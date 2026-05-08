@@ -7,11 +7,12 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import ScheduledPostsPanel from "@/components/scheduled/ScheduledPostsPanel";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 10 },
   visible: (i: number) => ({
-    opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.4, ease: "easeOut" },
+    opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.4 },
   }),
 };
 
@@ -136,55 +137,39 @@ export default function DashboardHome() {
           </div>
         </motion.div>
 
-        {/* Recent creations */}
+        {/* Scheduled posts widget */}
         <motion.div
           initial="hidden" animate="visible" variants={fadeUp} custom={6}
-          className="lg:col-span-2 bg-card rounded-2xl p-6 border border-border/40"
+          className="lg:col-span-2"
+        >
+          <ScheduledPostsPanel />
+        </motion.div>
+      </div>
+
+      {/* Recent creations strip */}
+      {recent.length > 0 && (
+        <motion.div
+          initial="hidden" animate="visible" variants={fadeUp} custom={7}
+          className="mt-6 bg-card rounded-2xl p-6 border border-border/40"
         >
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="font-semibold">Recent creations</h3>
-              <p className="text-xs text-muted-foreground">Your latest images from the studio</p>
+              <p className="text-xs text-muted-foreground">Latest from the studio</p>
             </div>
             <Link to="/dashboard/media" className="text-xs font-medium text-primary inline-flex items-center gap-0.5 hover:underline">
               View all <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
-
-          {recent.length === 0 ? (
-            <Link
-              to="/dashboard/image-studio"
-              className="block border-2 border-dashed border-border rounded-2xl p-10 text-center hover:border-primary/40 hover:bg-secondary/30 transition-colors"
-            >
-              <div className="w-12 h-12 rounded-2xl bg-gradient-hero mx-auto flex items-center justify-center mb-3 shadow-glow">
-                <Wand2 className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <p className="text-sm font-medium">Create your first image</p>
-              <p className="text-xs text-muted-foreground">Generations will appear here.</p>
-            </Link>
-          ) : (
-            <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 gap-3">
-              {recent.map((g) => (
-                <Link
-                  key={g.id}
-                  to="/dashboard/media"
-                  className="group relative aspect-square rounded-xl overflow-hidden bg-secondary"
-                >
-                  <img
-                    src={g.image_url}
-                    alt={g.prompt}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <p className="absolute bottom-2 left-2 right-2 text-[10px] text-background font-medium truncate opacity-0 group-hover:opacity-100 transition-opacity">
-                    {g.prompt}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          )}
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+            {recent.map((g) => (
+              <Link key={g.id} to="/dashboard/media" className="group relative aspect-square rounded-xl overflow-hidden bg-secondary">
+                <img src={g.image_url} alt={g.prompt} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              </Link>
+            ))}
+          </div>
         </motion.div>
-      </div>
+      )}
     </div>
   );
 }
