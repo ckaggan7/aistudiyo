@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Squiggle, StarDoodle, SpiralDoodle } from "@/components/Doodles";
 import { toast } from "sonner";
+import BrandWorkspace from "@/components/branding/BrandWorkspace";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 12 },
@@ -162,6 +163,8 @@ export default function BrandingCRM() {
           <Plus className="w-4 h-4 mr-2" /> New Brand
         </Button>
       </motion.div>
+
+      <BrandWorkspace />
 
       {/* Asset summary */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
