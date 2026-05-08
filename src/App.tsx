@@ -19,6 +19,7 @@ import ContactPage from "./pages/ContactPage";
 import BrandingCRM from "./pages/BrandingCRM";
 import TrendingTemplates from "./pages/TrendingTemplates";
 import ImageStudio from "./pages/ImageStudio";
+import AgentBuilder from "./pages/AgentBuilder";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -49,6 +50,7 @@ const App = () => (
           <Route path="/dashboard/trends" element={<DashboardPage><TrendEngine /></DashboardPage>} />
           <Route path="/dashboard/templates" element={<DashboardPage><TrendingTemplates /></DashboardPage>} />
           <Route path="/dashboard/branding" element={<DashboardPage><BrandingCRM /></DashboardPage>} />
+          <Route path="/dashboard/agents" element={<DashboardPage><AgentBuilder /></DashboardPage>} />
           <Route path="/dashboard/analytics" element={<DashboardPage><Analytics /></DashboardPage>} />
           <Route path="/dashboard/settings" element={<DashboardPage><SettingsPage /></DashboardPage>} />
           <Route path="*" element={<NotFound />} />

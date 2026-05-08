@@ -14,6 +14,7 @@ import {
   Flame,
   Briefcase,
   Wand2,
+  Bot,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +25,7 @@ const navItems = [
   { icon: Palette, label: "Design Studio", path: "/dashboard/design" },
   { icon: Flame, label: "Trending Templates", path: "/dashboard/templates" },
   { icon: Briefcase, label: "Branding CRM", path: "/dashboard/branding" },
+  { icon: Bot, label: "Agents", path: "/dashboard/agents" },
   { icon: Calendar, label: "Content Calendar", path: "/dashboard/calendar" },
   { icon: FolderOpen, label: "Media Library", path: "/dashboard/media" },
   { icon: TrendingUp, label: "Trend Engine", path: "/dashboard/trends" },

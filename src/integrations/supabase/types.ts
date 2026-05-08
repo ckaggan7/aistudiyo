@@ -14,6 +14,197 @@ export type Database = {
   }
   public: {
     Tables: {
+      agent_runs: {
+        Row: {
+          agent_id: string | null
+          finished_at: string | null
+          id: string
+          logs: Json | null
+          output: string | null
+          started_at: string
+          status: string
+        }
+        Insert: {
+          agent_id?: string | null
+          finished_at?: string | null
+          id?: string
+          logs?: Json | null
+          output?: string | null
+          started_at?: string
+          status?: string
+        }
+        Update: {
+          agent_id?: string | null
+          finished_at?: string | null
+          id?: string
+          logs?: Json | null
+          output?: string | null
+          started_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_runs_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agents: {
+        Row: {
+          created_at: string
+          enabled: boolean | null
+          goal: string | null
+          id: string
+          name: string
+          schedule_cron: string | null
+          system_prompt: string | null
+          tools: Json | null
+          type: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean | null
+          goal?: string | null
+          id?: string
+          name: string
+          schedule_cron?: string | null
+          system_prompt?: string | null
+          tools?: Json | null
+          type?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean | null
+          goal?: string | null
+          id?: string
+          name?: string
+          schedule_cron?: string | null
+          system_prompt?: string | null
+          tools?: Json | null
+          type?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      brand_profile: {
+        Row: {
+          audience: string | null
+          created_at: string
+          font_pair: string | null
+          id: string
+          logo_url: string | null
+          name: string
+          palette: Json | null
+          style_prompt: string | null
+          tagline: string | null
+          updated_at: string
+          user_id: string | null
+          voice: string | null
+        }
+        Insert: {
+          audience?: string | null
+          created_at?: string
+          font_pair?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          palette?: Json | null
+          style_prompt?: string | null
+          tagline?: string | null
+          updated_at?: string
+          user_id?: string | null
+          voice?: string | null
+        }
+        Update: {
+          audience?: string | null
+          created_at?: string
+          font_pair?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          palette?: Json | null
+          style_prompt?: string | null
+          tagline?: string | null
+          updated_at?: string
+          user_id?: string | null
+          voice?: string | null
+        }
+        Relationships: []
+      }
+      campaigns: {
+        Row: {
+          color: string | null
+          created_at: string
+          ends_at: string | null
+          goal: string | null
+          id: string
+          kpi: string | null
+          name: string
+          starts_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          ends_at?: string | null
+          goal?: string | null
+          id?: string
+          kpi?: string | null
+          name: string
+          starts_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          ends_at?: string | null
+          goal?: string | null
+          id?: string
+          kpi?: string | null
+          name?: string
+          starts_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      content_pillars: {
+        Row: {
+          cadence: string | null
+          color: string | null
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          user_id: string | null
+        }
+        Insert: {
+          cadence?: string | null
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          user_id?: string | null
+        }
+        Update: {
+          cadence?: string | null
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       generations: {
         Row: {
           created_at: string
@@ -43,6 +234,108 @@ export type Database = {
           mode?: string
           prompt?: string
           style?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      meta_connections: {
+        Row: {
+          access_token: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          ig_user_id: string | null
+          page_id: string | null
+          provider: string
+          user_id: string | null
+        }
+        Insert: {
+          access_token?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          ig_user_id?: string | null
+          page_id?: string | null
+          provider?: string
+          user_id?: string | null
+        }
+        Update: {
+          access_token?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          ig_user_id?: string | null
+          page_id?: string | null
+          provider?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      scheduled_posts: {
+        Row: {
+          campaign_id: string | null
+          caption: string | null
+          created_at: string
+          id: string
+          image_url: string | null
+          platform: string
+          scheduled_for: string
+          status: string
+          title: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          campaign_id?: string | null
+          caption?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          platform?: string
+          scheduled_for?: string
+          status?: string
+          title: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          campaign_id?: string | null
+          caption?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          platform?: string
+          scheduled_for?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      voice_presets: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          sample: string | null
+          tone: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          sample?: string | null
+          tone?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          sample?: string | null
+          tone?: string | null
           user_id?: string | null
         }
         Relationships: []
