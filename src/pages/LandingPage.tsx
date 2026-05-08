@@ -1,6 +1,6 @@
 import { motion, type Transition } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Sparkles, Palette, Calendar, ArrowRight, Zap, TrendingUp, Image as ImageIcon, Check, MessageSquareText, Wand2, BarChart3, Send, PenLine, Layers } from "lucide-react";
+import { Sparkles, Palette, Calendar, ArrowRight, Zap, TrendingUp, Image as ImageIcon, Check, MessageSquareText, Wand2, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
@@ -92,175 +92,136 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* Hero */}
-      <section className="relative min-h-screen flex items-center px-6 overflow-hidden">
-        {/* Soft pastel background */}
+      {/* Hero – minimal, centered, single ambient orb */}
+      <section className="relative min-h-screen flex items-center justify-center px-6 overflow-hidden">
         <div className="absolute inset-0 -z-10">
-          <div className="absolute inset-0 bg-gradient-to-br from-[hsl(30,100%,96%)] via-background to-[hsl(280,60%,96%)]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[hsl(30,100%,97%)] via-background to-[hsl(280,40%,97%)]" />
           <motion.div
-            animate={{ x: [0, 40, -20, 0], y: [0, -20, 20, 0], scale: [1, 1.15, 0.95, 1] }}
-            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-10 -left-20 w-[500px] h-[500px] rounded-full bg-[hsl(22,95%,70%/0.35)] blur-[120px]"
-          />
-          <motion.div
-            animate={{ x: [0, -30, 25, 0], y: [0, 30, -15, 0], scale: [1, 0.9, 1.1, 1] }}
-            transition={{ duration: 24, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute bottom-0 right-0 w-[600px] h-[600px] rounded-full bg-[hsl(280,80%,70%/0.3)] blur-[140px]"
+            animate={{ scale: [1, 1.1, 0.95, 1], opacity: [0.55, 0.7, 0.55] }}
+            transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[720px] h-[720px] rounded-full blur-[140px] bg-[radial-gradient(circle_at_center,hsl(22,95%,70%/0.45),hsl(280,80%,70%/0.35)_55%,transparent_75%)]"
           />
         </div>
 
-        {/* Floating doodles */}
-        <Squiggle className="hidden lg:block absolute top-32 left-10 w-24 text-primary/40" />
-        <StarDoodle className="hidden lg:block absolute top-40 right-20 w-10 text-accent/60" />
-        <CircleDoodle className="hidden lg:block absolute bottom-32 left-16 w-20 text-primary/30" />
-        <SpiralDoodle className="hidden lg:block absolute top-1/2 right-10 w-14 text-accent/40" />
-        <DotsTriangle className="hidden lg:block absolute bottom-20 right-1/3 w-12 text-primary/40" />
-        <BurstDoodle className="hidden lg:block absolute top-28 left-1/2 w-12 text-accent/50" />
+        <Squiggle className="hidden lg:block absolute top-32 left-16 w-20 text-primary/30" />
+        <StarDoodle className="hidden lg:block absolute top-40 right-24 w-9 text-accent/50" />
 
-        <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-12 lg:gap-16 items-center pt-24 pb-16 relative">
-          {/* Left – Artistic illustration card stack */}
+        <div className="max-w-3xl w-full text-center pt-28 pb-20 relative">
           <motion.div
-            initial={{ opacity: 0, x: -40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="relative order-2 lg:order-1"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-card/80 backdrop-blur border border-border/60 shadow-card text-xs font-medium mb-7"
           >
-            <div className="relative mx-auto max-w-md aspect-square">
-              {/* Back card - purple */}
-              <motion.div
-                animate={{ rotate: [-8, -6, -8], y: [0, -8, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-accent to-[hsl(280,80%,55%)] shadow-elevated -rotate-[8deg] origin-bottom-left"
-              >
-                <div className="absolute top-6 left-6 w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                  <Palette className="w-6 h-6 text-white" />
-                </div>
-                <StarDoodle className="absolute top-8 right-8 w-8 text-white/70" />
-                <ZigzagDoodle className="absolute bottom-12 left-8 w-24 text-white/50" />
-              </motion.div>
-
-              {/* Middle card - white with content */}
-              <motion.div
-                animate={{ rotate: [3, 5, 3], y: [0, -4, 0] }}
-                transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                className="absolute inset-0 rounded-[2rem] bg-card border border-border/60 shadow-elevated rotate-[3deg] p-7 flex flex-col"
-              >
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-2.5 h-2.5 rounded-full bg-[hsl(0,80%,65%)]" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-[hsl(45,95%,60%)]" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-[hsl(140,70%,55%)]" />
-                </div>
-                <p className="text-xs text-muted-foreground mb-2 font-mono">prompt.txt</p>
-                <p className="text-sm font-medium leading-relaxed mb-4">
-                  "Create a launch post for our new <span className="text-primary">eco-friendly</span> coffee brand 🌿"
-                </p>
-                <div className="mt-auto flex items-center justify-between">
-                  <div className="flex -space-x-2">
-                    <div className="w-7 h-7 rounded-full bg-gradient-hero border-2 border-card" />
-                    <div className="w-7 h-7 rounded-full bg-gradient-accent border-2 border-card" />
-                    <div className="w-7 h-7 rounded-full bg-accent border-2 border-card" />
-                  </div>
-                  <div className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold flex items-center gap-1">
-                    <Sparkles className="w-3 h-3" /> Generate
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Front card - orange */}
-              <motion.div
-                animate={{ rotate: [-2, 0, -2], y: [0, -10, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                className="absolute -bottom-4 -right-4 w-44 h-44 rounded-3xl bg-gradient-hero shadow-glow p-5 flex flex-col justify-between"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 rounded-xl bg-white/25 backdrop-blur-sm flex items-center justify-center">
-                    <TrendingUp className="w-5 h-5 text-white" />
-                  </div>
-                  <HeartDoodle className="w-6 text-white/80" />
-                </div>
-                <div>
-                  <p className="text-white/80 text-[10px] uppercase tracking-wider font-semibold">Engagement</p>
-                  <p className="text-white text-3xl font-bold">+247%</p>
-                </div>
-              </motion.div>
-
-              {/* Floating image preview */}
-              <motion.div
-                animate={{ y: [0, -12, 0], rotate: [-4, -2, -4] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
-                className="absolute -top-6 -left-4 w-32 h-32 rounded-2xl bg-gradient-to-br from-[hsl(280,70%,75%)] via-[hsl(330,80%,75%)] to-[hsl(22,95%,70%)] shadow-elevated -rotate-[6deg] flex items-center justify-center"
-              >
-                <ImageIcon className="w-10 h-10 text-white/90" strokeWidth={1.5} />
-                <ArrowDoodle className="absolute -bottom-8 -right-6 w-14 text-accent" />
-              </motion.div>
-            </div>
+            <Sparkles className="w-3.5 h-3.5 text-primary" />
+            <span className="text-foreground">AI Social Studio · Built with Claude</span>
           </motion.div>
 
-          {/* Right – Content */}
+          <motion.h1
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.05 }}
+            className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.02] mb-6 text-foreground"
+          >
+            Create content that{" "}
+            <span className="relative inline-block">
+              <span className="text-gradient-hero">stops the scroll</span>
+              <Underline className="absolute -bottom-3 left-0 w-full text-primary" />
+            </span>
+            .
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto mb-9"
+          >
+            Captions, visuals, and scheduling — one studio, powered by AI.
+          </motion.p>
+
           <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="order-1 lg:order-2 text-center lg:text-left relative"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.25 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8"
+          >
+            <Link to="/signup">
+              <Button size="lg" className="bg-gradient-hero text-primary-foreground hover:opacity-90 px-8 h-12 text-base rounded-full shadow-glow">
+                Join the Waitlist <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+            </Link>
+            <a href="#how-it-works">
+              <Button size="lg" variant="ghost" className="rounded-full px-6 h-12 text-base text-foreground hover:bg-foreground/5">
+                See it in action
+              </Button>
+            </a>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.35 }}
+            className="flex items-center gap-2.5 justify-center mb-14"
+          >
+            <div className="flex -space-x-2">
+              {[
+                "from-[hsl(22,95%,60%)] to-[hsl(45,95%,60%)]",
+                "from-[hsl(280,80%,60%)] to-[hsl(320,80%,60%)]",
+                "from-[hsl(190,90%,55%)] to-[hsl(220,90%,60%)]",
+                "from-[hsl(330,85%,65%)] to-[hsl(22,95%,60%)]",
+              ].map((g, i) => (
+                <div key={i} className={`w-6 h-6 rounded-full bg-gradient-to-br ${g} border-2 border-background`} />
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Join <span className="font-semibold text-foreground">2,000+ creators</span> on the waitlist
+            </p>
+          </motion.div>
+
+          {/* Single floating product preview */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="relative max-w-2xl mx-auto"
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-card border border-primary/20 shadow-card text-xs font-medium mb-6"
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+              className="bg-card/90 backdrop-blur border border-border/60 shadow-elevated rounded-3xl p-5 text-left"
             >
-              <motion.span
-                animate={{ rotate: [0, 15, -15, 0] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <Sparkles className="w-3.5 h-3.5 text-primary" />
-              </motion.span>
-              <span className="text-foreground">Built with Claude AI</span>
-              <span className="px-1.5 py-0.5 rounded-full bg-gradient-hero text-primary-foreground text-[10px] font-bold">NEW</span>
-            </motion.div>
-
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05] mb-6 text-foreground">
-              Create content
-              <br />
-              that{" "}
-              <span className="relative inline-block">
-                <span className="text-gradient-hero">stops the scroll</span>
-                <Underline className="absolute -bottom-3 left-0 w-full text-primary" />
-              </span>
-            </h1>
-
-            <p className="text-lg md:text-xl text-muted-foreground max-w-lg mx-auto lg:mx-0 mb-10">
-              Generate captions, design visuals, and schedule posts — all powered by AI in one elegant studio.
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center lg:items-start gap-4 mb-8">
-              <Link to="/signup">
-                <Button size="lg" className="bg-gradient-hero text-primary-foreground hover:opacity-90 transition-opacity px-8 h-12 text-base rounded-full shadow-glow">
-                  Join the Waitlist <ArrowRight className="ml-2 w-4 h-4" />
-                </Button>
-              </Link>
-              <Link to="/dashboard">
-                <Button size="lg" variant="outline" className="rounded-full px-8 h-12 text-base border-primary/30 hover:bg-primary/5">
-                  View Demo
-                </Button>
-              </Link>
-            </div>
-
-            <div className="flex items-center gap-3 justify-center lg:justify-start">
-              <div className="flex -space-x-2">
-                {[
-                  "from-[hsl(22,95%,60%)] to-[hsl(45,95%,60%)]",
-                  "from-[hsl(280,80%,60%)] to-[hsl(320,80%,60%)]",
-                  "from-[hsl(190,90%,55%)] to-[hsl(220,90%,60%)]",
-                  "from-[hsl(330,85%,65%)] to-[hsl(22,95%,60%)]",
-                ].map((g, i) => (
-                  <div key={i} className={`w-7 h-7 rounded-full bg-gradient-to-br ${g} border-2 border-background`} />
-                ))}
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-2.5 h-2.5 rounded-full bg-[hsl(0,80%,65%)]" />
+                <div className="w-2.5 h-2.5 rounded-full bg-[hsl(45,95%,60%)]" />
+                <div className="w-2.5 h-2.5 rounded-full bg-[hsl(140,70%,55%)]" />
+                <span className="ml-auto text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">studio.live</span>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Join <span className="font-semibold text-foreground">2,000+ creators</span> on the waitlist
-              </p>
-            </div>
+              <div className="grid grid-cols-5 gap-4 items-stretch">
+                <div className="col-span-3 space-y-3">
+                  <div className="text-xs text-muted-foreground font-mono">prompt</div>
+                  <p className="text-sm font-medium leading-relaxed">
+                    Launch post for our new <span className="text-primary">eco-friendly</span> coffee brand 🌿
+                  </p>
+                  <div className="space-y-1.5 pt-2">
+                    <div className="h-2 rounded-full bg-secondary w-11/12" />
+                    <div className="h-2 rounded-full bg-secondary w-9/12" />
+                    <div className="h-2 rounded-full bg-secondary w-10/12" />
+                  </div>
+                  <div className="flex items-center gap-2 pt-2">
+                    <div className="px-2.5 py-1 rounded-full bg-primary/10 text-primary text-[11px] font-semibold flex items-center gap-1">
+                      <Sparkles className="w-3 h-3" /> Generated
+                    </div>
+                    <div className="px-2.5 py-1 rounded-full bg-secondary text-foreground text-[11px] font-medium">
+                      Instagram · 1:1
+                    </div>
+                  </div>
+                </div>
+                <div className="col-span-2 aspect-square rounded-2xl bg-gradient-to-br from-[hsl(280,70%,75%)] via-[hsl(330,80%,75%)] to-[hsl(22,95%,70%)] flex items-center justify-center shadow-card">
+                  <ImageIcon className="w-9 h-9 text-white/90" strokeWidth={1.5} />
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
       </section>
