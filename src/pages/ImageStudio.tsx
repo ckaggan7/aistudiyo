@@ -12,6 +12,9 @@ import {
   Eye,
   EyeOff,
   Sparkles,
+  Wand2,
+  Sticker as StickerIcon,
+  Video,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,6 +22,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useSearchParams } from "react-router-dom";
 
 type Style = {
   name: string;
@@ -27,7 +31,7 @@ type Style = {
   prompt: string;
 };
 
-const STYLES: Style[] = [
+const IMAGE_STYLES: Style[] = [
   { name: "Scribble", desc: "Hand-drawn cartoon doodle style", thumb: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=600&h=600&fit=crop", prompt: "as a loose hand-drawn cartoon scribble doodle in black ink with playful imperfect lines on white paper" },
   { name: "Animal Infographic", desc: "Educational dark blue with diagrams", thumb: "https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=600&h=600&fit=crop", prompt: "as an educational infographic on a deep navy background with cream callouts, dotted lines, vintage scientific diagram aesthetic" },
   { name: "Chibi Stickers", desc: "Cute anime chibi on pastel", thumb: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&h=600&fit=crop", prompt: "in a cute chibi anime sticker style with big eyes, pastel pink background, sparkles and heart decorations, clean vector illustration" },
@@ -45,6 +49,22 @@ const STYLES: Style[] = [
   { name: "Golden Hour", desc: "Warm sunset landscape", thumb: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&h=600&fit=crop", prompt: "in golden hour landscape lighting, warm amber sun rays, soft haze, breathtaking natural scenery" },
 ];
 
+const STICKER_STYLES: Style[] = [
+  { name: "Cartoon Pop", desc: "Bold cartoon sticker", thumb: "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=600&h=600&fit=crop", prompt: "as a die-cut cartoon sticker with thick white outline, vivid pop colors, transparent background, bold and playful" },
+  { name: "Kawaii", desc: "Cute pastel sticker", thumb: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&h=600&fit=crop", prompt: "as a kawaii chibi sticker with big sparkly eyes, soft pastel colors, white outline, cute and adorable, transparent background" },
+  { name: "Retro", desc: "70s vintage sticker", thumb: "https://images.unsplash.com/photo-1485518882345-15568b007407?w=600&h=600&fit=crop", prompt: "as a retro 70s vintage sticker with warm orange, mustard and brown palette, groovy typography, halftone texture" },
+  { name: "Minimal Line", desc: "Single-line illustration", thumb: "https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8?w=600&h=600&fit=crop", prompt: "as a minimalist single-line illustration sticker, monoline ink, white background, elegant and simple" },
+  { name: "Holographic", desc: "Iridescent shimmer", thumb: "https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=600&h=600&fit=crop", prompt: "as a holographic iridescent sticker with rainbow chrome shimmer, metallic foil finish, glossy reflections, transparent background" },
+  { name: "Doodle", desc: "Hand-drawn marker doodle", thumb: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=600&h=600&fit=crop", prompt: "as a hand-drawn marker doodle sticker with chunky outline, flat pastel fill, slight imperfections, friendly vibe" },
+];
+
+const VIDEO_ENGINES = [
+  { id: "veo-3", name: "Veo 3", desc: "Cinematic, sound-aware", badge: "Premium", gradient: "from-primary to-accent" },
+  { id: "kling-2", name: "Kling 2.0", desc: "Smooth motion, lip sync", badge: "Popular", gradient: "from-accent to-purple-500" },
+  { id: "runway-gen3", name: "Runway Gen-3", desc: "Director-grade control", badge: "Pro", gradient: "from-orange-400 to-primary" },
+  { id: "pika-2", name: "Pika 2.0", desc: "Stylised short clips", badge: "Stylised", gradient: "from-pink-400 to-accent" },
+];
+
 type Generation = {
   id: string;
   prompt: string;
@@ -53,11 +73,29 @@ type Generation = {
   created_at: string;
 };
 
+type Mode = "image" | "sticker" | "video";
+
 export default function ImageStudio() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialMode = (searchParams.get("mode") as Mode) || "image";
+  const [mode, setMode] = useState<Mode>(
+    initialMode === "sticker" || initialMode === "video" ? initialMode : "image",
+  );
   const [prompt, setPrompt] = useState("");
   const [openStyle, setOpenStyle] = useState<Style | null>(null);
   const [history, setHistory] = useState<Generation[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const setModeAndUrl = (m: Mode) => {
+    setMode(m);
+    const next = new URLSearchParams(searchParams);
+    if (m === "image") next.delete("mode");
+    else next.set("mode", m);
+    setSearchParams(next, { replace: true });
+  };
+
+  const styles = mode === "sticker" ? STICKER_STYLES : IMAGE_STYLES;
+  const isVideo = mode === "video";
 
   const loadHistory = async () => {
     const { data } = await supabase
@@ -70,17 +108,23 @@ export default function ImageStudio() {
   useEffect(() => { loadHistory(); }, []);
 
   const quickGenerate = async () => {
+    if (isVideo) return toast.info("Video generation is coming soon");
     if (!prompt.trim()) return toast.error("Describe what you want to create");
     setLoading(true);
+    const stylePrompt =
+      mode === "sticker"
+        ? "as a die-cut sticker with thick white outline, vivid colors, transparent background"
+        : "";
+    const styleName = mode === "sticker" ? "Sticker" : "Default";
     const { data, error } = await supabase.functions.invoke("generate-image", {
-      body: { prompt, style: "Default", stylePrompt: "", mode: "text" },
+      body: { prompt, style: styleName, stylePrompt, mode: "text" },
     });
     setLoading(false);
     if (error || (data as any)?.error) {
       toast.error((data as any)?.error || error?.message || "Generation failed");
       return;
     }
-    toast.success("Image generated and saved to Media Library");
+    toast.success(`${mode === "sticker" ? "Sticker" : "Image"} generated and saved`);
     setPrompt("");
     loadHistory();
   };
@@ -88,10 +132,61 @@ export default function ImageStudio() {
   return (
     <div className="max-w-6xl mx-auto">
       <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
-        <h1 className="text-4xl font-bold tracking-tight mb-2">Images</h1>
-        <p className="text-muted-foreground">Describe what you want to create — or pick a style below</p>
+        <h1 className="text-4xl font-bold tracking-tight mb-2">Studio</h1>
+        <p className="text-muted-foreground">One place for images, stickers and (soon) video.</p>
       </motion.div>
 
+      {/* Mode switcher */}
+      <div className="flex justify-center mb-6">
+        <div className="inline-flex p-1 rounded-2xl bg-secondary border border-border/40">
+          {([
+            { id: "image" as Mode, label: "Image", icon: Wand2 },
+            { id: "sticker" as Mode, label: "Sticker", icon: StickerIcon },
+            { id: "video" as Mode, label: "Video", icon: Video },
+          ]).map((m) => (
+            <button
+              key={m.id}
+              onClick={() => setModeAndUrl(m.id)}
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
+                mode === m.id ? "bg-card shadow-card text-foreground" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <m.icon className="w-4 h-4" />
+              {m.label}
+              {m.id === "video" && (
+                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-accent/15 text-accent">SOON</span>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {isVideo ? (
+        <div className="bg-card border border-border/60 rounded-2xl p-8 text-center shadow-card">
+          <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-hero flex items-center justify-center mb-4 shadow-glow">
+            <Video className="w-6 h-6 text-primary-foreground" />
+          </div>
+          <h2 className="text-xl font-bold mb-1">Video generation is coming soon</h2>
+          <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6">
+            We're integrating cinematic video models. Get notified the moment it goes live.
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto mb-6">
+            {VIDEO_ENGINES.map((e) => (
+              <div key={e.id} className="p-3 rounded-xl border-2 border-border/60 text-left opacity-70">
+                <div className={`w-full aspect-[5/3] rounded-lg bg-gradient-to-br ${e.gradient} mb-2 flex items-end justify-end p-2`}>
+                  <span className="text-[10px] font-semibold bg-card/90 backdrop-blur px-2 py-0.5 rounded-full">{e.badge}</span>
+                </div>
+                <p className="text-sm font-semibold">{e.name}</p>
+                <p className="text-xs text-muted-foreground">{e.desc}</p>
+              </div>
+            ))}
+          </div>
+          <Button asChild className="bg-gradient-hero text-primary-foreground hover:opacity-90 rounded-xl">
+            <a href="/signup">Join the waitlist</a>
+          </Button>
+        </div>
+      ) : (
+      <>
       {/* Prompt bar */}
       <div className="bg-card border border-border/60 rounded-2xl shadow-card p-2 flex items-center gap-2 mb-8">
         <button className="p-2.5 rounded-xl hover:bg-secondary transition-colors text-muted-foreground" title="Upload">
@@ -101,7 +196,7 @@ export default function ImageStudio() {
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && quickGenerate()}
-          placeholder="Describe a new image..."
+          placeholder={mode === "sticker" ? "Describe a new sticker..." : "Describe a new image..."}
           className="flex-1 bg-transparent outline-none text-sm px-2"
         />
         <button className="p-2.5 rounded-xl hover:bg-secondary transition-colors text-muted-foreground">
@@ -119,9 +214,11 @@ export default function ImageStudio() {
 
       {/* Style strip */}
       <div className="mb-8">
-        <h2 className="text-sm font-semibold mb-3 px-1">Create an image</h2>
+        <h2 className="text-sm font-semibold mb-3 px-1">
+          {mode === "sticker" ? "Pick a sticker style" : "Create an image"}
+        </h2>
         <div className="flex gap-3 overflow-x-auto pb-3 -mx-1 px-1 scrollbar-thin">
-          {STYLES.map((s) => (
+          {styles.map((s) => (
             <button
               key={s.name}
               onClick={() => setOpenStyle(s)}
@@ -153,6 +250,8 @@ export default function ImageStudio() {
             ))}
           </div>
         </div>
+      )}
+      </>
       )}
 
       <AnimatePresence>
