@@ -3,7 +3,6 @@ import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   Sparkles,
-  Image,
   Palette,
   Calendar,
   FolderOpen,
@@ -13,7 +12,6 @@ import {
   Menu,
   X,
   Flame,
-  Sticker,
   Briefcase,
   Wand2,
 } from "lucide-react";
@@ -22,11 +20,9 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: Sparkles, label: "AI Generator", path: "/dashboard/generator" },
-  { icon: Image, label: "Image Generator", path: "/dashboard/images" },
-  { icon: Wand2, label: "Image Studio", path: "/dashboard/image-studio", badge: "NEW" },
+  { icon: Wand2, label: "Images", path: "/dashboard/image-studio" },
   { icon: Palette, label: "Design Studio", path: "/dashboard/design" },
   { icon: Flame, label: "Trending Templates", path: "/dashboard/templates" },
-  { icon: Sticker, label: "Sticker Generator", path: "/dashboard/stickers" },
   { icon: Briefcase, label: "Branding CRM", path: "/dashboard/branding" },
   { icon: Calendar, label: "Content Calendar", path: "/dashboard/calendar" },
   { icon: FolderOpen, label: "Media Library", path: "/dashboard/media" },
