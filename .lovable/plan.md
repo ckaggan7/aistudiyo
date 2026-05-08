@@ -1,97 +1,84 @@
-# Plan: Hero redesign + Image Studio consolidation
+# Plan: Calendar widget, Branding CRM, Agent Builder
 
-## 1. Redesign the Landing Hero (`src/pages/LandingPage.tsx`)
+Three features to ship. All UI-first; backend uses Lovable Cloud (Supabase). Meta API integration is scoped as scaffolded edge functions ready for credentials.
 
-The current hero is busy: a 3-card stack illustration, multiple floating doodles, animated blobs, badge, two CTAs, and a social-proof row competing for attention. We'll move to a focused, modern single-column hero in line with our Apple-minimalist memory rule.
+---
 
-New hero composition:
-- **Centered layout** (no left/right split), max-width ~960px.
-- **Single ambient gradient backdrop** — one large breathing orb instead of two, plus a subtle noise/grid for depth. Fewer doodles (1–2 max).
-- **Refined eyebrow chip**: "AI Social Studio · Built with Claude" — simpler, no "NEW" pill.
-- **Headline**: bigger, tighter — "Create content that stops the scroll." with the gradient underline only on the last 3 words.
-- **Subhead**: one tight line — "Captions, visuals, and scheduling — one studio, powered by AI."
-- **Primary CTA**: "Join the Waitlist →". Secondary ghost link: "See it in action" (scrolls to How it works).
-- **Trust row** below: avatars + "Join 2,000+ creators" — kept, but smaller and centered.
-- **Hero preview**: a single floating product card (mock studio screen) gently breathing below the CTAs — replaces the 3-card stack. Uses real-looking UI chrome (prompt bar + generated image thumb + caption snippet) so the value prop is visible at a glance.
+## 1. Dashboard — Scheduled Posts Calendar Widget
 
-Doodles/decorations: keep just one Squiggle and one Star at low opacity. Remove the rest from the hero.
+**Goal:** Show upcoming scheduled posts on `/dashboard` with status + quick actions.
 
-The rest of the landing page (How it works, Features, Pricing, etc.) stays untouched.
+**Schema (new table `scheduled_posts`):**
+- `id`, `user_id`, `title`, `caption`, `image_url`, `platform` (instagram/facebook/x/linkedin), `scheduled_for` (timestamptz), `status` (draft/scheduled/published/failed), `created_at`, `updated_at`
+- RLS: public for now (matches existing pattern in `generations`)
 
-## 2. Remove duplicates in the Dashboard
+**UI on `DashboardHome.tsx`:**
+- New section "Upcoming posts" replacing/augmenting Recent Creations
+- Two view tabs: **List** (default) and **Calendar** (mini month grid)
+- Each row/cell shows: date chip, platform icon, title, status badge (color-coded), thumbnail
+- Quick actions per post: **Reschedule** (date picker popover), **Edit** (dialog → caption + datetime), **Publish now**, **Delete**
+- "Important dates" rail above: today / next 7 days counters + next post countdown
 
-There are overlaps between `DashboardHome` "Featured Tools" cards, "Quick Actions", and the sidebar:
-- Sidebar already has all 13 tools — duplicating them as Quick Actions adds noise.
-- "Featured Tools" highlights Trending Templates / Sticker Generator / Branding CRM, which are also in the sidebar.
-- "Generate Caption" + "Create Image" + "Schedule Post" + "View Analytics" in Quick Actions are all sidebar items.
+**Files:**
+- `src/pages/DashboardHome.tsx` — add ScheduledPostsPanel
+- `src/components/scheduled/ScheduledPostsPanel.tsx` (new)
+- `src/components/scheduled/PostQuickActions.tsx` (new)
+- `src/hooks/useScheduledPosts.ts` (new) — list/update/delete via supabase
 
-Changes in `src/pages/DashboardHome.tsx`:
-- **Keep stats row** (Posts, Scheduled, Engagement, Hashtags) — useful at-a-glance.
-- **Replace "Featured Tools" + "Quick Actions" with a single "Start creating" panel** containing 3 contextual entry points only:
-  1. **New image** → `/dashboard/image-studio` (the unified module, see §3)
-  2. **New caption** → `/dashboard/generator`
-  3. **Schedule a post** → `/dashboard/calendar`
-- **Keep "Recent Posts"** as the activity panel beside it.
-- Remove `Sticker`, `Briefcase`, `Flame`, `Image as ImageIcon` etc. imports that become unused.
+---
 
-Result: one "what next?" panel + recent activity, no duplication of the sidebar.
+## 2. Branding CRM — Innovative redesign
 
-## 3. Combine image modules into one powerful Image Studio
+**Concept:** Brand Workspace that connects design tokens → image gen → content calendar.
 
-Today there are three image-related entries in the sidebar:
-- **Image Generator** (`/dashboard/images`) — mock multi-engine selector (Nano Banana / Flux / Ideogram / SDXL / Veo / Kling…). Not wired to backend.
-- **Image Studio** (`/dashboard/image-studio`) — the real one. Calls the `generate-image` edge function, supports text→image and image→image with curated styles, saves to Media Library.
-- **Sticker Generator** (`/dashboard/stickers`) — mock sticker styles, no backend.
+**Sections in `BrandingCRM.tsx`:**
+1. **Brand Identity Card** — logo upload, name, tagline, tone of voice, target audience, color palette (HSL pickers), font pairing. Saved to `brand_profile` table.
+2. **Visual DNA** — preview chips synced into Image Studio (auto-injected as style prefix when generating).
+3. **Voice Presets** — 3 saved tone presets that pre-fill Caption Generator.
+4. **Content Pillars** — 4–6 topic pillars with weekly cadence; feed into Calendar as recurring slots.
+5. **Campaigns** — group of scheduled_posts with goal, KPI, date range; visible as colored bands on calendar.
+6. **Asset Bank** — pinned media from generations table per brand.
 
-Plan: make **Image Studio** the single, powerful module, and merge the best ideas from the other two into it.
+**Data flow:** Brand profile → ImageStudio reads `brand.style_prompt` → AIGenerator reads `brand.voice` → ContentCalendar/Dashboard groups by `campaign_id`.
 
-### New Image Studio structure (`src/pages/ImageStudio.tsx`)
+**New tables:** `brand_profile`, `content_pillars`, `campaigns`, `voice_presets`.
 
-Top-level mode switcher (segmented control): **Image · Sticker · Video**
+---
 
-- **Image mode** (default, real)
-  - Quick prompt bar (existing) — text → image via `generate-image` edge fn.
-  - Style strip (existing 15 styles) — opens the existing modal with Text-to-Image / Modify-My-Image tabs.
-  - Engine row (visual chips, optional, defaults to Nano Banana): "Nano Banana · Fast", "Nano Banana Pro · Highest quality", "Ideogram · Text in image". Sent as a `model` field to the edge function (the function can fall back to default if unknown — no business-logic change required, just plumbing the field).
-  - Aspect ratio chips: 1:1, 9:16, 4:5, 16:9.
+## 3. Agent Builder (Manus-style, Meta accounts)
 
-- **Sticker mode**
-  - Same prompt bar.
-  - Style strip swaps to sticker styles (Cartoon Pop, Kawaii, Retro, Minimal Line, Holographic, Doodle) — uses the same modal + edge function with a sticker-tuned `stylePrompt` (e.g. "as a die-cut sticker on transparent background, bold outline, vivid colors").
-  - "Recent stickers" reuses the existing recent-generations grid filtered by style.
+**Goal:** Drag-light builder to compose autonomous agents that **Publish**, **Research**, **Analyze** for Meta (Instagram/Facebook).
 
-- **Video mode**
-  - Visible but marked **Coming soon** — disabled engine cards (Veo 3, Kling 2.0, Runway, Pika) with a waitlist CTA. Keeps the surface area without shipping a non-working flow.
+**UI: `/dashboard/agents` (new page)**
+- Agent gallery: 3 starter templates — Publisher, Researcher, Analyst
+- Agent detail: name, goal, schedule (cron), tools enabled, system prompt, run history, last result
+- Run console: streaming logs, current step, output preview
+- "Connect Meta" CTA → OAuth via Meta Graph API (requires user app credentials)
 
-### Routing & sidebar (`src/App.tsx`, `src/components/DashboardLayout.tsx`)
+**Tools per agent type:**
+- **Publisher:** generate_caption, generate_image, schedule_post, publish_to_meta
+- **Researcher:** web_search (Lovable AI), competitor_scan, hashtag_trends, summarize
+- **Analyst:** fetch_meta_insights, compute_engagement, generate_report, post_to_calendar
 
-- Keep route `/dashboard/image-studio` as the canonical one.
-- Redirect `/dashboard/images` and `/dashboard/stickers` to `/dashboard/image-studio` (with a `?mode=sticker` query param for the sticker route so users land in the right tab).
-- Sidebar: remove "Image Generator" and "Sticker Generator" entries; rename "Image Studio" to **"Images"** (drop the NEW badge). Net: 13 → 11 sidebar items.
-- Delete `src/pages/ImageGenerator.tsx` and `src/pages/StickerGenerator.tsx` once routes are redirected and imports cleaned up in `App.tsx`.
+**Backend:**
+- Edge function `agent-runner` — orchestrator using Lovable AI Gateway (gemini-3-flash-preview) with tool-calling
+- Edge function `meta-publish` — POSTs to Graph API `/{ig-user-id}/media` + `/media_publish`
+- Edge function `meta-insights` — GET `/{ig-user-id}/insights`
+- Cron via pg_cron triggers `agent-runner` per schedule
+- Tables: `agents`, `agent_runs`, `agent_tools`, `meta_connections` (access_token, page_id, ig_user_id)
 
-### Dashboard "Start creating" link
+**Secrets needed (will request after approval):** `META_APP_ID`, `META_APP_SECRET`. User completes OAuth in-app to store per-user tokens.
 
-The "New image" entry on `DashboardHome` points to `/dashboard/image-studio` (image mode). We can add a secondary "New sticker" link to `/dashboard/image-studio?mode=sticker` if helpful.
+**Sidebar:** add "Agents" entry (Bot icon) above Settings.
 
-## Technical notes
+---
 
-- Hero changes are pure presentation in `LandingPage.tsx` — no token changes, reuse existing `bg-gradient-hero`, `text-gradient-hero`, `shadow-glow`, `shadow-elevated` tokens.
-- Image Studio mode switching: a single `mode` state ("image" | "sticker" | "video"), read initial value from `useSearchParams()`. Style strips are two arrays in the same component; the modal stays unchanged.
-- Edge function (`supabase/functions/generate-image`) doesn't need changes for the consolidation; if we wire engine selection, we'll forward an optional `model` field but keep the existing default behavior so nothing breaks.
-- Remove unused imports/icons after each file edit to keep TypeScript clean.
+## Build Order
+1. Migration: `scheduled_posts`, `brand_profile`, `campaigns`, `content_pillars`, `voice_presets`, `agents`, `agent_runs`, `meta_connections` (single migration with RLS).
+2. Dashboard scheduled posts widget + list/calendar tabs + quick actions.
+3. Branding CRM redesign with brand-aware hooks read by ImageStudio + AIGenerator.
+4. Agent Builder UI + edge functions (`agent-runner`, `meta-publish`, `meta-insights`) scaffolded; live Meta calls gated until secrets added.
 
-## Out of scope
-
-- No changes to `generate-content` edge function, auth, waitlist DB, or pricing logic.
-- No new design tokens; we reuse the existing palette.
-- Video generation backend — surfaced as "Coming soon" only.
-
-## Files touched
-
-- `src/pages/LandingPage.tsx` — hero section rewrite (rest of page untouched).
-- `src/pages/DashboardHome.tsx` — replace Featured Tools + Quick Actions with one Start panel.
-- `src/pages/ImageStudio.tsx` — add mode switcher, sticker style set, video coming-soon state.
-- `src/App.tsx` — drop ImageGenerator/StickerGenerator imports, add redirects.
-- `src/components/DashboardLayout.tsx` — slim sidebar, rename to "Images".
-- Delete: `src/pages/ImageGenerator.tsx`, `src/pages/StickerGenerator.tsx`.
+## Open questions
+- Should I scaffold Meta integration with placeholder OAuth (working UI, mocked publish) and request `META_APP_ID`/`META_APP_SECRET` after, or stop and request secrets first?
+- Single brand per user, or multi-brand workspace?
