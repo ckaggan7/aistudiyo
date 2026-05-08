@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import { format, isSameDay, parseISO, addDays, startOfDay } from "date-fns";
 import {
   Calendar as CalendarIcon, List, Instagram, Facebook, Twitter, Linkedin,
@@ -376,5 +375,3 @@ function EditDialog({
 }
 
 export { ScheduledPostsPanel };
-
-import { Link as RLink } from "react-router-dom";
