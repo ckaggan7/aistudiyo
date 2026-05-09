@@ -1,62 +1,49 @@
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
-  Bot, Sparkles, Search, BarChart3, Plus, Play, Loader2, Check,
-  ArrowLeft, Clock, Wand2, Calendar, Trash2,
+  Bot, Send, Search, Plus, Play, Loader2, Check, ArrowLeft, Clock, Trash2, FileText, Inbox, Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
+import { WalletBadge } from "@/components/agents/WalletBadge";
+import { InstagramConnectCard } from "@/components/agents/InstagramConnectCard";
+import { ReportsLibrary } from "@/components/agents/ReportsLibrary";
+import { ApprovalInbox } from "@/components/agents/ApprovalInbox";
+import { useWallet } from "@/hooks/useWallet";
 
-type AgentType = "publisher" | "researcher" | "analyst";
+type AgentType = "publisher" | "insights";
 type Agent = {
-  id: string;
-  name: string;
-  type: AgentType;
-  goal: string | null;
-  system_prompt: string | null;
-  schedule_cron: string | null;
-  tools: string[];
-  enabled: boolean;
+  id: string; name: string; type: AgentType; goal: string | null;
+  system_prompt: string | null; schedule_cron: string | null;
+  tools: string[]; enabled: boolean;
 };
-type Run = {
-  id: string;
-  agent_id: string;
-  status: string;
-  output: string | null;
-  logs: { t: string; msg: string }[];
-  started_at: string;
-  finished_at: string | null;
-};
+type Run = { id: string; agent_id: string; status: string; started_at: string };
 
-const TEMPLATES: { type: AgentType; name: string; icon: any; color: string; goal: string; system: string; tools: string[] }[] = [
+const TEMPLATES: { type: AgentType; name: string; icon: any; color: string; goal: string; system: string; tools: string[]; cost: number; desc: string }[] = [
   {
-    type: "publisher", name: "Publisher Agent", icon: Wand2, color: "from-violet-500 to-fuchsia-500",
-    goal: "Plan and schedule a week of on-brand Instagram posts",
+    type: "publisher", name: "Content Publisher", icon: Send, color: "from-violet-500 to-fuchsia-500",
+    goal: "Plan, schedule, and publish on-brand posts with your approval",
     system: "You are a senior social media strategist. Craft scroll-stopping hooks and on-brand captions. Always end with a CTA.",
-    tools: ["generate_caption", "generate_image", "schedule_post", "publish_to_meta"],
+    tools: ["generate_caption", "generate_image", "schedule_post", "request_approval", "publish_to_meta"],
+    cost: 5, desc: "Generates a content plan, queues posts for approval, then publishes to Instagram on schedule.",
   },
   {
-    type: "researcher", name: "Researcher Agent", icon: Search, color: "from-cyan-500 to-blue-500",
-    goal: "Find emerging trends and competitor moves",
-    system: "You are a culture and trend analyst. Surface non-obvious insights, cite evidence, prioritize action.",
-    tools: ["web_search", "competitor_scan", "hashtag_trends", "summarize"],
-  },
-  {
-    type: "analyst", name: "Analyst Agent", icon: BarChart3, color: "from-amber-500 to-rose-500",
-    goal: "Audit performance and propose next-week experiments",
-    system: "You are an analytics-driven growth marketer. Be numeric, blunt, and prescriptive.",
-    tools: ["fetch_meta_insights", "compute_engagement", "generate_report", "post_to_calendar"],
+    type: "insights", name: "Insights Agent", icon: Search, color: "from-cyan-500 to-blue-500",
+    goal: "Surface trends and analyze performance",
+    system: "You are a culture analyst and growth marketer. Combine trend research with hard performance numbers.",
+    tools: ["web_search", "competitor_scan", "fetch_meta_insights", "compute_engagement", "summarize"],
+    cost: 3, desc: "Combined research + analytics. Pulls trends, competitor moves, and your IG performance into one report.",
   },
 ];
 
 export default function AgentBuilder() {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [selected, setSelected] = useState<Agent | null>(null);
-  const [creating, setCreating] = useState(false);
 
   const refresh = async () => {
     const { data } = await supabase.from("agents").select("*").order("created_at", { ascending: false });
@@ -65,16 +52,17 @@ export default function AgentBuilder() {
   useEffect(() => { refresh(); }, []);
 
   const createFromTemplate = async (tpl: typeof TEMPLATES[number]) => {
+    const existing = agents.find((a) => a.type === tpl.type);
+    if (existing) { setSelected(existing); return; }
     const { data } = await supabase.from("agents").insert({
       name: tpl.name, type: tpl.type, goal: tpl.goal, system_prompt: tpl.system,
       tools: tpl.tools, enabled: true,
     }).select().single();
     if (data) {
-      toast.success(`${tpl.name} created`);
+      toast.success(`${tpl.name} ready`);
       refresh();
       setSelected(data as Agent);
     }
-    setCreating(false);
   };
 
   if (selected) return <AgentDetail agent={selected} onBack={() => { setSelected(null); refresh(); }} onDelete={async () => {
@@ -86,90 +74,55 @@ export default function AgentBuilder() {
 
   return (
     <div className="max-w-6xl mx-auto">
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex flex-wrap items-center justify-between gap-4 mb-8">
+      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-2xl bg-gradient-hero flex items-center justify-center shadow-glow">
             <Bot className="w-5 h-5 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Agent Builder</h1>
-            <p className="text-sm text-muted-foreground">Autonomous workers that publish, research, and analyze for you</p>
+            <h1 className="text-2xl font-bold tracking-tight">Agents</h1>
+            <p className="text-sm text-muted-foreground">Autonomous workers powered by your wallet credits</p>
           </div>
         </div>
-        <Button onClick={() => setCreating(true)} className="bg-gradient-hero text-primary-foreground rounded-xl">
-          <Plus className="w-4 h-4" /> New agent
-        </Button>
+        <WalletBadge />
       </motion.div>
 
-      {/* Templates always visible */}
-      <h2 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">Templates</h2>
-      <div className="grid md:grid-cols-3 gap-4 mb-10">
-        {TEMPLATES.map((tpl) => (
-          <button key={tpl.type} onClick={() => createFromTemplate(tpl)}
-            className="text-left rounded-2xl bg-card border border-border/40 hover:border-primary/40 p-5 transition-all group">
-            <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${tpl.color} flex items-center justify-center mb-3 shadow-glow`}>
-              <tpl.icon className="w-5 h-5 text-white" />
-            </div>
-            <p className="font-semibold mb-1">{tpl.name}</p>
-            <p className="text-xs text-muted-foreground mb-3">{tpl.goal}</p>
-            <div className="flex flex-wrap gap-1">
-              {tpl.tools.slice(0, 3).map((t) => (
-                <span key={t} className="text-[10px] px-1.5 py-0.5 rounded-full bg-secondary text-muted-foreground">{t}</span>
-              ))}
-              {tpl.tools.length > 3 && <span className="text-[10px] text-muted-foreground">+{tpl.tools.length - 3}</span>}
-            </div>
-          </button>
-        ))}
-      </div>
+      <div className="mb-6"><InstagramConnectCard /></div>
 
       <h2 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">Your agents</h2>
-      {agents.length === 0 ? (
-        <div className="border-2 border-dashed border-border rounded-2xl p-10 text-center text-sm text-muted-foreground">
-          No agents yet. Pick a template above to get started.
-        </div>
-      ) : (
-        <div className="grid md:grid-cols-2 gap-3">
-          {agents.map((a) => (
-            <button key={a.id} onClick={() => setSelected(a)}
-              className="text-left flex items-center gap-3 rounded-xl bg-card border border-border/40 hover:border-primary/40 p-4 transition-all">
-              <div className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                <Bot className="w-4 h-4" />
+      <div className="grid md:grid-cols-2 gap-4 mb-10">
+        {TEMPLATES.map((tpl) => {
+          const existing = agents.find((a) => a.type === tpl.type);
+          return (
+            <button key={tpl.type} onClick={() => createFromTemplate(tpl)}
+              className="text-left rounded-2xl bg-card border border-border/40 hover:border-primary/40 p-6 transition-all group relative overflow-hidden">
+              <div className={`absolute -top-10 -right-10 w-40 h-40 rounded-full bg-gradient-to-br ${tpl.color} opacity-10 blur-2xl group-hover:opacity-20 transition-opacity`} />
+              <div className={`relative w-12 h-12 rounded-xl bg-gradient-to-br ${tpl.color} flex items-center justify-center mb-4 shadow-glow`}>
+                <tpl.icon className="w-5 h-5 text-white" />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold truncate">{a.name}</p>
-                <p className="text-xs text-muted-foreground truncate">{a.goal}</p>
+              <div className="flex items-center gap-2 mb-1">
+                <p className="font-semibold text-base">{tpl.name}</p>
+                {existing && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600">active</span>}
               </div>
-              <span className={`text-[10px] px-2 py-0.5 rounded-full ${a.enabled ? "bg-emerald-500/10 text-emerald-600" : "bg-muted text-muted-foreground"}`}>
-                {a.enabled ? "active" : "off"}
-              </span>
+              <p className="text-xs text-muted-foreground mb-4">{tpl.desc}</p>
+              <div className="flex items-center justify-between">
+                <div className="flex flex-wrap gap-1">
+                  {tpl.tools.slice(0, 3).map((t) => (
+                    <span key={t} className="text-[10px] px-1.5 py-0.5 rounded-full bg-secondary text-muted-foreground">{t}</span>
+                  ))}
+                  {tpl.tools.length > 3 && <span className="text-[10px] text-muted-foreground self-center">+{tpl.tools.length - 3}</span>}
+                </div>
+                <span className="text-[11px] text-muted-foreground">{tpl.cost} credits/run</span>
+              </div>
             </button>
-          ))}
-        </div>
-      )}
+          );
+        })}
+      </div>
 
-      <AnimatePresence>
-        {creating && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-background/70 backdrop-blur-sm flex items-center justify-center p-4"
-            onClick={() => setCreating(false)}>
-            <div className="bg-card rounded-2xl p-6 w-full max-w-md shadow-elevated border" onClick={(e) => e.stopPropagation()}>
-              <h3 className="font-bold mb-3">Pick a template</h3>
-              <div className="space-y-2">
-                {TEMPLATES.map((t) => (
-                  <button key={t.type} onClick={() => createFromTemplate(t)}
-                    className="w-full text-left rounded-xl bg-secondary/40 hover:bg-secondary p-3 flex items-center gap-3">
-                    <t.icon className="w-4 h-4 text-primary" />
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium">{t.name}</p>
-                      <p className="text-xs text-muted-foreground truncate">{t.goal}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Saved reports</h2>
+      </div>
+      <ReportsLibrary />
     </div>
   );
 }
@@ -179,7 +132,17 @@ function AgentDetail({ agent, onBack, onDelete }: { agent: Agent; onBack: () => 
   const [runs, setRuns] = useState<Run[]>([]);
   const [running, setRunning] = useState(false);
   const [output, setOutput] = useState<string | null>(null);
-  const [liveLogs, setLiveLogs] = useState<string[]>([]);
+  const [logs, setLogs] = useState<string[]>([]);
+  const [tab, setTab] = useState(agent.type === "publisher" ? "run" : "run");
+  const { balance, refresh: refreshWallet } = useWallet();
+
+  // Publisher inputs
+  const [posts, setPosts] = useState(3);
+  const [days, setDays] = useState(7);
+  // Insights inputs
+  const [mode, setMode] = useState<"research" | "analyze" | "blend">("blend");
+
+  const cost = agent.type === "publisher" ? 5 : 3;
 
   const loadRuns = async () => {
     const { data } = await supabase.from("agent_runs").select("*").eq("agent_id", agent.id).order("started_at", { ascending: false }).limit(10);
@@ -192,38 +155,114 @@ function AgentDetail({ agent, onBack, onDelete }: { agent: Agent; onBack: () => 
       name: a.name, goal: a.goal, system_prompt: a.system_prompt,
       schedule_cron: a.schedule_cron, enabled: a.enabled,
     }).eq("id", a.id);
-    toast.success("Agent saved");
+    toast.success("Saved");
   };
 
   const run = async () => {
+    if (balance < cost) {
+      toast.error(`Need ${cost} credits — wallet has ${balance}`);
+      return;
+    }
     setRunning(true);
     setOutput(null);
-    setLiveLogs(["Starting agent…", "Loading brand context…", "Calling AI gateway…"]);
-    const { data, error } = await supabase.functions.invoke("agent-runner", { body: { agent_id: a.id } });
+    setLogs(["Checking wallet…", `Reserving ${cost} credits…`, "Loading brand context…", "Calling AI gateway…"]);
+    const { data, error } = await supabase.functions.invoke("agent-runner", {
+      body: { agent_id: a.id, params: { posts, days, mode } },
+    });
     setRunning(false);
     if (error) { toast.error(error.message); return; }
     setOutput(data.output);
-    setLiveLogs((data.logs ?? []).map((l: any) => l.msg));
-    toast.success("Run complete");
+    setLogs((data.logs ?? []).map((l: any) => l.msg));
+    toast.success(`Run complete · -${cost} credits`);
+    refreshWallet();
     loadRuns();
+    if (agent.type === "publisher") setTab("approvals");
   };
 
   return (
-    <div className="max-w-5xl mx-auto">
-      <button onClick={onBack} className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 mb-4">
-        <ArrowLeft className="w-4 h-4" /> Back to agents
-      </button>
+    <div className="max-w-6xl mx-auto">
+      <div className="flex items-center justify-between mb-4">
+        <button onClick={onBack} className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5">
+          <ArrowLeft className="w-4 h-4" /> Back
+        </button>
+        <WalletBadge />
+      </div>
 
-      <div className="grid lg:grid-cols-5 gap-6">
-        {/* Config */}
-        <div className="lg:col-span-2 space-y-4">
-          <div className="bg-card rounded-2xl p-5 border border-border/40 space-y-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-hero flex items-center justify-center">
-                <Bot className="w-4 h-4 text-primary-foreground" />
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-11 h-11 rounded-xl bg-gradient-hero flex items-center justify-center shadow-glow">
+          <Bot className="w-5 h-5 text-primary-foreground" />
+        </div>
+        <div>
+          <Input className="font-semibold text-lg border-0 px-0 h-auto focus-visible:ring-0" value={a.name} onChange={(e) => setA({ ...a, name: e.target.value })} />
+          <p className="text-xs text-muted-foreground">{cost} credits per run</p>
+        </div>
+      </div>
+
+      <Tabs value={tab} onValueChange={setTab}>
+        <TabsList>
+          <TabsTrigger value="run"><Play className="w-3.5 h-3.5" /> Run</TabsTrigger>
+          {agent.type === "publisher" && <TabsTrigger value="approvals"><Inbox className="w-3.5 h-3.5" /> Approvals</TabsTrigger>}
+          <TabsTrigger value="reports"><FileText className="w-3.5 h-3.5" /> Reports</TabsTrigger>
+          <TabsTrigger value="config"><Settings className="w-3.5 h-3.5" /> Configure</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="run" className="mt-4 space-y-4">
+          <div className="bg-card rounded-2xl p-5 border border-border/40">
+            {agent.type === "publisher" ? (
+              <div className="grid sm:grid-cols-2 gap-3 mb-4">
+                <div>
+                  <label className="text-xs font-medium mb-1 block">Posts to plan</label>
+                  <Input type="number" min={1} max={14} value={posts} onChange={(e) => setPosts(+e.target.value)} />
+                </div>
+                <div>
+                  <label className="text-xs font-medium mb-1 block">Spread over (days)</label>
+                  <Input type="number" min={1} max={30} value={days} onChange={(e) => setDays(+e.target.value)} />
+                </div>
               </div>
-              <Input className="font-semibold" value={a.name} onChange={(e) => setA({ ...a, name: e.target.value })} />
+            ) : (
+              <div className="mb-4">
+                <label className="text-xs font-medium mb-2 block">Mode</label>
+                <div className="flex gap-2">
+                  {(["research", "analyze", "blend"] as const).map((m) => (
+                    <button key={m} onClick={() => setMode(m)} className={`flex-1 text-xs px-3 py-2 rounded-lg border ${mode === m ? "bg-primary/10 border-primary/40 text-primary" : "bg-secondary/40 border-transparent text-muted-foreground"}`}>
+                      {m === "research" ? "Trends" : m === "analyze" ? "My performance" : "Blend both"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            <Button onClick={run} disabled={running} className="w-full bg-gradient-hero text-primary-foreground">
+              {running ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
+              {running ? "Running" : `Run now · ${cost} credits`}
+            </Button>
+          </div>
+
+          {(logs.length > 0 || output) && (
+            <div className="bg-card rounded-2xl p-5 border border-border/40">
+              <div className="bg-secondary/40 rounded-xl p-3 font-mono text-[11px] space-y-1 max-h-40 overflow-auto mb-3">
+                {logs.map((l, i) => <p key={i} className="flex items-center gap-2"><Check className="w-3 h-3 text-emerald-500" />{l}</p>)}
+              </div>
+              {output && (
+                <div className="prose prose-sm max-w-none dark:prose-invert">
+                  <ReactMarkdown>{output}</ReactMarkdown>
+                </div>
+              )}
             </div>
+          )}
+        </TabsContent>
+
+        {agent.type === "publisher" && (
+          <TabsContent value="approvals" className="mt-4">
+            <ApprovalInbox />
+          </TabsContent>
+        )}
+
+        <TabsContent value="reports" className="mt-4">
+          <ReportsLibrary agentId={agent.id} />
+        </TabsContent>
+
+        <TabsContent value="config" className="mt-4 space-y-4">
+          <div className="bg-card rounded-2xl p-5 border border-border/40 space-y-3">
             <div>
               <label className="text-xs font-medium mb-1 block">Goal</label>
               <Textarea rows={2} value={a.goal ?? ""} onChange={(e) => setA({ ...a, goal: e.target.value })} />
@@ -233,61 +272,19 @@ function AgentDetail({ agent, onBack, onDelete }: { agent: Agent; onBack: () => 
               <Textarea rows={4} value={a.system_prompt ?? ""} onChange={(e) => setA({ ...a, system_prompt: e.target.value })} />
             </div>
             <div>
-              <label className="text-xs font-medium mb-1 block">Schedule (cron, optional)</label>
+              <label className="text-xs font-medium mb-1 block">Schedule (cron)</label>
               <Input placeholder="0 9 * * 1" value={a.schedule_cron ?? ""} onChange={(e) => setA({ ...a, schedule_cron: e.target.value })} />
             </div>
-            <div>
-              <p className="text-xs font-medium mb-1.5">Tools</p>
-              <div className="flex flex-wrap gap-1">
-                {a.tools.map((t) => (
-                  <span key={t} className="text-[10px] px-2 py-1 rounded-full bg-primary/10 text-primary">{t}</span>
-                ))}
-              </div>
-            </div>
-            <div className="flex gap-2 pt-2">
+            <div className="flex gap-2 pt-1">
               <Button onClick={save} variant="outline" className="flex-1">Save</Button>
-              <Button onClick={run} disabled={running} className="flex-1 bg-gradient-hero text-primary-foreground">
-                {running ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
-                {running ? "Running" : "Run now"}
+              <Button onClick={onDelete} variant="ghost" className="text-destructive hover:text-destructive">
+                <Trash2 className="w-3.5 h-3.5" /> Delete
               </Button>
             </div>
-            <Button variant="ghost" size="sm" onClick={onDelete} className="w-full text-destructive hover:text-destructive">
-              <Trash2 className="w-3.5 h-3.5" /> Delete agent
-            </Button>
           </div>
 
           <div className="bg-card rounded-2xl p-5 border border-border/40">
-            <p className="text-xs font-medium mb-2 uppercase tracking-wide text-muted-foreground">Connect Meta</p>
-            <p className="text-xs text-muted-foreground mb-3">Required for live publish to Instagram & Facebook. Add META_APP_ID and META_APP_SECRET in backend secrets, then complete OAuth.</p>
-            <Button variant="outline" size="sm" className="w-full" disabled>
-              Connect Instagram (coming soon)
-            </Button>
-          </div>
-        </div>
-
-        {/* Runs / output */}
-        <div className="lg:col-span-3 space-y-4">
-          <div className="bg-card rounded-2xl p-5 border border-border/40">
-            <div className="flex items-center justify-between mb-3">
-              <p className="font-semibold">Run console</p>
-              {running && <span className="text-xs text-primary inline-flex items-center gap-1.5"><Loader2 className="w-3 h-3 animate-spin" /> running</span>}
-            </div>
-            <div className="bg-secondary/40 rounded-xl p-3 font-mono text-[11px] space-y-1 max-h-40 overflow-auto">
-              {liveLogs.length === 0 ? (
-                <p className="text-muted-foreground">No active run. Click "Run now" to start.</p>
-              ) : liveLogs.map((l, i) => (
-                <p key={i} className="flex items-center gap-2"><Check className="w-3 h-3 text-emerald-500" />{l}</p>
-              ))}
-            </div>
-            {output && (
-              <div className="mt-4 prose prose-sm max-w-none dark:prose-invert">
-                <ReactMarkdown>{output}</ReactMarkdown>
-              </div>
-            )}
-          </div>
-
-          <div className="bg-card rounded-2xl p-5 border border-border/40">
-            <p className="font-semibold mb-3">Run history</p>
+            <p className="font-semibold text-sm mb-2">Run history</p>
             {runs.length === 0 ? (
               <p className="text-xs text-muted-foreground">No runs yet.</p>
             ) : (
@@ -304,8 +301,8 @@ function AgentDetail({ agent, onBack, onDelete }: { agent: Agent; onBack: () => 
               </ul>
             )}
           </div>
-        </div>
-      </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

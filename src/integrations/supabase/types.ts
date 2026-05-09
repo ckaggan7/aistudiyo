@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      agent_reports: {
+        Row: {
+          agent_id: string | null
+          content_md: string
+          created_at: string
+          id: string
+          metadata: Json
+          pinned: boolean
+          run_id: string | null
+          title: string
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          agent_id?: string | null
+          content_md?: string
+          created_at?: string
+          id?: string
+          metadata?: Json
+          pinned?: boolean
+          run_id?: string | null
+          title: string
+          type?: string
+          user_id?: string | null
+        }
+        Update: {
+          agent_id?: string | null
+          content_md?: string
+          created_at?: string
+          id?: string
+          metadata?: Json
+          pinned?: boolean
+          run_id?: string | null
+          title?: string
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       agent_runs: {
         Row: {
           agent_id: string | null
@@ -205,6 +244,36 @@ export type Database = {
         }
         Relationships: []
       }
+      credit_transactions: {
+        Row: {
+          agent_id: string | null
+          amount: number
+          created_at: string
+          id: string
+          reason: string
+          run_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          agent_id?: string | null
+          amount: number
+          created_at?: string
+          id?: string
+          reason: string
+          run_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          agent_id?: string | null
+          amount?: number
+          created_at?: string
+          id?: string
+          reason?: string
+          run_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       generations: {
         Row: {
           created_at: string
@@ -273,6 +342,7 @@ export type Database = {
       }
       scheduled_posts: {
         Row: {
+          approval_status: string
           campaign_id: string | null
           caption: string | null
           created_at: string
@@ -286,6 +356,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          approval_status?: string
           campaign_id?: string | null
           caption?: string | null
           created_at?: string
@@ -299,6 +370,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          approval_status?: string
           campaign_id?: string | null
           caption?: string | null
           created_at?: string
@@ -355,6 +427,30 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+        }
+        Relationships: []
+      }
+      wallet: {
+        Row: {
+          balance: number
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }

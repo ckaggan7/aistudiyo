@@ -1,5 +1,5 @@
-// Agent runner — orchestrates a publisher / researcher / analyst agent using Lovable AI Gateway.
-// Tools available are mocked for now; meta-publish / meta-insights become real once META secrets are set.
+// Agent runner — Publisher (creates posts pending approval) + Insights (research/analyze/blend).
+// Deducts wallet credits and saves output to agent_reports.
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -26,10 +26,7 @@ async function db(path: string, init: RequestInit = {}) {
 async function callAI(messages: any[], system: string) {
   const r = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${LOVABLE_API_KEY}`,
-      "Content-Type": "application/json",
-    },
+    headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
     body: JSON.stringify({
       model: "google/gemini-3-flash-preview",
       messages: [{ role: "system", content: system }, ...messages],
@@ -40,21 +37,47 @@ async function callAI(messages: any[], system: string) {
   return data.choices?.[0]?.message?.content ?? "";
 }
 
+async function getOrCreateWallet() {
+  const r = await db(`wallet?select=*&limit=1`);
+  const rows = await r.json();
+  if (rows[0]) return rows[0];
+  const c = await db("wallet", { method: "POST", body: JSON.stringify({ balance: 50 }) });
+  const [w] = await c.json();
+  return w;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    const { agent_id } = await req.json();
+    const { agent_id, params = {} } = await req.json();
     if (!agent_id) throw new Error("agent_id required");
 
-    // Load agent
     const aRes = await db(`agents?id=eq.${agent_id}&select=*`);
     const [agent] = await aRes.json();
     if (!agent) throw new Error("agent not found");
 
-    // Load brand context
+    const cost = agent.type === "publisher" ? 5 : 3;
+
+    // Wallet check
+    const wallet = await getOrCreateWallet();
+    if ((wallet.balance ?? 0) < cost) {
+      return new Response(JSON.stringify({ error: `Insufficient credits (need ${cost}, have ${wallet.balance})` }), {
+        status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Brand context
     const bRes = await db(`brand_profile?select=*&order=created_at.desc&limit=1`);
     const [brand] = await bRes.json();
+    const brandLine = brand
+      ? `Brand: ${brand.name}. Voice: ${brand.voice ?? "n/a"}. Audience: ${brand.audience ?? "n/a"}. Style: ${brand.style_prompt ?? "n/a"}.`
+      : "No brand profile yet.";
+
+    // IG context (test-mode metadata)
+    const igRes = await db(`meta_connections?provider=eq.instagram&select=*&limit=1`);
+    const [ig] = await igRes.json();
+    const igLine = ig ? `Instagram connected: @${ig.ig_user_id}.` : "No Instagram connected (using simulated data).";
 
     // Create run
     const runRes = await db("agent_runs", {
@@ -63,58 +86,89 @@ Deno.serve(async (req) => {
     });
     const [run] = await runRes.json();
 
-    const logs: any[] = [{ t: new Date().toISOString(), msg: "Loaded agent and brand context" }];
-    const brandLine = brand
-      ? `Brand: ${brand.name}. Voice: ${brand.voice ?? "n/a"}. Audience: ${brand.audience ?? "n/a"}. Style: ${brand.style_prompt ?? "n/a"}.`
-      : "No brand profile yet.";
+    const logs: any[] = [
+      { t: new Date().toISOString(), msg: "Loaded agent + brand + IG context" },
+      { t: new Date().toISOString(), msg: `Reserved ${cost} credits` },
+    ];
 
     let output = "";
+    let reportType = "plan";
+    let reportTitle = "";
 
     if (agent.type === "publisher") {
-      logs.push({ t: new Date().toISOString(), msg: "Drafting weekly content plan" });
-      const plan = await callAI(
-        [{ role: "user", content: `Draft a 7-day Instagram content plan in markdown with: day, hook, caption (<= 80 words), suggested image prompt. Goal: ${agent.goal ?? "growth"}.` }],
-        `${agent.system_prompt ?? "You are a senior social media strategist."}\n${brandLine}`,
-      );
-      output = plan;
+      const posts = Math.max(1, Math.min(14, Number(params.posts ?? 3)));
+      const days = Math.max(1, Math.min(30, Number(params.days ?? 7)));
+      logs.push({ t: new Date().toISOString(), msg: `Drafting ${posts} posts across ${days} days` });
 
-      // Auto-create 3 scheduled_posts from the AI output
+      output = await callAI(
+        [{ role: "user", content: `Draft ${posts} Instagram posts spread across ${days} days. For each, output: ### Day N — Title, then **Hook**, **Caption** (<=80 words), **Image prompt**, **Hashtags**. Goal: ${agent.goal ?? "growth"}.` }],
+        `${agent.system_prompt ?? "You are a senior social media strategist."}\n${brandLine}\n${igLine}`,
+      );
+
+      // Generate scheduled_posts pending approval
       const today = new Date();
-      const samples = [0, 2, 4].map((d) => {
-        const date = new Date(today); date.setDate(today.getDate() + d); date.setHours(10, 0, 0, 0);
-        return {
-          title: `${brand?.name ?? "Brand"} · Day ${d + 1}`,
-          caption: plan.slice(0, 200),
+      const interval = Math.max(1, Math.floor(days / posts));
+      const draft: any[] = [];
+      for (let i = 0; i < posts; i++) {
+        const d = new Date(today); d.setDate(today.getDate() + i * interval); d.setHours(10, 0, 0, 0);
+        draft.push({
+          title: `${brand?.name ?? "Brand"} · Post ${i + 1}`,
+          caption: output.split("###")[i + 1]?.slice(0, 280) ?? output.slice(0, 200),
           platform: "instagram",
-          scheduled_for: date.toISOString(),
-          status: "scheduled",
-        };
-      });
-      await db("scheduled_posts", { method: "POST", body: JSON.stringify(samples) });
-      logs.push({ t: new Date().toISOString(), msg: `Scheduled ${samples.length} posts to calendar` });
-    } else if (agent.type === "researcher") {
-      logs.push({ t: new Date().toISOString(), msg: "Scanning trends" });
-      output = await callAI(
-        [{ role: "user", content: `Surface 5 emerging social media trends this week relevant to: ${agent.goal ?? "the brand"}. For each: trend name, why it matters, content angle, hashtags.` }],
-        `${agent.system_prompt ?? "You are a culture and trend analyst."}\n${brandLine}`,
-      );
-    } else if (agent.type === "analyst") {
-      logs.push({ t: new Date().toISOString(), msg: "Computing engagement insights" });
-      output = await callAI(
-        [{ role: "user", content: `Generate a 1-page engagement report (markdown) with: top metrics, 3 wins, 3 issues, next-week recommendations. Brand goal: ${agent.goal ?? "n/a"}.` }],
-        `${agent.system_prompt ?? "You are an analytics-driven growth marketer."}\n${brandLine}`,
-      );
+          scheduled_for: d.toISOString(),
+          status: "draft",
+          approval_status: "pending_approval",
+        });
+      }
+      await db("scheduled_posts", { method: "POST", body: JSON.stringify(draft) });
+      logs.push({ t: new Date().toISOString(), msg: `${posts} posts queued for your approval` });
+      reportType = "plan";
+      reportTitle = `Content plan · ${posts} posts · ${new Date().toLocaleDateString()}`;
     } else {
-      output = "Unknown agent type.";
+      // insights
+      const mode = (params.mode as string) ?? "blend";
+      logs.push({ t: new Date().toISOString(), msg: `Insights mode: ${mode}` });
+      const prompt =
+        mode === "research"
+          ? `Surface 5 emerging trends this week relevant to: ${agent.goal ?? "the brand"}. For each: trend, why it matters, content angle, hashtags.`
+          : mode === "analyze"
+          ? `Generate a 1-page engagement audit (markdown) for ${ig ? "@" + ig.ig_user_id : "the brand"}: top metrics, 3 wins, 3 issues, next-week recommendations.`
+          : `Combine trend research + a performance audit for ${ig ? "@" + ig.ig_user_id : "the brand"}. Sections: ## Trends (5 items), ## Performance (wins/issues), ## Plays for next week.`;
+      output = await callAI(
+        [{ role: "user", content: prompt }],
+        `${agent.system_prompt ?? "You are an analytics-driven growth marketer and culture analyst."}\n${brandLine}\n${igLine}`,
+      );
+      reportType = mode === "analyze" ? "analysis" : "research";
+      reportTitle = `${mode === "research" ? "Trends" : mode === "analyze" ? "Performance audit" : "Insights"} · ${new Date().toLocaleDateString()}`;
     }
 
-    logs.push({ t: new Date().toISOString(), msg: "Run complete" });
+    // Save report
+    await db("agent_reports", {
+      method: "POST",
+      body: JSON.stringify({
+        agent_id, run_id: run.id, title: reportTitle, type: reportType,
+        content_md: output, metadata: { params },
+      }),
+    });
+    logs.push({ t: new Date().toISOString(), msg: "Report saved" });
+
+    // Debit wallet
+    await db(`wallet?id=eq.${wallet.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ balance: wallet.balance - cost }),
+    });
+    await db("credit_transactions", {
+      method: "POST",
+      body: JSON.stringify({ agent_id, run_id: run.id, amount: -cost, reason: `${agent.type} run` }),
+    });
+    logs.push({ t: new Date().toISOString(), msg: `Charged ${cost} credits` });
+
     await db(`agent_runs?id=eq.${run.id}`, {
       method: "PATCH",
       body: JSON.stringify({ status: "succeeded", output, logs, finished_at: new Date().toISOString() }),
     });
 
-    return new Response(JSON.stringify({ run_id: run.id, output, logs }), {
+    return new Response(JSON.stringify({ run_id: run.id, output, logs, charged: cost }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
