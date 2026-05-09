@@ -700,6 +700,169 @@ export type Database = {
         }
         Relationships: []
       }
+      workflow_run_steps: {
+        Row: {
+          created_at: string
+          duration_ms: number | null
+          error: string | null
+          finished_at: string | null
+          id: string
+          input: Json | null
+          node_id: string
+          node_label: string | null
+          node_type: string
+          output: Json | null
+          run_id: string
+          started_at: string | null
+          status: string
+          step_index: number
+        }
+        Insert: {
+          created_at?: string
+          duration_ms?: number | null
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          input?: Json | null
+          node_id: string
+          node_label?: string | null
+          node_type: string
+          output?: Json | null
+          run_id: string
+          started_at?: string | null
+          status?: string
+          step_index?: number
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number | null
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          input?: Json | null
+          node_id?: string
+          node_label?: string | null
+          node_type?: string
+          output?: Json | null
+          run_id?: string
+          started_at?: string | null
+          status?: string
+          step_index?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_run_steps_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflow_runs: {
+        Row: {
+          created_at: string
+          duration_ms: number | null
+          error: string | null
+          finished_at: string | null
+          id: string
+          input: Json
+          output: Json | null
+          started_at: string | null
+          status: string
+          trigger_source: string
+          user_id: string
+          workflow_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_ms?: number | null
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          input?: Json
+          output?: Json | null
+          started_at?: string | null
+          status?: string
+          trigger_source?: string
+          user_id: string
+          workflow_id: string
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number | null
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          input?: Json
+          output?: Json | null
+          started_at?: string | null
+          status?: string
+          trigger_source?: string
+          user_id?: string
+          workflow_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_runs_workflow_id_fkey"
+            columns: ["workflow_id"]
+            isOneToOne: false
+            referencedRelation: "workflows"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflows: {
+        Row: {
+          created_at: string
+          description: string | null
+          graph: Json
+          id: string
+          is_template: boolean
+          last_run_at: string | null
+          name: string
+          run_count: number
+          schedule_cron: string | null
+          status: string
+          tags: string[] | null
+          updated_at: string
+          user_id: string
+          workspace_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          graph?: Json
+          id?: string
+          is_template?: boolean
+          last_run_at?: string | null
+          name: string
+          run_count?: number
+          schedule_cron?: string | null
+          status?: string
+          tags?: string[] | null
+          updated_at?: string
+          user_id: string
+          workspace_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          graph?: Json
+          id?: string
+          is_template?: boolean
+          last_run_at?: string | null
+          name?: string
+          run_count?: number
+          schedule_cron?: string | null
+          status?: string
+          tags?: string[] | null
+          updated_at?: string
+          user_id?: string
+          workspace_id?: string | null
+        }
+        Relationships: []
+      }
       workspace_members: {
         Row: {
           created_at: string

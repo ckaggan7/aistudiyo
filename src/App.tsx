@@ -21,6 +21,9 @@ import TrendingTemplates from "./pages/TrendingTemplates";
 import ImageStudio from "./pages/ImageStudio";
 import AgentBuilder from "./pages/AgentBuilder";
 import NotFound from "./pages/NotFound";
+import WorkflowsList from "./pages/workflows/WorkflowsList";
+import WorkflowBuilder from "./pages/workflows/WorkflowBuilder";
+import WorkflowRuns from "./pages/workflows/WorkflowRuns";
 import AdminOverview from "./pages/admin/AdminOverview";
 import AdminShell from "./components/layout/AdminShell";
 import { AuthProvider } from "./hooks/useAuth";
@@ -84,6 +87,9 @@ const App = () => (
           <Route path="/dashboard/templates" element={<DashboardPage><TrendingTemplates /></DashboardPage>} />
           <Route path="/dashboard/branding" element={<DashboardPage><BrandingCRM /></DashboardPage>} />
           <Route path="/dashboard/agents" element={<DashboardPage><AgentBuilder /></DashboardPage>} />
+          <Route path="/dashboard/workflows" element={<DashboardPage><WorkflowsList /></DashboardPage>} />
+          <Route path="/dashboard/workflows/runs" element={<DashboardPage><WorkflowRuns /></DashboardPage>} />
+          <Route path="/dashboard/workflows/:id" element={<DashboardPage><WorkflowBuilder /></DashboardPage>} />
           <Route path="/dashboard/analytics" element={<DashboardPage><Analytics /></DashboardPage>} />
           <Route path="/dashboard/settings" element={<DashboardPage><SettingsPage /></DashboardPage>} />
           <Route path="/admin" element={<AdminPage><AdminOverview /></AdminPage>} />
