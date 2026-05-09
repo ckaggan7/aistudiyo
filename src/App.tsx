@@ -21,11 +21,21 @@ import TrendingTemplates from "./pages/TrendingTemplates";
 import ImageStudio from "./pages/ImageStudio";
 import AgentBuilder from "./pages/AgentBuilder";
 import NotFound from "./pages/NotFound";
+import AdminOverview from "./pages/admin/AdminOverview";
+import AdminShell from "./components/layout/AdminShell";
+import { AuthProvider } from "./hooks/useAuth";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
 const DashboardPage = ({ children }: { children: React.ReactNode }) => (
   <DashboardLayout>{children}</DashboardLayout>
+);
+
+const AdminPage = ({ children }: { children: React.ReactNode }) => (
+  <ProtectedRoute requireRole="super_admin">
+    <AdminShell>{children}</AdminShell>
+  </ProtectedRoute>
 );
 
 const App = () => (
@@ -34,6 +44,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <AuthProvider>
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/signup" element={<WaitlistPage />} />
@@ -53,8 +64,10 @@ const App = () => (
           <Route path="/dashboard/agents" element={<DashboardPage><AgentBuilder /></DashboardPage>} />
           <Route path="/dashboard/analytics" element={<DashboardPage><Analytics /></DashboardPage>} />
           <Route path="/dashboard/settings" element={<DashboardPage><SettingsPage /></DashboardPage>} />
+          <Route path="/admin" element={<AdminPage><AdminOverview /></AdminPage>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
