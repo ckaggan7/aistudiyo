@@ -1,65 +1,42 @@
-## Goal
-Create a separate Super Admin portal at `/superadmin` — isolated from the main app — focused on monitoring users (list, roles, status). Reuses the existing UI system (orange/black, glassmorphism, AdminShell-style layout). No redesign.
+## Simplify dashboard sidebar
 
-## Scope (this round)
+Reduce the 13-item sidebar in `src/components/DashboardLayout.tsx` to 5 core sections with sub-items revealed on hover/expand. No other UI changes.
 
-1. **Dedicated login at `/superadmin/login`**
-   - Standalone page (not the user `/login`).
-   - Email + password sign-in only (no Google, no signup).
-   - After auth, verifies the user has `super_admin` role via `has_role()`. If not → sign out + show "Access denied".
-   - Reuses existing visual identity (gradient hero, glow card).
+### New structure
 
-2. **Protected `/superadmin/*` routes**
-   - New `SuperAdminRoute` guard: requires session + `super_admin` role; otherwise redirect to `/superadmin/login`.
-   - Wraps a new `SuperAdminShell` (sidebar variant of `AdminShell`, branded "SUPER ADMIN" in red/primary accent).
-
-3. **Pages (monitoring scope = users + roles + status)**
-   - `/superadmin` — Overview: total users, new this week, active sessions (from `activity_logs`), role distribution, recent signups.
-   - `/superadmin/users` — Full user table:
-     - Search by email/name, filter by role + status.
-     - Columns: avatar, email, name, roles, status (active/suspended), workspace count, last activity, joined.
-     - Row actions: grant/revoke role, suspend/reactivate, view details drawer.
-   - `/superadmin/users/:userId` — Detail drawer/page: profile, roles, workspaces, recent activity logs, AI usage summary.
-
-4. **Promote current user to `super_admin`**
-   - Insert a `super_admin` row in `user_roles` for your currently signed-in account (using its `auth.uid()` resolved at run time via a one-shot SQL using the most recent profile — or you confirm the email in chat before I run it).
-
-5. **Status field for users**
-   - Add `status text default 'active'` (values: `active` | `suspended`) to `profiles`.
-   - Suspended users get blocked at sign-in via a small client check + RLS-friendly flag (full session revocation requires admin API; suspension is reflected in UI + login gate now, hard token revocation can be a follow-up).
-
-## Out of scope (future rounds)
-- AI usage / credits monitoring per user
-- Live sessions / IP / device tracking
-- Impersonation
-- Hard token revocation via Supabase Admin API edge function
-
-## Files to add
-```text
-src/pages/superadmin/SuperAdminLogin.tsx
-src/pages/superadmin/SuperAdminOverview.tsx
-src/pages/superadmin/SuperAdminUsers.tsx
-src/pages/superadmin/SuperAdminUserDetail.tsx
-src/components/auth/SuperAdminRoute.tsx
-src/components/layout/SuperAdminShell.tsx
+```
+Dashboard           → /dashboard
+Create              (LayoutGroup)
+  ├─ AI Generator   → /dashboard/generator
+  ├─ Images         → /dashboard/image-studio
+  ├─ Design Studio  → /dashboard/design
+  └─ Templates      → /dashboard/templates
+Automate            (LayoutGroup)
+  ├─ Agents         → /dashboard/agents
+  └─ Workflows      → /dashboard/workflows
+Plan                (LayoutGroup)
+  ├─ Calendar       → /dashboard/calendar
+  ├─ Media Library  → /dashboard/media
+  └─ Branding CRM   → /dashboard/branding
+Insights            (LayoutGroup)
+  ├─ Trend Engine   → /dashboard/trends
+  └─ Analytics      → /dashboard/analytics
+Settings            → /dashboard/settings
 ```
 
-## Files to edit
-- `src/App.tsx` — register `/superadmin/*` routes outside the regular app shell.
-- `src/integrations/supabase/types.ts` — auto-updates after migration.
+Top-level visible items drop from 13 → 6 (Dashboard, Create, Automate, Plan, Insights, Settings).
 
-## Migrations
-- `ALTER TABLE profiles ADD COLUMN status text NOT NULL DEFAULT 'active'`.
-- Insert `super_admin` role for your current account (confirmed via the email tied to your active session before running).
+### Implementation
 
-## UX
-- Same orange + black ecosystem, same components (`ReusableTable`, `FilterBar`, `StatsCard`, `GlowCard`).
-- Distinct "SUPER ADMIN" badge in sidebar header (red dot + uppercase tracking) so it's visually clear you're in the privileged area.
-- Cmd+K palette is NOT mounted inside the super admin shell (kept isolated).
+- Edit only `src/components/DashboardLayout.tsx`.
+- Replace flat `navItems` with a grouped structure (`{ icon, label, path? , children? }`).
+- Render top-level items as collapsible groups using a small local `useState` for which group is open. A group auto-expands when the current route matches one of its children.
+- Group header: icon + label + chevron (rotates on open). Children: indented list, no icons (or smaller icons), same active-state styling as today.
+- Keep all existing styling tokens (`bg-primary/10 text-primary`, `bg-sidebar`, etc.) — no design system changes.
+- Preserve mobile drawer behavior, `WorkspaceSwitcher`, and the ⌘K kbd hint.
+- Icons: keep `LayoutDashboard`, `Settings`. New group icons: `Sparkles` (Create), `Bot` (Automate), `Calendar` (Plan), `BarChart3` (Insights). Drop unused imports.
 
-## Acceptance
-- Visiting `/superadmin` while logged out → `/superadmin/login`.
-- Logging in as a non-super-admin → "Access denied", signed out.
-- Logging in as super_admin → Overview with live counts.
-- `/superadmin/users` lists all users, supports search/filter, grant/revoke roles, suspend/reactivate, CSV export.
-- Suspended users cannot sign in to the main `/login` (blocked with toast).
+### Out of scope
+
+- No route changes, no new pages, no removal of existing pages.
+- No changes to top bar, theme tokens, or other components.
