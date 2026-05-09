@@ -24,7 +24,15 @@ import NotFound from "./pages/NotFound";
 import AdminOverview from "./pages/admin/AdminOverview";
 import AdminShell from "./components/layout/AdminShell";
 import { AuthProvider } from "./hooks/useAuth";
+import { WorkspaceProvider } from "./hooks/useWorkspace";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import CommandPalette from "./components/CommandPalette";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminWorkspaces from "./pages/admin/AdminWorkspaces";
+import AdminAIModels from "./pages/admin/AdminAIModels";
+import AdminAIUsage from "./pages/admin/AdminAIUsage";
+import AdminActivity from "./pages/admin/AdminActivity";
+import AdminFlags from "./pages/admin/AdminFlags";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +53,8 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+        <WorkspaceProvider>
+        <CommandPalette />
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/signup" element={<WaitlistPage />} />
@@ -65,8 +75,15 @@ const App = () => (
           <Route path="/dashboard/analytics" element={<DashboardPage><Analytics /></DashboardPage>} />
           <Route path="/dashboard/settings" element={<DashboardPage><SettingsPage /></DashboardPage>} />
           <Route path="/admin" element={<AdminPage><AdminOverview /></AdminPage>} />
+          <Route path="/admin/users" element={<AdminPage><AdminUsers /></AdminPage>} />
+          <Route path="/admin/workspaces" element={<AdminPage><AdminWorkspaces /></AdminPage>} />
+          <Route path="/admin/ai-models" element={<AdminPage><AdminAIModels /></AdminPage>} />
+          <Route path="/admin/ai-usage" element={<AdminPage><AdminAIUsage /></AdminPage>} />
+          <Route path="/admin/activity" element={<AdminPage><AdminActivity /></AdminPage>} />
+          <Route path="/admin/flags" element={<AdminPage><AdminFlags /></AdminPage>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </WorkspaceProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
