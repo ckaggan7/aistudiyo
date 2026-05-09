@@ -15,6 +15,7 @@ import {
   Briefcase,
   Wand2,
   Bot,
+  Workflow,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import WorkspaceSwitcher from "./workspace/WorkspaceSwitcher";
@@ -27,6 +28,7 @@ const navItems = [
   { icon: Flame, label: "Trending Templates", path: "/dashboard/templates" },
   { icon: Briefcase, label: "Branding CRM", path: "/dashboard/branding" },
   { icon: Bot, label: "Agents", path: "/dashboard/agents" },
+  { icon: Workflow, label: "Workflows", path: "/dashboard/workflows" },
   { icon: Calendar, label: "Content Calendar", path: "/dashboard/calendar" },
   { icon: FolderOpen, label: "Media Library", path: "/dashboard/media" },
   { icon: TrendingUp, label: "Trend Engine", path: "/dashboard/trends" },
