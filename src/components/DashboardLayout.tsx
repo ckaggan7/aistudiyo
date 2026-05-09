@@ -17,6 +17,7 @@ import {
   Bot,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import WorkspaceSwitcher from "./workspace/WorkspaceSwitcher";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
@@ -92,7 +93,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <button onClick={() => setSidebarOpen(true)} className="lg:hidden mr-4 text-muted-foreground">
             <Menu className="w-5 h-5" />
           </button>
-          <div className="flex-1" />
+          <div className="flex-1 flex items-center gap-3">
+            <WorkspaceSwitcher />
+          </div>
+          <kbd className="hidden md:inline-flex items-center gap-1 px-2 h-7 rounded-md border border-border/60 bg-muted/40 text-[10px] font-mono text-muted-foreground">
+            <span>⌘</span>K
+          </kbd>
         </header>
 
         <main className="flex-1 p-6">
