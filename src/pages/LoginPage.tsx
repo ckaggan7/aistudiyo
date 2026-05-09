@@ -1,28 +1,71 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, Eye, EyeOff, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function LoginPage() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user, loading: authLoading } = useAuth();
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const redirectTo = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname ?? "/dashboard";
+
+  useEffect(() => {
+    if (!authLoading && user) navigate(redirectTo, { replace: true });
+  }, [authLoading, user, navigate, redirectTo]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim() || !password.trim()) {
       toast.error("Please fill in all fields");
       return;
     }
     setLoading(true);
-    // TODO: integrate auth
-    await new Promise((r) => setTimeout(r, 1500));
-    setLoading(false);
-    toast.info("Authentication coming soon!");
+    try {
+      if (mode === "signup") {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/dashboard`,
+            data: { full_name: name || undefined },
+          },
+        });
+        if (error) throw error;
+        toast.success("Account created. Check your email to confirm.");
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        toast.success("Welcome back");
+      }
+    } catch (err: any) {
+      toast.error(err?.message ?? "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogle = async () => {
+    setLoading(true);
+    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
+    if (result.error) {
+      toast.error(result.error.message ?? "Google sign-in failed");
+      setLoading(false);
+      return;
+    }
+    if (!result.redirected) setLoading(false);
   };
 
   return (
@@ -57,13 +100,43 @@ export default function LoginPage() {
         {/* Card */}
         <div className="rounded-3xl border border-border/50 bg-card/80 backdrop-blur-xl p-8 shadow-elevated">
           <h1 className="text-2xl font-bold tracking-tight text-center mb-1">
-            Welcome back
+            {mode === "signin" ? "Welcome back" : "Create your account"}
           </h1>
           <p className="text-sm text-muted-foreground text-center mb-8">
-            Sign in to your account
+            {mode === "signin" ? "Sign in to your account" : "Start creating in seconds"}
           </p>
 
-          <form onSubmit={handleLogin} className="space-y-4">
+          <div className="grid grid-cols-2 gap-1 p-1 mb-6 rounded-xl bg-muted/40 text-sm">
+            {(["signin", "signup"] as const).map((m) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => setMode(m)}
+                className={`h-9 rounded-lg font-medium transition-colors ${
+                  mode === m ? "bg-background shadow-sm" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {m === "signin" ? "Sign In" : "Sign Up"}
+              </button>
+            ))}
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {mode === "signup" && (
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider">
+                  Name
+                </label>
+                <Input
+                  type="text"
+                  placeholder="Your name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="h-12 bg-background/60 border-border/50 text-base"
+                  disabled={loading}
+                />
+              </div>
+            )}
             <div>
               <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider">
                 Email
@@ -101,12 +174,6 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="flex justify-end">
-              <button type="button" className="text-xs text-primary hover:underline">
-                Forgot password?
-              </button>
-            </div>
-
             <Button
               type="submit"
               disabled={loading}
@@ -116,7 +183,7 @@ export default function LoginPage() {
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <span className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4" /> Sign In
+                  <Sparkles className="w-4 h-4" /> {mode === "signin" ? "Sign In" : "Create account"}
                 </span>
               )}
             </Button>
@@ -129,11 +196,12 @@ export default function LoginPage() {
             <div className="flex-1 h-px bg-border" />
           </div>
 
-          {/* Social login placeholder */}
           <Button
             variant="outline"
+            type="button"
+            disabled={loading}
             className="w-full h-12 text-base rounded-xl border-border/50 bg-background/60"
-            onClick={() => toast.info("Google sign-in coming soon!")}
+            onClick={handleGoogle}
           >
             <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
               <path
@@ -157,11 +225,10 @@ export default function LoginPage() {
           </Button>
         </div>
 
-        {/* Sign up link */}
-        <p className="text-center text-sm text-muted-foreground mt-6">
-          Don't have an account?{" "}
+        <p className="text-center text-xs text-muted-foreground mt-6">
+          By continuing, you agree to our terms.{" "}
           <Link to="/signup" className="text-primary font-medium hover:underline">
-            Join the Waitlist
+            Or join the waitlist
           </Link>
         </p>
       </motion.div>
