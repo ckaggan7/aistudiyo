@@ -46,8 +46,21 @@ export default function LoginPage() {
         if (error) throw error;
         toast.success("Account created. Check your email to confirm.");
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        // Block suspended users
+        const uid = data.user?.id;
+        if (uid) {
+          const { data: prof } = await supabase
+            .from("profiles")
+            .select("status")
+            .eq("user_id", uid)
+            .maybeSingle();
+          if (prof?.status === "suspended") {
+            await supabase.auth.signOut();
+            throw new Error("This account has been suspended. Contact support.");
+          }
+        }
         toast.success("Welcome back");
       }
     } catch (err: any) {
