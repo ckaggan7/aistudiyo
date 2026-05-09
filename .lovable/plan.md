@@ -1,85 +1,65 @@
-## Agents Section Redesign
+## Goal
+Create a separate Super Admin portal at `/superadmin` — isolated from the main app — focused on monitoring users (list, roles, status). Reuses the existing UI system (orange/black, glassmorphism, AdminShell-style layout). No redesign.
 
-Restructure the Agents hub from 3 templates → **2 focused agents**, add Instagram connection, wallet credits, and a saved reports library.
+## Scope (this round)
 
-### 1. Agent Lineup (was 3, now 2)
+1. **Dedicated login at `/superadmin/login`**
+   - Standalone page (not the user `/login`).
+   - Email + password sign-in only (no Google, no signup).
+   - After auth, verifies the user has `super_admin` role via `has_role()`. If not → sign out + show "Access denied".
+   - Reuses existing visual identity (gradient hero, glow card).
 
-**A. Content Publisher Agent**
-- Generates a content plan (captions + image prompts) based on brand profile + chosen date range
-- Creates draft `scheduled_posts` rows with `status = "pending_approval"`
-- User reviews in an Approval Inbox → Approve / Edit / Reject
-- Approved posts move to `status = "scheduled"` and (if IG connected) auto-publish at `scheduled_for`
-- Inputs: date range, posts/week, platform, tone, optional campaign
+2. **Protected `/superadmin/*` routes**
+   - New `SuperAdminRoute` guard: requires session + `super_admin` role; otherwise redirect to `/superadmin/login`.
+   - Wraps a new `SuperAdminShell` (sidebar variant of `AdminShell`, branded "SUPER ADMIN" in red/primary accent).
 
-**B. Insights Agent** (merged Researcher + Analyst)
-- One agent, two modes via tabs: **Research** (trends, competitors, hashtags) and **Analyze** (engagement report from connected IG)
-- Single run can blend both: "What's trending + how did we perform?"
-- Output saved as a Report
+3. **Pages (monitoring scope = users + roles + status)**
+   - `/superadmin` — Overview: total users, new this week, active sessions (from `activity_logs`), role distribution, recent signups.
+   - `/superadmin/users` — Full user table:
+     - Search by email/name, filter by role + status.
+     - Columns: avatar, email, name, roles, status (active/suspended), workspace count, last activity, joined.
+     - Row actions: grant/revoke role, suspend/reactivate, view details drawer.
+   - `/superadmin/users/:userId` — Detail drawer/page: profile, roles, workspaces, recent activity logs, AI usage summary.
 
-### 2. Instagram Connection (test + train)
+4. **Promote current user to `super_admin`**
+   - Insert a `super_admin` row in `user_roles` for your currently signed-in account (using its `auth.uid()` resolved at run time via a one-shot SQL using the most recent profile — or you confirm the email in chat before I run it).
 
-- New "Connect Instagram" card at top of Agents page
-- Public Instagram only (Basic Display + Graph API for Business/Creator)
-- Stores token in existing `meta_connections` table
-- Used for: pulling recent posts/insights to train tone, publishing approved posts, fetching analytics
-- Status pill: Disconnected / Connected as @handle / Token expiring
+5. **Status field for users**
+   - Add `status text default 'active'` (values: `active` | `suspended`) to `profiles`.
+   - Suspended users get blocked at sign-in via a small client check + RLS-friendly flag (full session revocation requires admin API; suspension is reflected in UI + login gate now, hard token revocation can be a follow-up).
 
-### 3. Wallet & Credits
+## Out of scope (future rounds)
+- AI usage / credits monitoring per user
+- Live sessions / IP / device tracking
+- Impersonation
+- Hard token revocation via Supabase Admin API edge function
 
-- New `wallet` table: `user_id`, `balance`, `updated_at`
-- New `credit_transactions` table: `user_id`, `agent_id`, `run_id`, `amount` (negative=spend), `reason`, `created_at`
-- Pricing (per run):
-  - Publisher plan generation: 5 credits
-  - Publisher auto-publish (per post): 1 credit
-  - Insights run: 3 credits
-- Pre-flight check before `agent-runner` executes; deduct on success; refund on failure
-- Wallet header chip on Agents page: "◆ 42 credits" with "Top up" button (stub for now)
-
-### 4. Saved Reports Library
-
-- New `agent_reports` table: `id`, `user_id`, `agent_id`, `run_id`, `title`, `type` (`research` | `analysis` | `plan`), `content_md`, `metadata`, `created_at`, `pinned`
-- "Reports" tab on Agent detail + global "Reports" rail on Agents home
-- Each report: open in modal, export as MD/PDF, pin, delete, re-run
-
-### 5. Approval Inbox (Publisher)
-
-- New panel on Publisher detail: list of `pending_approval` posts with image, caption, scheduled date
-- Quick actions: Approve, Edit caption, Reschedule, Reject
-- Bulk approve
-
-### 6. Page Layout
-
+## Files to add
 ```text
-/dashboard/agents
-┌──────────────────────────────────────────────┐
-│ Header  [Wallet: 42◆ Top up] [Connect IG ●]  │
-├──────────────────────────────────────────────┤
-│ Your Agents (2 cards)                         │
-│  ┌────────────┐  ┌────────────┐              │
-│  │ Publisher  │  │ Insights   │              │
-│  └────────────┘  └────────────┘              │
-├──────────────────────────────────────────────┤
-│ Saved Reports (horizontal rail)              │
-├──────────────────────────────────────────────┤
-│ Recent Runs                                   │
-└──────────────────────────────────────────────┘
+src/pages/superadmin/SuperAdminLogin.tsx
+src/pages/superadmin/SuperAdminOverview.tsx
+src/pages/superadmin/SuperAdminUsers.tsx
+src/pages/superadmin/SuperAdminUserDetail.tsx
+src/components/auth/SuperAdminRoute.tsx
+src/components/layout/SuperAdminShell.tsx
 ```
 
-Detail page tabs: **Configure · Run · Approvals (Publisher only) · Reports · History**
+## Files to edit
+- `src/App.tsx` — register `/superadmin/*` routes outside the regular app shell.
+- `src/integrations/supabase/types.ts` — auto-updates after migration.
 
-### Technical changes
+## Migrations
+- `ALTER TABLE profiles ADD COLUMN status text NOT NULL DEFAULT 'active'`.
+- Insert `super_admin` role for your current account (confirmed via the email tied to your active session before running).
 
-- DB migration: drop researcher/analyst seed templates; add `wallet`, `credit_transactions`, `agent_reports`; add `approval_status` to `scheduled_posts`
-- Edit `src/pages/AgentBuilder.tsx`: 2 templates, wallet header, IG connect card, reports rail
-- New components: `WalletBadge.tsx`, `InstagramConnectCard.tsx`, `ApprovalInbox.tsx`, `ReportsLibrary.tsx`, `ReportViewer.tsx`
-- Edge functions:
-  - `agent-runner`: add credit check/debit, save output to `agent_reports`, Publisher writes posts as `pending_approval`
-  - `meta-oauth-start` / `meta-oauth-callback`: IG OAuth flow (requires `META_APP_ID`, `META_APP_SECRET`)
-  - `meta-publish`: cron-style publish for approved posts at their scheduled time
-- Hooks: `useWallet`, `useReports`, `useMetaConnection`
+## UX
+- Same orange + black ecosystem, same components (`ReusableTable`, `FilterBar`, `StatsCard`, `GlowCard`).
+- Distinct "SUPER ADMIN" badge in sidebar header (red dot + uppercase tracking) so it's visually clear you're in the privileged area.
+- Cmd+K palette is NOT mounted inside the super admin shell (kept isolated).
 
-### Open questions before build
-
-1. IG OAuth needs `META_APP_ID` + `META_APP_SECRET` — request now or scaffold UI with "Coming soon" until you provide them?
-2. Wallet top-up: stub button, or wire Stripe/Paddle now?
-3. Starting credit balance for new users (e.g. 50 free)?
+## Acceptance
+- Visiting `/superadmin` while logged out → `/superadmin/login`.
+- Logging in as a non-super-admin → "Access denied", signed out.
+- Logging in as super_admin → Overview with live counts.
+- `/superadmin/users` lists all users, supports search/filter, grant/revoke roles, suspend/reactivate, CSV export.
+- Suspended users cannot sign in to the main `/login` (blocked with toast).
