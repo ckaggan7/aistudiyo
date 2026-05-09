@@ -33,6 +33,12 @@ import AdminAIModels from "./pages/admin/AdminAIModels";
 import AdminAIUsage from "./pages/admin/AdminAIUsage";
 import AdminActivity from "./pages/admin/AdminActivity";
 import AdminFlags from "./pages/admin/AdminFlags";
+import SuperAdminLogin from "./pages/superadmin/SuperAdminLogin";
+import SuperAdminOverview from "./pages/superadmin/SuperAdminOverview";
+import SuperAdminUsers from "./pages/superadmin/SuperAdminUsers";
+import SuperAdminUserDetail from "./pages/superadmin/SuperAdminUserDetail";
+import SuperAdminRoute from "./components/auth/SuperAdminRoute";
+import SuperAdminShell from "./components/layout/SuperAdminShell";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +50,12 @@ const AdminPage = ({ children }: { children: React.ReactNode }) => (
   <ProtectedRoute requireRole="super_admin">
     <AdminShell>{children}</AdminShell>
   </ProtectedRoute>
+);
+
+const SuperAdminPage = ({ children }: { children: React.ReactNode }) => (
+  <SuperAdminRoute>
+    <SuperAdminShell>{children}</SuperAdminShell>
+  </SuperAdminRoute>
 );
 
 const App = () => (
@@ -81,6 +93,10 @@ const App = () => (
           <Route path="/admin/ai-usage" element={<AdminPage><AdminAIUsage /></AdminPage>} />
           <Route path="/admin/activity" element={<AdminPage><AdminActivity /></AdminPage>} />
           <Route path="/admin/flags" element={<AdminPage><AdminFlags /></AdminPage>} />
+          <Route path="/superadmin/login" element={<SuperAdminLogin />} />
+          <Route path="/superadmin" element={<SuperAdminPage><SuperAdminOverview /></SuperAdminPage>} />
+          <Route path="/superadmin/users" element={<SuperAdminPage><SuperAdminUsers /></SuperAdminPage>} />
+          <Route path="/superadmin/users/:userId" element={<SuperAdminPage><SuperAdminUserDetail /></SuperAdminPage>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         </WorkspaceProvider>
