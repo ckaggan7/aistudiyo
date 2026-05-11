@@ -3,13 +3,13 @@ import { ArrowRight, FileText, LayoutGrid, MessageSquare, Film, Hash, Megaphone,
 import { FlowSection } from "@/components/ui/story-scroll";
 
 const STEPS = [
-  { Icon: Sparkles,    label: "Prompt" },
-  { Icon: FileText,    label: "Post" },
-  { Icon: LayoutGrid,  label: "Carousel" },
-  { Icon: MessageSquare,label: "Thread" },
-  { Icon: Film,        label: "Reel" },
-  { Icon: Megaphone,   label: "CTA" },
-  { Icon: Hash,        label: "Hashtags" },
+  { Icon: Sparkles,     label: "Prompt",   accent: "22 95% 55%"  },
+  { Icon: FileText,     label: "Post",     accent: "220 90% 60%" },
+  { Icon: LayoutGrid,   label: "Carousel", accent: "265 85% 62%" },
+  { Icon: MessageSquare,label: "Thread",   accent: "265 85% 62%" },
+  { Icon: Film,         label: "Reel",     accent: "330 88% 62%" },
+  { Icon: Megaphone,    label: "CTA",      accent: "160 75% 50%" },
+  { Icon: Hash,         label: "Hashtags", accent: "45 95% 58%"  },
 ];
 
 export default function ContentEngineScene() {
@@ -42,7 +42,14 @@ export default function ContentEngineScene() {
             transition={{ delay: i * 0.1 }}
             className="flex items-center gap-3"
           >
-            <div className="flex items-center gap-2 px-4 h-12 rounded-full bg-black/90 text-white shadow-elevated">
+            <div
+              className="flex items-center gap-2 px-4 h-12 rounded-full bg-black/90 text-white shadow-elevated"
+              style={{ boxShadow: `0 0 0 1px hsl(${s.accent} / 0.5), 0 0 22px -4px hsl(${s.accent} / 0.55)` }}
+            >
+              <span
+                className="inline-block w-2 h-2 rounded-full"
+                style={{ background: `hsl(${s.accent})`, boxShadow: `0 0 8px hsl(${s.accent})` }}
+              />
               <s.Icon className="w-4 h-4" />
               <span className="text-sm font-semibold">{s.label}</span>
             </div>
