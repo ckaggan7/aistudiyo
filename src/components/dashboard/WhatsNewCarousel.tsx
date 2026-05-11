@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Sparkles, Bot, LayoutTemplate, Image as ImageIcon,
-  CalendarClock, Brain, Flame, ArrowRight,
+  CalendarClock, Brain, Flame,
 } from "lucide-react";
 
 type Item = {
