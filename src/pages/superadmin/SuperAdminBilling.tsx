@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GlowCard } from "@/components/ui/glow-card";
-import { CircleDollarSign, Coins, FileText, Users, TrendingUp } from "lucide-react";
+import { FileText, Users, TrendingUp } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { format, subDays, startOfDay } from "date-fns";
 import SuperAdminCredits from "./SuperAdminCredits";
