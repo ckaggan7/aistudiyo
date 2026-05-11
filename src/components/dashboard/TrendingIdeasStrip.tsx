@@ -14,12 +14,12 @@ const IDEAS = [
 export default function TrendingIdeasStrip() {
   return (
     <motion.section
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.2, duration: 0.35 }}
-      className="bg-card rounded-2xl p-5 md:p-6 border border-border/40 mb-6"
+      transition={{ delay: 0.18, duration: 0.25 }}
+      className="bg-card rounded-2xl p-5 border border-border/40 mb-6"
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Flame className="w-4 h-4 text-primary" />
           <h3 className="font-semibold text-sm">Trending ideas today</h3>
