@@ -1,14 +1,25 @@
 import { ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Users, ShieldCheck, LogOut, Coins } from "lucide-react";
+import {
+  LayoutDashboard, Users, Building2, Cpu, CircleDollarSign,
+  BarChart3, LifeBuoy, Server, Settings as SettingsIcon,
+  ShieldCheck, LogOut,
+} from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 
 const items = [
   { icon: LayoutDashboard, label: "Overview", path: "/superadmin" },
   { icon: Users, label: "Users", path: "/superadmin/users" },
-  { icon: Coins, label: "Credits", path: "/superadmin/credits" },
+  { icon: Building2, label: "Workspaces", path: "/superadmin/workspaces" },
+  { icon: Cpu, label: "AI Center", path: "/superadmin/ai" },
+  { icon: CircleDollarSign, label: "Billing", path: "/superadmin/billing" },
+  { icon: BarChart3, label: "Analytics", path: "/superadmin/analytics" },
+  { divider: true as const },
+  { icon: LifeBuoy, label: "Support", path: "/superadmin/support" },
+  { icon: Server, label: "System", path: "/superadmin/system" },
+  { icon: SettingsIcon, label: "Settings", path: "/superadmin/settings" },
 ];
 
 export default function SuperAdminShell({ children }: { children: ReactNode }) {
@@ -37,16 +48,19 @@ export default function SuperAdminShell({ children }: { children: ReactNode }) {
           </Link>
         </div>
         <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
-          {items.map((it) => {
+          {items.map((it, idx) => {
+            if ("divider" in it) {
+              return <div key={`div-${idx}`} className="my-2 mx-2 border-t border-border/40" />;
+            }
             const active = pathname === it.path || (it.path !== "/superadmin" && pathname.startsWith(it.path));
             return (
               <Link
                 key={it.path}
                 to={it.path}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all relative",
+                  "flex items-center gap-3 px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all relative",
                   active
-                    ? "bg-primary/10 text-primary"
+                    ? "bg-primary/10 text-primary shadow-[0_0_24px_-6px_hsl(var(--primary)/0.5)]"
                     : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
                 )}
               >
