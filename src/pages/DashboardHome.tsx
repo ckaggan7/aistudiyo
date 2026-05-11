@@ -102,49 +102,44 @@ export default function DashboardHome() {
         ))}
       </div>
 
-      {/* Main grid */}
-      <div className="grid lg:grid-cols-3 gap-6">
-        {/* Quick actions */}
-        <motion.div
-          initial="hidden" animate="visible" variants={fadeUp} custom={5}
-          className="lg:col-span-1 bg-card rounded-2xl p-6 border border-border/40"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold">Quick start</h3>
-          </div>
-          <div className="space-y-1">
-            {[
-              { title: "Image Studio",  desc: "Generate & edit visuals", icon: Wand2,    to: "/dashboard/image-studio" },
-              { title: "Caption Writer",desc: "Hooks, posts, hashtags",   icon: Sparkles, to: "/dashboard/generator" },
-              { title: "Calendar",      desc: "Plan your week",           icon: Calendar, to: "/dashboard/calendar" },
-              { title: "Trends",        desc: "What's hot today",         icon: TrendingUp,to: "/dashboard/trends" },
-            ].map((a) => (
-              <Link
-                key={a.to}
-                to={a.to}
-                className="group flex items-center gap-3 p-3 -mx-1 rounded-xl hover:bg-secondary/60 transition-colors"
-              >
-                <div className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                  <a.icon className="w-4 h-4 text-foreground/70 group-hover:text-primary" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium leading-tight">{a.title}</p>
-                  <p className="text-xs text-muted-foreground truncate">{a.desc}</p>
-                </div>
-                <ArrowRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-              </Link>
-            ))}
-          </div>
-        </motion.div>
+      {/* Quick actions — horizontal */}
+      <motion.div
+        initial="hidden" animate="visible" variants={fadeUp} custom={5}
+        className="bg-card rounded-2xl p-6 border border-border/40 mb-6"
+      >
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-semibold">Quick start</h3>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {[
+            { title: "Image Studio",  desc: "Generate & edit visuals", icon: Wand2,    to: "/dashboard/image-studio" },
+            { title: "Caption Writer",desc: "Hooks, posts, hashtags",   icon: Sparkles, to: "/dashboard/generator" },
+            { title: "Calendar",      desc: "Plan your week",           icon: Calendar, to: "/dashboard/calendar" },
+            { title: "Trends",        desc: "What's hot today",         icon: TrendingUp,to: "/dashboard/trends" },
+          ].map((a) => (
+            <Link
+              key={a.to}
+              to={a.to}
+              className="group flex items-center gap-3 p-3 rounded-xl border border-border/40 hover:border-primary/30 hover:bg-secondary/60 transition-colors"
+            >
+              <div className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center group-hover:bg-primary/10 transition-colors shrink-0">
+                <a.icon className="w-4 h-4 text-foreground/70 group-hover:text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium leading-tight truncate">{a.title}</p>
+                <p className="text-xs text-muted-foreground truncate">{a.desc}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </motion.div>
 
-        {/* Scheduled posts widget */}
-        <motion.div
-          initial="hidden" animate="visible" variants={fadeUp} custom={6}
-          className="lg:col-span-2"
-        >
-          <ScheduledPostsPanel />
-        </motion.div>
-      </div>
+      {/* Scheduled posts widget */}
+      <motion.div
+        initial="hidden" animate="visible" variants={fadeUp} custom={6}
+      >
+        <ScheduledPostsPanel />
+      </motion.div>
 
       {/* Recent creations strip */}
       {recent.length > 0 && (
