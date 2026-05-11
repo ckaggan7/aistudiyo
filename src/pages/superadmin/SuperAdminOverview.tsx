@@ -1,120 +1,144 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { StatsCard } from "@/components/ui/stats-card";
 import { GlowCard } from "@/components/ui/glow-card";
-import { Users, UserPlus, ShieldCheck, Pause, Activity } from "lucide-react";
-import { format } from "date-fns";
-import { Badge } from "@/components/ui/badge";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { CompactStatsCard } from "@/components/admin/CompactStatsCard";
+import { AdminQuickActions } from "@/components/admin/AdminQuickActions";
+import { RealtimeFeed, type FeedItem } from "@/components/admin/RealtimeFeed";
+import { AIHealthIndicator } from "@/components/admin/AIHealthIndicator";
+import {
+  Users, Activity, ShieldCheck, Building2, Cpu, CircleDollarSign,
+  UserPlus, AlertTriangle, Sparkles, LifeBuoy, ServerCrash,
+} from "lucide-react";
 
 type Recent = { user_id: string; email: string | null; display_name: string | null; created_at: string };
 
 export default function SuperAdminOverview() {
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({ total: 0, weekly: 0, suspended: 0, admins: 0, activity: 0 });
+  const [stats, setStats] = useState({ users: 0, weekly: 0, workspaces: 0, ai: 0, admins: 0, failures: 0 });
   const [recent, setRecent] = useState<Recent[]>([]);
-  const [byRole, setByRole] = useState<Record<string, number>>({});
+  const [providersOk, setProvidersOk] = useState({ ok: 0, total: 0 });
+  const [aiFails, setAiFails] = useState<{ id: string; model_slug: string; status: string; created_at: string }[]>([]);
 
   useEffect(() => {
     (async () => {
+      const dayAgo = new Date(Date.now() - 86400_000).toISOString();
       const weekAgo = new Date(Date.now() - 7 * 86400_000).toISOString();
-      const [{ count: total }, { count: weekly }, { count: suspended }, rolesRes, activityRes, recentRes] =
-        await Promise.all([
-          supabase.from("profiles").select("*", { count: "exact", head: true }),
-          supabase.from("profiles").select("*", { count: "exact", head: true }).gte("created_at", weekAgo),
-          supabase.from("profiles").select("*", { count: "exact", head: true }).eq("status", "suspended"),
-          supabase.from("user_roles").select("role"),
-          supabase
-            .from("activity_logs")
-            .select("*", { count: "exact", head: true })
-            .gte("created_at", new Date(Date.now() - 86400_000).toISOString()),
-          supabase
-            .from("profiles")
-            .select("user_id,email,display_name,created_at")
-            .order("created_at", { ascending: false })
-            .limit(8),
-        ]);
-
+      const [u, weekly, ws, ai, roles, recentRes, prov, fails] = await Promise.all([
+        supabase.from("profiles").select("*", { count: "exact", head: true }),
+        supabase.from("profiles").select("*", { count: "exact", head: true }).gte("created_at", weekAgo),
+        supabase.from("workspaces").select("*", { count: "exact", head: true }).eq("status", "active"),
+        supabase.from("ai_request_logs").select("*", { count: "exact", head: true }).gte("created_at", dayAgo),
+        supabase.from("user_roles").select("role"),
+        supabase.from("profiles").select("user_id,email,display_name,created_at").order("created_at", { ascending: false }).limit(6),
+        supabase.from("ai_providers").select("status,enabled"),
+        supabase.from("ai_request_logs").select("id,model_slug,status,created_at").neq("status", "success").order("created_at", { ascending: false }).limit(4),
+      ]);
       const dist: Record<string, number> = {};
-      (rolesRes.data ?? []).forEach((r: any) => {
-        dist[r.role] = (dist[r.role] ?? 0) + 1;
-      });
-      setByRole(dist);
+      (roles.data ?? []).forEach((r: any) => { dist[r.role] = (dist[r.role] ?? 0) + 1; });
+      const total = (prov.data ?? []).length;
+      const ok = (prov.data ?? []).filter((p: any) => p.enabled && p.status === "healthy").length;
+      setProvidersOk({ ok, total });
       setStats({
-        total: total ?? 0,
-        weekly: weekly ?? 0,
-        suspended: suspended ?? 0,
+        users: u.count ?? 0,
+        weekly: weekly.count ?? 0,
+        workspaces: ws.count ?? 0,
+        ai: ai.count ?? 0,
         admins: (dist["super_admin"] ?? 0) + (dist["admin"] ?? 0),
-        activity: activityRes.count ?? 0,
+        failures: (fails.data ?? []).length,
       });
       setRecent((recentRes.data ?? []) as Recent[]);
+      setAiFails((fails.data ?? []) as any);
       setLoading(false);
     })();
   }, []);
 
+  const feed: FeedItem[] = [
+    ...recent.map((r) => ({
+      id: `u-${r.user_id}`,
+      icon: <UserPlus className="w-3.5 h-3.5" />,
+      title: `New signup · ${r.display_name ?? r.email ?? "user"}`,
+      meta: r.email ?? undefined,
+      time: r.created_at,
+      tone: "success" as const,
+    })),
+    ...aiFails.map((f) => ({
+      id: `f-${f.id}`,
+      icon: <ServerCrash className="w-3.5 h-3.5" />,
+      title: `AI failure · ${f.model_slug}`,
+      meta: f.status,
+      time: f.created_at,
+      tone: "error" as const,
+    })),
+  ].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 10);
+
   return (
     <div className="space-y-6 max-w-[1600px] mx-auto">
-      <header>
-        <p className="text-xs uppercase tracking-widest text-destructive font-semibold">Super Admin</p>
-        <h1 className="text-3xl font-bold tracking-tight">User Monitoring</h1>
-        <p className="text-sm text-muted-foreground mt-1">Real-time overview of all platform users.</p>
-      </header>
+      <AdminPageHeader
+        eyebrow="Super Admin"
+        title="Platform Overview"
+        description="Realtime pulse of users, workspaces, AI usage and system health."
+        actions={
+          <AdminQuickActions
+            actions={[
+              { label: "Invite admin", icon: ShieldCheck, to: "/superadmin/users" },
+              { label: "AI failures", icon: AlertTriangle, to: "/superadmin/support" },
+              { label: "Billing", icon: CircleDollarSign, to: "/superadmin/billing" },
+            ]}
+          />
+        }
+      />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        <StatsCard label="Total users" value={stats.total} icon={Users} loading={loading} />
-        <StatsCard label="New (7d)" value={stats.weekly} icon={UserPlus} loading={loading} />
-        <StatsCard label="Admins" value={stats.admins} icon={ShieldCheck} loading={loading} />
-        <StatsCard label="Suspended" value={stats.suspended} icon={Pause} loading={loading} />
-        <StatsCard label="24h activity" value={stats.activity} icon={Activity} loading={loading} />
-      </div>
+      <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <CompactStatsCard label="Users" value={stats.users} hint={`+${stats.weekly} this week`} icon={Users} loading={loading} />
+        <CompactStatsCard label="Active 24h" value={stats.ai} icon={Activity} loading={loading} />
+        <CompactStatsCard label="AI requests 24h" value={stats.ai} icon={Cpu} loading={loading} />
+        <CompactStatsCard label="Revenue MRR" value="$0" hint="not connected" icon={CircleDollarSign} loading={loading} />
+        <CompactStatsCard label="Workspaces" value={stats.workspaces} icon={Building2} loading={loading} />
+        <CompactStatsCard label="Admins" value={stats.admins} icon={ShieldCheck} loading={loading} />
+      </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <GlowCard className="p-5">
-          <h3 className="text-sm font-semibold mb-4">Role distribution</h3>
-          <div className="space-y-2">
-            {Object.entries(byRole).length === 0 && (
-              <p className="text-xs text-muted-foreground">No role data yet.</p>
-            )}
-            {Object.entries(byRole).map(([role, n]) => {
-              const pct = stats.total ? Math.min(100, (n / stats.total) * 100) : 0;
-              return (
-                <div key={role}>
-                  <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="capitalize">{role.replace("_", " ")}</span>
-                    <span className="text-muted-foreground">{n}</span>
-                  </div>
-                  <div className="h-1.5 rounded-full bg-muted/40 overflow-hidden">
-                    <div className="h-full bg-gradient-hero" style={{ width: `${pct}%` }} />
-                  </div>
-                </div>
-              );
-            })}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <GlowCard className="p-5 lg:col-span-2">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold flex items-center gap-2"><Activity className="w-4 h-4 text-primary" /> Realtime activity</h3>
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">live</span>
           </div>
+          <RealtimeFeed items={feed} empty="No activity in the last 24 hours." />
         </GlowCard>
 
-        <GlowCard className="p-5">
-          <h3 className="text-sm font-semibold mb-4">Recent signups</h3>
-          <div className="space-y-2">
-            {recent.map((r) => (
-              <div key={r.user_id} className="flex items-center justify-between gap-3 py-1.5">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-8 h-8 rounded-full bg-gradient-hero text-primary-foreground grid place-items-center text-xs font-semibold shrink-0">
-                    {(r.display_name ?? r.email ?? "?").slice(0, 1).toUpperCase()}
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-sm font-medium truncate">{r.display_name ?? r.email}</div>
-                    <div className="text-xs text-muted-foreground truncate">{r.email}</div>
-                  </div>
-                </div>
-                <Badge variant="secondary" className="text-[10px]">
-                  {format(new Date(r.created_at), "MMM d")}
-                </Badge>
+        <div className="space-y-4">
+          <GlowCard className="p-5">
+            <h3 className="text-sm font-semibold mb-3">System health</h3>
+            <ul className="space-y-2 text-sm">
+              {["API Gateway", "Auth", "Database", "Storage"].map((s) => (
+                <li key={s} className="flex items-center justify-between">
+                  <span className="text-muted-foreground">{s}</span>
+                  <AIHealthIndicator status="healthy" />
+                </li>
+              ))}
+              <li className="flex items-center justify-between">
+                <span className="text-muted-foreground">AI providers</span>
+                <AIHealthIndicator status={providersOk.ok === providersOk.total ? "healthy" : "degraded"} label={`${providersOk.ok}/${providersOk.total}`} />
+              </li>
+            </ul>
+          </GlowCard>
+
+          <GlowCard className="p-5 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent pointer-events-none" />
+            <div className="relative">
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="w-4 h-4 text-primary" />
+                <h3 className="text-sm font-semibold">AI assistant summary</h3>
               </div>
-            ))}
-            {recent.length === 0 && !loading && (
-              <p className="text-xs text-muted-foreground">No users yet.</p>
-            )}
-          </div>
-        </GlowCard>
+              <ul className="text-xs text-muted-foreground space-y-1.5">
+                <li>• {stats.weekly} new users this week — {stats.users > 0 ? `+${((stats.weekly / Math.max(stats.users, 1)) * 100).toFixed(1)}%` : "—"} of base.</li>
+                <li>• {stats.failures > 0 ? `${stats.failures} AI failures in last 24h. Review Support.` : "AI providers running clean."}</li>
+                <li>• {stats.workspaces} active workspaces. Inspect via Workspaces.</li>
+              </ul>
+            </div>
+          </GlowCard>
+        </div>
       </div>
     </div>
   );

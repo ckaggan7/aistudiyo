@@ -26,7 +26,7 @@ type Profile = {
 };
 type RoleRow = { user_id: string; role: string };
 
-const ROLES = ["super_admin", "admin", "manager", "creator", "user"] as const;
+const ROLES = ["super_admin", "admin", "creator", "user"] as const;
 
 export default function SuperAdminUsers() {
   const navigate = useNavigate();
