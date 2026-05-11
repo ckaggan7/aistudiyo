@@ -1,70 +1,39 @@
-# Full Bento Dashboard Plan
+## Goal
+Replace the existing hero bento card on `/dashboard` with the **Premium Creator Hero** direction: a wider single-row layout with a soft warm canvas, a refined "Welcome, {name}" headline, four crisp white stat cards in a row, and a bigger ambient AI orb anchored to the right.
 
-Goal: take the existing creator dashboard and restructure it as a **true bento mosaic** — every section becomes a self-contained tile of varying sizes inside one unified 12-column grid, instead of stacked row blocks.
+## Scope (UI only)
+Only the hero card. Wiring (auth name, stats values, rotating subtitle) stays as-is. No layout grid changes outside the hero, no new routes, no backend.
 
-No backend/data changes. Visual + layout only. All existing components and routes preserved.
+## Files
 
-## What changes
+**Edit `src/components/dashboard/WelcomeHeader.tsx`** — rewrite layout:
+- Outer: `bento-hero` keeps soft warm gradient + rounded-[2.5rem] shell; increase padding (`p-8 md:p-12`).
+- Inner: `flex flex-col md:flex-row items-center justify-between gap-10`. Left grows, right is fixed `w-72 md:w-80`.
+- Left column:
+  - Status chip: white pill, border, tiny pinging orange dot, label `AI creator playground` (uppercase, tracking-wider).
+  - Headline: `text-5xl md:text-6xl font-bold tracking-tight` — "Welcome, " + `<span class="text-gradient-hero capitalize">{name}</span>`.
+  - Rotating subtitle (existing `SUBTITLES` + AnimatePresence) — kept, restyled `text-base text-muted-foreground`.
+  - Stats: replace pill chips with a 4-column white card row (`grid grid-cols-2 lg:grid-cols-4 gap-3`). Each card: `bg-white rounded-2xl border border-border/60 shadow-sm p-4`, eyebrow label uppercase tracking-wide, value `text-2xl font-bold` with a small accent suffix (`days`, `+18%` in emerald, etc.). Same four stats: Streak 7d, Reach +18%, Credits 142, Posts 23.
+- Right column (orb):
+  - Container `relative w-64 h-64 md:w-80 md:h-80`.
+  - Ambient: large `bg-primary/20 blur-[100px] rounded-full` halo behind.
+  - Keep existing `<AIOrb />` component (no rewrite) — pass `size={280}` and let CSS halo sit behind it.
+  - Remove the faint sparkline bars behind the orb (cleaner per direction).
+  - Floating "live" pill: small white rounded badge top-left of orb with pinging green dot + "Live".
 
-### 1. `src/pages/DashboardHome.tsx` — single bento grid
-Replace stacked rows with one `grid-cols-12 auto-rows-[minmax(140px,auto)] gap-4` mosaic. Each child gets a `col-span-*` + `row-span-*` so tiles feel asymmetric like a real bento.
-
-```text
-Row 1 (hero band):
-[ WelcomeHero  col-8 row-2 ] [ AIOrbCard col-4 row-2 ]
-
-Row 2 (creation band):
-[ QuickCreate col-7 row-2 ] [ AISuggestions col-5 row-2 ]
-
-Row 3 (agents mosaic):
-[ AgentsStrip col-8 row-2 ] [ TrendingNowFeed col-4 row-3 ]
-[ WhatsNewCarousel col-8 row-1 ]
-
-Row 4 (calendar + library):
-[ TrendingSocialDates col-5 row-2 ] [ RecentContentPacks col-7 row-2 ]
-
-Row 5 (footer tiles):
-[ CreatorMomentum col-4 ] [ CalendarPreview col-4 ] [ CoreActionCards col-4 ]
-```
-
-Mobile: stack to 1 col with same order, `row-span` resets.
-
-### 2. Each component → bento tile
-Every dashboard component wrapper gets normalized to:
-- Full-height `h-full` so tiles fill their grid cell
-- `.bento` base utility (already in `index.css`) for rounded-3xl, white bg, soft shadow, hover lift
-- Consistent inner padding `p-5 lg:p-6`
-- Tile header pattern: small eyebrow chip + title + optional action link in top-right
-- Remove their own outer `space-y` margins (grid `gap-4` handles spacing)
-
-Components touched (wrapper-only edits, content untouched):
-`WelcomeHeader`, `QuickCreateBar`, `AISuggestions`, `AgentsStrip`, `TrendingNowFeed`, `WhatsNewCarousel`, `TrendingSocialDates`, `RecentContentPacks`, `CreatorMomentum`, `CalendarPreview`, `CoreActionCards`.
-
-### 3. New tile variants in `src/index.css`
-Add 3 size-flavored variants on top of existing `.bento`:
-- `.bento-tall` — taller min-height + vertical content alignment
-- `.bento-wide` — landscape ratio, stat-style emphasis
-- `.bento-feature` — soft gradient surface for hero/standout tiles (reuses `--gradient-hero-soft`)
-- `.bento-accent` already exists; keep for the orange standout.
-
-Also add a subtle hover: `hover:-translate-y-0.5 hover:shadow-bento-lg transition`.
-
-### 4. Reintroduce `CreatorMomentum` + `CoreActionCards`
-They were retired from the page but still exist. Bring them back as small footer bento tiles so the mosaic feels rich without adding new code.
-
-### 5. Mobile
-- Grid collapses to `grid-cols-1`
-- Each tile keeps its own internal layout (already responsive)
-- Mobile bottom dock stays
+**Edit `src/index.css`** — minor:
+- Soften `.bento-hero` background to match the warmer stone tone (keep existing tokens, no new colors).
+- No new utilities required; reuse `text-gradient-hero`, `shadow-bento`, design tokens.
 
 ## Out of scope
-- No new components
-- No content/data changes
-- No new routes
-- No backend
-- No theme/token changes beyond the 3 new bento variants
+- Other dashboard tiles (QuickCreate, AISuggestions, Agents, etc.).
+- AIOrb component internals.
+- Stats data source.
+- Mobile dock and sidebar.
 
-## Files to edit
-- `src/pages/DashboardHome.tsx` (rewrite layout)
-- `src/index.css` (add 3 bento variants + hover)
-- Light wrapper tweaks (`h-full`, header pattern) in the 11 dashboard components listed above
+## Acceptance
+- Hero spans full grid row, taller and more premium feel.
+- Headline reads clearly, "Admin" rendered in orange gradient (no broken block).
+- Four white stat cards aligned in a single row at `lg`, 2×2 on mobile.
+- Orb sits on the right with soft halo + floating live pill, no overlapping sparkline.
+- No regression on other tiles.
