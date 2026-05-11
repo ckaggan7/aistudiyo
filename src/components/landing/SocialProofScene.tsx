@@ -47,6 +47,13 @@ export default function SocialProofScene() {
             transition={{ delay: 0.2 + i * 0.08 }}
             className="rounded-2xl bg-white/5 border border-white/10 p-5 backdrop-blur"
           >
+            <div className="flex items-center gap-2 mb-3">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+              </span>
+              <span className="text-[10px] uppercase tracking-[0.2em] text-emerald-300/90 font-bold">Live</span>
+            </div>
             <p className="text-sm leading-relaxed text-white/85">"{t.q}"</p>
             <div className="mt-4 pt-3 border-t border-white/10">
               <p className="text-sm font-semibold">{t.who}</p>
