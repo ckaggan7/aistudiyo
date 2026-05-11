@@ -26,6 +26,7 @@ import WorkflowBuilder from "./pages/workflows/WorkflowBuilder";
 import WorkflowRuns from "./pages/workflows/WorkflowRuns";
 import { AuthProvider } from "./hooks/useAuth";
 import { WorkspaceProvider } from "./hooks/useWorkspace";
+import { ThemeProvider } from "./hooks/useTheme";
 import CommandPalette from "./components/CommandPalette";
 import SuperAdminLogin from "./pages/superadmin/SuperAdminLogin";
 import SuperAdminOverview from "./pages/superadmin/SuperAdminOverview";
@@ -61,6 +62,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+        <ThemeProvider>
         <WorkspaceProvider>
         <CommandPalette />
         <Routes>
@@ -101,6 +103,7 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
         </Routes>
         </WorkspaceProvider>
+        </ThemeProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
