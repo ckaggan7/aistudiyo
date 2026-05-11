@@ -34,7 +34,9 @@ export default function AgentsStrip() {
           <Link
             key={a.label}
             to={a.to}
-            className="group rounded-2xl border border-border/60 bg-muted/30 hover:bg-white hover:border-primary/30 hover:shadow-md p-4 transition-all relative"
+            onMouseMove={tilt.onMouseMove}
+            onMouseLeave={tilt.onMouseLeave}
+            className="tilt group rounded-2xl border border-border/60 bg-gradient-to-br from-white to-muted/30 hover:to-white hover:border-primary/30 hover:shadow-md p-4 relative"
           >
             <div
               className="w-10 h-10 rounded-xl flex items-center justify-center mb-3 relative"
