@@ -74,7 +74,7 @@ export default function QuickCreateBar({ initial = "" }: { initial?: string }) {
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && submit()}
             placeholder={PLACEHOLDERS[phIdx]}
-            className="flex-1 bg-transparent outline-none px-2 text-base md:text-lg placeholder:text-muted-foreground/60"
+            className="flex-1 min-w-0 bg-transparent outline-none px-2 text-sm md:text-base placeholder:text-muted-foreground/60"
           />
           <button
             onClick={submit}
