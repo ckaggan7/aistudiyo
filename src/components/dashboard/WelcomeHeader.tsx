@@ -12,8 +12,8 @@ const SUBTITLES = [
 
 type Stat = { label: string; value: string; suffix?: string; suffixTone?: string };
 const STATS: Stat[] = [
-  { label: "Streak",  value: "7",   suffix: "days",  suffixTone: "text-primary" },
-  { label: "Reach",   value: "45.2k", suffix: "+18%", suffixTone: "text-emerald-500" },
+  { label: "Streak",  value: "7",    suffix: "days", suffixTone: "text-primary" },
+  { label: "Reach",   value: "4.2k", suffix: "+18%", suffixTone: "text-emerald-500" },
   { label: "Credits", value: "142" },
   { label: "Posts",   value: "23" },
 ];
@@ -83,10 +83,10 @@ export default function WelcomeHeader() {
                 <p className="text-muted-foreground text-[10px] font-semibold uppercase tracking-wider mb-1.5">
                   {s.label}
                 </p>
-                <div className="flex items-end gap-1.5">
-                  <span className="text-2xl font-bold text-foreground leading-none">{s.value}</span>
+                <div className="flex items-end gap-1">
+                  <span className="text-xl lg:text-2xl font-bold text-foreground leading-none">{s.value}</span>
                   {s.suffix && (
-                    <span className={`text-xs font-semibold mb-0.5 ${s.suffixTone ?? "text-muted-foreground"}`}>
+                    <span className={`text-[11px] font-semibold mb-0.5 ${s.suffixTone ?? "text-muted-foreground"}`}>
                       {s.suffix}
                     </span>
                   )}
