@@ -9,64 +9,29 @@ import {
   X,
   Bot,
   Calendar,
-  ChevronDown,
+  FolderOpen,
+  TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import WorkspaceSwitcher from "./workspace/WorkspaceSwitcher";
 import ProfileMenu from "./dashboard/ProfileMenu";
 
-type NavLeaf = { label: string; path: string };
-type NavItem =
-  | { icon: any; label: string; path: string; children?: undefined }
-  | { icon: any; label: string; children: NavLeaf[]; path?: undefined };
+type NavItem = { icon: any; label: string; path: string };
 
 const navItems: NavItem[] = [
-  { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-  {
-    icon: Sparkles,
-    label: "Create",
-    children: [
-      { label: "AI Generator", path: "/dashboard/generator" },
-      { label: "Images", path: "/dashboard/image-studio" },
-      { label: "Design Studio", path: "/dashboard/design" },
-      { label: "Templates", path: "/dashboard/templates" },
-    ],
-  },
-  {
-    icon: Bot,
-    label: "Automate",
-    children: [
-      { label: "Agents", path: "/dashboard/agents" },
-      { label: "Workflows", path: "/dashboard/workflows" },
-    ],
-  },
-  {
-    icon: Calendar,
-    label: "Plan",
-    children: [
-      { label: "Calendar", path: "/dashboard/calendar" },
-      { label: "Media Library", path: "/dashboard/media" },
-      { label: "Branding CRM", path: "/dashboard/branding" },
-    ],
-  },
-  {
-    icon: BarChart3,
-    label: "Insights",
-    children: [
-      { label: "Trend Engine", path: "/dashboard/trends" },
-      { label: "Analytics", path: "/dashboard/analytics" },
-    ],
-  },
+  { icon: LayoutDashboard, label: "Home", path: "/dashboard" },
+  { icon: Sparkles, label: "Create", path: "/dashboard/generator" },
+  { icon: Bot, label: "Agents", path: "/dashboard/agents" },
+  { icon: FolderOpen, label: "Content Packs", path: "/dashboard/media" },
+  { icon: Calendar, label: "Calendar", path: "/dashboard/calendar" },
+  { icon: TrendingUp, label: "Trends", path: "/dashboard/trends" },
+  { icon: BarChart3, label: "Analytics", path: "/dashboard/analytics" },
   { icon: Settings, label: "Settings", path: "/dashboard/settings" },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const isChildActive = (children?: NavLeaf[]) =>
-    !!children?.some((c) => location.pathname === c.path || location.pathname.startsWith(c.path + "/"));
-  const initialOpen = navItems.find((i) => i.children && isChildActive(i.children))?.label ?? null;
-  const [openGroup, setOpenGroup] = useState<string | null>(initialOpen);
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -83,77 +48,35 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         )}
       >
         <div className="h-16 flex items-center justify-between px-6 border-b border-sidebar-border">
-          <Link to="/" className="text-lg font-bold tracking-tight">
-            AI <span className="text-gradient-hero">STUDIYO</span>
+          <Link to="/" className="text-base font-semibold tracking-tight">
+            AI STUDIYO
           </Link>
           <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-muted-foreground">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
+        <nav className="flex-1 py-4 px-3 space-y-0.5 overflow-y-auto">
           {navItems.map((item) => {
-            if (!item.children) {
-              const isActive = location.pathname === item.path;
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path!}
-                  onClick={() => setSidebarOpen(false)}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                    isActive
-                      ? "bg-primary/10 text-primary"
-                      : "text-sidebar-foreground hover:bg-sidebar-accent"
-                  )}
-                >
-                  <item.icon className="w-4.5 h-4.5" />
-                  <span className="flex-1">{item.label}</span>
-                </Link>
-              );
-            }
-            const isOpen = openGroup === item.label;
-            const hasActive = isChildActive(item.children);
+            const isActive =
+              item.path === "/dashboard"
+                ? location.pathname === "/dashboard"
+                : location.pathname === item.path || location.pathname.startsWith(item.path + "/");
             return (
-              <div key={item.label}>
-                <button
-                  onClick={() => setOpenGroup(isOpen ? null : item.label)}
-                  className={cn(
-                    "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                    hasActive
-                      ? "text-primary"
-                      : "text-sidebar-foreground hover:bg-sidebar-accent"
-                  )}
-                >
-                  <item.icon className="w-4.5 h-4.5" />
-                  <span className="flex-1 text-left">{item.label}</span>
-                  <ChevronDown
-                    className={cn("w-4 h-4 transition-transform", isOpen && "rotate-180")}
-                  />
-                </button>
-                {isOpen && (
-                  <div className="mt-1 ml-4 pl-3 border-l border-sidebar-border space-y-1">
-                    {item.children.map((c) => {
-                      const active = location.pathname === c.path || location.pathname.startsWith(c.path + "/");
-                      return (
-                        <Link
-                          key={c.path}
-                          to={c.path}
-                          onClick={() => setSidebarOpen(false)}
-                          className={cn(
-                            "block px-3 py-2 rounded-lg text-sm transition-colors",
-                            active
-                              ? "bg-primary/10 text-primary font-medium"
-                              : "text-sidebar-foreground hover:bg-sidebar-accent"
-                          )}
-                        >
-                          {c.label}
-                        </Link>
-                      );
-                    })}
-                  </div>
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={() => setSidebarOpen(false)}
+                className={cn(
+                  "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                  isActive
+                    ? "bg-primary/[0.08] text-primary"
+                    : "text-sidebar-foreground hover:bg-sidebar-accent"
                 )}
-              </div>
+              >
+                <item.icon className="w-4 h-4" />
+                <span className="flex-1">{item.label}</span>
+              </Link>
             );
           })}
         </nav>
