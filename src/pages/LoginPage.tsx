@@ -233,9 +233,9 @@ export default function LoginPage() {
           </Button>
         </div>
 
-        <p className="text-center text-xs text-muted-foreground mt-6">
+        <p className="text-center text-xs text-white/45 mt-6">
           By continuing, you agree to our terms.{" "}
-          <Link to="/signup" className="text-primary font-medium hover:underline">
+          <Link to="/signup" className="text-[hsl(22_100%_60%)] font-medium hover:underline">
             Or join the waitlist
           </Link>
         </p>
