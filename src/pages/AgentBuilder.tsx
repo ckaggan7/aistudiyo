@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Bot, Send, Search, Plus, Play, Loader2, Check, ArrowLeft, Clock, Trash2, FileText, Inbox, Settings,
+  Instagram, Linkedin, Flame, TrendingUp, MessageCircle, Repeat, Target,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,21 +25,73 @@ type Agent = {
 };
 type Run = { id: string; agent_id: string; status: string; started_at: string };
 
-const TEMPLATES: { type: AgentType; name: string; icon: any; color: string; goal: string; system: string; tools: string[]; cost: number; desc: string }[] = [
+type Category = "growth" | "content" | "strategy" | "research";
+
+const TEMPLATES: { type: AgentType; category: Category; name: string; icon: any; color: string; goal: string; system: string; tools: string[]; cost: number; desc: string }[] = [
   {
-    type: "publisher", name: "Content Publisher", icon: Send, color: "from-violet-500 to-fuchsia-500",
-    goal: "Plan, schedule, and publish on-brand posts with your approval",
-    system: "You are a senior social media strategist. Craft scroll-stopping hooks and on-brand captions. Always end with a CTA.",
+    type: "publisher", category: "growth", name: "Instagram Growth", icon: Instagram, color: "from-pink-500 to-fuchsia-500",
+    goal: "Plan, post, and hashtag-optimize for Instagram growth",
+    system: "You are an Instagram growth strategist. Craft scroll-stopping hooks, on-brand captions, and trend-aware hashtags. Always end with a CTA.",
     tools: ["generate_caption", "generate_image", "schedule_post", "request_approval", "publish_to_meta"],
-    cost: 5, desc: "Generates a content plan, queues posts for approval, then publishes to Instagram on schedule.",
+    cost: 5, desc: "Plans a week of IG posts, optimizes for reach, queues for approval and publishes.",
   },
   {
-    type: "insights", name: "Insights Agent", icon: Search, color: "from-cyan-500 to-blue-500",
-    goal: "Surface trends and analyze performance",
-    system: "You are a culture analyst and growth marketer. Combine trend research with hard performance numbers.",
-    tools: ["web_search", "competitor_scan", "fetch_meta_insights", "compute_engagement", "summarize"],
-    cost: 3, desc: "Combined research + analytics. Pulls trends, competitor moves, and your IG performance into one report.",
+    type: "publisher", category: "growth", name: "LinkedIn Branding", icon: Linkedin, color: "from-blue-500 to-cyan-500",
+    goal: "Authority posts and thought-leadership for LinkedIn",
+    system: "You are a personal branding strategist for executives and founders. Write authority-driven LinkedIn posts with strong hooks, narrative arcs, and clear takeaways.",
+    tools: ["generate_caption", "schedule_post", "request_approval"],
+    cost: 4, desc: "Builds an authority voice on LinkedIn — long-form posts, story-driven hooks, weekly cadence.",
   },
+  {
+    type: "publisher", category: "content", name: "Viral Content", icon: Flame, color: "from-orange-500 to-red-500",
+    goal: "Hook hunter and scroll-stop caption writer",
+    system: "You are a viral content engineer. Generate 10 hook variants per topic, score them, and rewrite the top 3 into full captions.",
+    tools: ["generate_caption", "generate_image", "request_approval"],
+    cost: 4, desc: "Pumps out hook variants, scores them, expands the winners into full posts.",
+  },
+  {
+    type: "insights", category: "research", name: "AI Research", icon: Search, color: "from-cyan-500 to-blue-500",
+    goal: "Topic and competitor research",
+    system: "You are a research analyst. Pull facts, examples, statistics, and competitor moves on a topic. Cite sources.",
+    tools: ["web_search", "competitor_scan", "summarize"],
+    cost: 3, desc: "Researches a topic or competitor deeply, returns a structured brief with sources.",
+  },
+  {
+    type: "insights", category: "research", name: "Trend Hunter", icon: TrendingUp, color: "from-emerald-500 to-cyan-500",
+    goal: "Surface emerging trends daily",
+    system: "You are a culture analyst. Scan the web for emerging trends in the user's niche and rank them by velocity and relevance.",
+    tools: ["web_search", "summarize"],
+    cost: 3, desc: "Daily scan of emerging trends in your niche, ranked by velocity.",
+  },
+  {
+    type: "publisher", category: "growth", name: "Engagement", icon: MessageCircle, color: "from-violet-500 to-pink-500",
+    goal: "Reply drafts and DM ideas",
+    system: "You are a community manager. Draft warm, on-brand reply variants to comments and DMs.",
+    tools: ["generate_caption", "request_approval"],
+    cost: 2, desc: "Drafts on-brand replies to comments and DMs — never sounds like a bot.",
+  },
+  {
+    type: "publisher", category: "content", name: "Repurposing", icon: Repeat, color: "from-amber-500 to-orange-500",
+    goal: "One post into carousel, reel, blog",
+    system: "You are a content repurposer. Take a single post and reshape it into 5 formats: carousel, reel script, LinkedIn post, X thread, blog intro.",
+    tools: ["generate_caption", "generate_image", "request_approval"],
+    cost: 3, desc: "Turn one piece of content into a week's worth across platforms.",
+  },
+  {
+    type: "insights", category: "strategy", name: "Campaign Strategist", icon: Target, color: "from-fuchsia-500 to-purple-500",
+    goal: "Multi-week campaign plans",
+    system: "You are a campaign strategist. Build week-by-week campaign plans with objectives, content pillars, hooks, and KPIs.",
+    tools: ["web_search", "summarize"],
+    cost: 4, desc: "Plans multi-week campaigns with content pillars, hooks, and KPIs.",
+  },
+];
+
+const CATEGORIES: { id: Category | "all"; label: string }[] = [
+  { id: "all", label: "All" },
+  { id: "growth", label: "Growth" },
+  { id: "content", label: "Content" },
+  { id: "strategy", label: "Strategy" },
+  { id: "research", label: "Research" },
 ];
 
 export default function AgentBuilder() {
