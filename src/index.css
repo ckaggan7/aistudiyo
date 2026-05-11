@@ -62,6 +62,13 @@
     --warning-foreground: 0 0% 100%;
     --info: 200 98% 48%;
     --info-foreground: 0 0% 100%;
+
+    /* Multi-color accents (used per-scene; brand stays orange) */
+    --accent-violet: 265 85% 62%;
+    --accent-blue: 220 90% 60%;
+    --accent-pink: 330 88% 62%;
+    --accent-emerald: 160 75% 50%;
+    --accent-amber: 45 95% 58%;
   }
 
   .dark {
