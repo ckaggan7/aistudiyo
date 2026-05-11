@@ -24,37 +24,28 @@ import NotFound from "./pages/NotFound";
 import WorkflowsList from "./pages/workflows/WorkflowsList";
 import WorkflowBuilder from "./pages/workflows/WorkflowBuilder";
 import WorkflowRuns from "./pages/workflows/WorkflowRuns";
-import AdminOverview from "./pages/admin/AdminOverview";
-import AdminShell from "./components/layout/AdminShell";
 import { AuthProvider } from "./hooks/useAuth";
 import { WorkspaceProvider } from "./hooks/useWorkspace";
-import ProtectedRoute from "./components/auth/ProtectedRoute";
 import CommandPalette from "./components/CommandPalette";
-import AdminUsers from "./pages/admin/AdminUsers";
-import AdminWorkspaces from "./pages/admin/AdminWorkspaces";
-import AdminAIModels from "./pages/admin/AdminAIModels";
-import AdminAIUsage from "./pages/admin/AdminAIUsage";
-import AdminActivity from "./pages/admin/AdminActivity";
-import AdminFlags from "./pages/admin/AdminFlags";
 import SuperAdminLogin from "./pages/superadmin/SuperAdminLogin";
 import SuperAdminOverview from "./pages/superadmin/SuperAdminOverview";
 import SuperAdminUsers from "./pages/superadmin/SuperAdminUsers";
 import SuperAdminUserDetail from "./pages/superadmin/SuperAdminUserDetail";
 import SuperAdminRoute from "./components/auth/SuperAdminRoute";
 import SuperAdminShell from "./components/layout/SuperAdminShell";
-import SuperAdminCredits from "./pages/superadmin/SuperAdminCredits";
+import SuperAdminWorkspaces from "./pages/superadmin/SuperAdminWorkspaces";
+import SuperAdminAI from "./pages/superadmin/SuperAdminAI";
+import SuperAdminBilling from "./pages/superadmin/SuperAdminBilling";
+import SuperAdminAnalytics from "./pages/superadmin/SuperAdminAnalytics";
+import SuperAdminSupport from "./pages/superadmin/SuperAdminSupport";
+import SuperAdminSystem from "./pages/superadmin/SuperAdminSystem";
+import SuperAdminSettings from "./pages/superadmin/SuperAdminSettings";
 import CreditsPage from "./pages/CreditsPage";
 
 const queryClient = new QueryClient();
 
 const DashboardPage = ({ children }: { children: React.ReactNode }) => (
   <DashboardLayout>{children}</DashboardLayout>
-);
-
-const AdminPage = ({ children }: { children: React.ReactNode }) => (
-  <ProtectedRoute requireRole="super_admin">
-    <AdminShell>{children}</AdminShell>
-  </ProtectedRoute>
 );
 
 const SuperAdminPage = ({ children }: { children: React.ReactNode }) => (
@@ -95,18 +86,18 @@ const App = () => (
           <Route path="/dashboard/analytics" element={<DashboardPage><Analytics /></DashboardPage>} />
           <Route path="/dashboard/credits" element={<DashboardPage><CreditsPage /></DashboardPage>} />
           <Route path="/dashboard/settings" element={<DashboardPage><SettingsPage /></DashboardPage>} />
-          <Route path="/admin" element={<AdminPage><AdminOverview /></AdminPage>} />
-          <Route path="/admin/users" element={<AdminPage><AdminUsers /></AdminPage>} />
-          <Route path="/admin/workspaces" element={<AdminPage><AdminWorkspaces /></AdminPage>} />
-          <Route path="/admin/ai-models" element={<AdminPage><AdminAIModels /></AdminPage>} />
-          <Route path="/admin/ai-usage" element={<AdminPage><AdminAIUsage /></AdminPage>} />
-          <Route path="/admin/activity" element={<AdminPage><AdminActivity /></AdminPage>} />
-          <Route path="/admin/flags" element={<AdminPage><AdminFlags /></AdminPage>} />
+          <Route path="/admin/*" element={<Navigate to="/superadmin" replace />} />
           <Route path="/superadmin/login" element={<SuperAdminLogin />} />
           <Route path="/superadmin" element={<SuperAdminPage><SuperAdminOverview /></SuperAdminPage>} />
           <Route path="/superadmin/users" element={<SuperAdminPage><SuperAdminUsers /></SuperAdminPage>} />
           <Route path="/superadmin/users/:userId" element={<SuperAdminPage><SuperAdminUserDetail /></SuperAdminPage>} />
-          <Route path="/superadmin/credits" element={<SuperAdminPage><SuperAdminCredits /></SuperAdminPage>} />
+          <Route path="/superadmin/workspaces" element={<SuperAdminPage><SuperAdminWorkspaces /></SuperAdminPage>} />
+          <Route path="/superadmin/ai" element={<SuperAdminPage><SuperAdminAI /></SuperAdminPage>} />
+          <Route path="/superadmin/billing" element={<SuperAdminPage><SuperAdminBilling /></SuperAdminPage>} />
+          <Route path="/superadmin/analytics" element={<SuperAdminPage><SuperAdminAnalytics /></SuperAdminPage>} />
+          <Route path="/superadmin/support" element={<SuperAdminPage><SuperAdminSupport /></SuperAdminPage>} />
+          <Route path="/superadmin/system" element={<SuperAdminPage><SuperAdminSystem /></SuperAdminPage>} />
+          <Route path="/superadmin/settings" element={<SuperAdminPage><SuperAdminSettings /></SuperAdminPage>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         </WorkspaceProvider>
