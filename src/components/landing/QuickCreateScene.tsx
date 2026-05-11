@@ -33,6 +33,8 @@ export default function QuickCreateScene() {
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[60rem] h-[60rem] rounded-full opacity-25 blur-3xl"
              style={{ background: "radial-gradient(circle, hsl(22 95% 55% / 0.6), transparent 60%)" }} />
+        <div className="absolute bottom-10 right-10 w-[24rem] h-[24rem] rounded-full opacity-25 blur-3xl"
+             style={{ background: "radial-gradient(circle, hsl(220 90% 60% / 0.55), transparent 60%)" }} />
       </div>
 
       <p className="relative text-[10px] font-bold uppercase tracking-[0.3em] text-orange-400/90">02 — Quick Create</p>
@@ -52,7 +54,10 @@ export default function QuickCreateScene() {
             <div className="flex-1 flex items-center px-4 text-left min-h-[3rem]">
               <Sparkles className="w-4 h-4 text-orange-400 shrink-0 mr-3" />
               <span className="text-base md:text-lg">{typed}</span>
-              <span className="ml-0.5 inline-block w-[2px] h-5 bg-orange-400 animate-pulse" />
+              <span
+                className="ml-0.5 inline-block w-[2px] h-5 animate-pulse"
+                style={{ background: "hsl(220 90% 60%)", boxShadow: "0 0 8px hsl(220 90% 60% / 0.9)" }}
+              />
             </div>
             <button className="btn-premium px-5 rounded-xl inline-flex items-center gap-1.5 text-sm font-semibold">
               Create <ArrowUp className="w-4 h-4 rotate-45" />
