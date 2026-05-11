@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Instagram, Linkedin, TrendingUp, Repeat, ArrowRight, Bot } from "lucide-react";
+import { useTilt } from "@/hooks/useTilt";
 
 const AGENTS = [
   { icon: Instagram, label: "Grow Instagram",     desc: "Daily, hands-free",      to: "/dashboard/agents",                                       accent: "hsl(var(--accent-pink))" },
@@ -10,6 +11,7 @@ const AGENTS = [
 ];
 
 export default function AgentsStrip() {
+  const tilt = useTilt();
   return (
     <motion.section
       initial={{ opacity: 0, y: 6 }}
