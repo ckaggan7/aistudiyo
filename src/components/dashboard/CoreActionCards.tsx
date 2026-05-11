@@ -22,7 +22,7 @@ const ACTIONS = [
     desc: "Plan your week, autopilot it",
     icon: CalendarClock,
     to: "/dashboard/calendar",
-    gradient: "from-orange-400 to-primary",
+    gradient: "from-sky-500 to-blue-600",
   },
 ];
 
