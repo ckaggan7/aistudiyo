@@ -33,7 +33,7 @@ export default function RecentContentPacks() {
       initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.12, duration: 0.25 }}
-      className="card-bento"
+      className="card-bento h-full flex flex-col"
     >
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
