@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
-import { User, Bell, Palette, Shield, CreditCard } from "lucide-react";
+import { User, Bell, Palette, Coins, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { Link } from "react-router-dom";
+import { useWallet } from "@/hooks/useWallet";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 10 },
@@ -10,6 +12,7 @@ const fadeUp = {
 };
 
 export default function SettingsPage() {
+  const { balance } = useWallet();
   return (
     <div className="max-w-2xl">
       <motion.h1 initial="hidden" animate="visible" variants={fadeUp} className="text-2xl font-bold tracking-tight mb-6">
@@ -17,6 +20,22 @@ export default function SettingsPage() {
       </motion.h1>
 
       <div className="space-y-6">
+        {/* Credits */}
+        <motion.div initial="hidden" animate="visible" variants={fadeUp} className="bg-card rounded-2xl p-6 shadow-card">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Coins className="w-5 h-5 text-primary" />
+              <div>
+                <h3 className="font-semibold">Credits & Usage</h3>
+                <p className="text-xs text-muted-foreground">Balance: <span className="font-semibold text-foreground tabular-nums">{balance}</span> credits</p>
+              </div>
+            </div>
+            <Button asChild variant="outline">
+              <Link to="/dashboard/credits" className="gap-1.5">Manage <ArrowRight className="w-4 h-4" /></Link>
+            </Button>
+          </div>
+        </motion.div>
+
         {/* Profile */}
         <motion.div initial="hidden" animate="visible" variants={fadeUp} className="bg-card rounded-2xl p-6 shadow-card">
           <div className="flex items-center gap-2 mb-4">

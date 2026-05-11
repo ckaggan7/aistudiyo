@@ -42,6 +42,8 @@ import SuperAdminUsers from "./pages/superadmin/SuperAdminUsers";
 import SuperAdminUserDetail from "./pages/superadmin/SuperAdminUserDetail";
 import SuperAdminRoute from "./components/auth/SuperAdminRoute";
 import SuperAdminShell from "./components/layout/SuperAdminShell";
+import SuperAdminCredits from "./pages/superadmin/SuperAdminCredits";
+import CreditsPage from "./pages/CreditsPage";
 
 const queryClient = new QueryClient();
 
@@ -91,6 +93,7 @@ const App = () => (
           <Route path="/dashboard/workflows/runs" element={<DashboardPage><WorkflowRuns /></DashboardPage>} />
           <Route path="/dashboard/workflows/:id" element={<DashboardPage><WorkflowBuilder /></DashboardPage>} />
           <Route path="/dashboard/analytics" element={<DashboardPage><Analytics /></DashboardPage>} />
+          <Route path="/dashboard/credits" element={<DashboardPage><CreditsPage /></DashboardPage>} />
           <Route path="/dashboard/settings" element={<DashboardPage><SettingsPage /></DashboardPage>} />
           <Route path="/admin" element={<AdminPage><AdminOverview /></AdminPage>} />
           <Route path="/admin/users" element={<AdminPage><AdminUsers /></AdminPage>} />
@@ -103,6 +106,7 @@ const App = () => (
           <Route path="/superadmin" element={<SuperAdminPage><SuperAdminOverview /></SuperAdminPage>} />
           <Route path="/superadmin/users" element={<SuperAdminPage><SuperAdminUsers /></SuperAdminPage>} />
           <Route path="/superadmin/users/:userId" element={<SuperAdminPage><SuperAdminUserDetail /></SuperAdminPage>} />
+          <Route path="/superadmin/credits" element={<SuperAdminPage><SuperAdminCredits /></SuperAdminPage>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         </WorkspaceProvider>

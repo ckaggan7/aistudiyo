@@ -1,7 +1,7 @@
 import { Coins, Plus } from "lucide-react";
 import { useWallet } from "@/hooks/useWallet";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { Link } from "react-router-dom";
 
 export function WalletBadge() {
   const { balance } = useWallet();
@@ -10,8 +10,8 @@ export function WalletBadge() {
       <Coins className="w-3.5 h-3.5 text-amber-500" />
       <span className="text-sm font-semibold tabular-nums">{balance}</span>
       <span className="text-xs text-muted-foreground">credits</span>
-      <Button size="sm" variant="ghost" className="h-6 px-2 -mr-1" onClick={() => toast.info("Top-up coming soon")}>
-        <Plus className="w-3 h-3" /> Top up
+      <Button asChild size="sm" variant="ghost" className="h-6 px-2 -mr-1">
+        <Link to="/dashboard/credits"><Plus className="w-3 h-3" /> Top up</Link>
       </Button>
     </div>
   );

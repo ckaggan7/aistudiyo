@@ -408,30 +408,36 @@ export type Database = {
       }
       credit_transactions: {
         Row: {
+          actor_id: string | null
           agent_id: string | null
           amount: number
           created_at: string
           id: string
           reason: string
           run_id: string | null
+          type: string
           user_id: string | null
         }
         Insert: {
+          actor_id?: string | null
           agent_id?: string | null
           amount: number
           created_at?: string
           id?: string
           reason: string
           run_id?: string | null
+          type?: string
           user_id?: string | null
         }
         Update: {
+          actor_id?: string | null
           agent_id?: string | null
           amount?: number
           created_at?: string
           id?: string
           reason?: string
           run_id?: string | null
+          type?: string
           user_id?: string | null
         }
         Relationships: []
@@ -939,6 +945,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      adjust_user_credits: {
+        Args: { _delta: number; _reason: string; _user_id: string }
+        Returns: {
+          balance: number
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "wallet"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

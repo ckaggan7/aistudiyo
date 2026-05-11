@@ -1,13 +1,14 @@
 import { ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Users, ShieldCheck, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, ShieldCheck, LogOut, Coins } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 
 const items = [
   { icon: LayoutDashboard, label: "Overview", path: "/superadmin" },
   { icon: Users, label: "Users", path: "/superadmin/users" },
+  { icon: Coins, label: "Credits", path: "/superadmin/credits" },
 ];
 
 export default function SuperAdminShell({ children }: { children: ReactNode }) {
