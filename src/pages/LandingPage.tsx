@@ -7,6 +7,7 @@ import TrendsScene from "@/components/landing/TrendsScene";
 import BrandVoiceScene from "@/components/landing/BrandVoiceScene";
 import SocialProofScene from "@/components/landing/SocialProofScene";
 import FinalCTAScene from "@/components/landing/FinalCTAScene";
+import CinematicFooter from "@/components/ui/cinematic-footer";
 
 export default function LandingPage() {
   return (
@@ -19,6 +20,7 @@ export default function LandingPage() {
       <BrandVoiceScene />
       <SocialProofScene />
       <FinalCTAScene />
+      <CinematicFooter />
     </FlowArt>
   );
 }
