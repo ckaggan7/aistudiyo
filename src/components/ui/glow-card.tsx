@@ -16,22 +16,20 @@ export const GlowCard = React.forwardRef<HTMLDivElement, Props>(
       <div
         ref={ref}
         className={cn(
-          "relative rounded-2xl border border-border/60 bg-card/80 backdrop-blur-xl",
-          "shadow-sm transition-all duration-300",
-          interactive && "hover:-translate-y-0.5 hover:shadow-elevated hover:border-border",
+          "relative rounded-2xl border border-border/40 bg-card/95 backdrop-blur-sm",
+          "shadow-sm transition-colors duration-200",
+          interactive && "hover:border-border hover:shadow-md",
           className,
         )}
         {...props}
       >
-        {glow !== "none" && (
+        {glow === "primary" && (
           <div
             aria-hidden
             className={cn(
               "pointer-events-none absolute -inset-px rounded-2xl opacity-0 transition-opacity duration-500",
               interactive && "group-hover:opacity-100",
-              glow === "primary"
-                ? "bg-gradient-to-br from-primary/20 via-transparent to-transparent"
-                : "bg-gradient-to-br from-primary/5 via-transparent to-transparent",
+              "bg-gradient-to-br from-primary/15 via-transparent to-transparent",
             )}
           />
         )}
