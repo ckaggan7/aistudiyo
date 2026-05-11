@@ -1,39 +1,49 @@
 ## Goal
-Replace the existing hero bento card on `/dashboard` with the **Premium Creator Hero** direction: a wider single-row layout with a soft warm canvas, a refined "Welcome, {name}" headline, four crisp white stat cards in a row, and a bigger ambient AI orb anchored to the right.
+Tighten dashboard density and visual consistency by standardizing **padding, gaps, header rhythm, and inner item padding** across every bento tile. No layout/grid restructure, no copy or color changes.
 
-## Scope (UI only)
-Only the hero card. Wiring (auth name, stats values, rotating subtitle) stays as-is. No layout grid changes outside the hero, no new routes, no backend.
+## Spacing system (single source of truth)
+
+| Token              | Old (mixed)            | New (standard) |
+|--------------------|------------------------|----------------|
+| Grid gap           | `gap-4` (16)           | `gap-3 lg:gap-4` (12 / 16) |
+| Card padding       | 24 (`p-6` / 1.5rem)    | `p-5` (20px) — `p-6` only at `lg` for hero |
+| Hero padding       | `p-6 md:p-10`          | `p-6 md:p-8`   |
+| Header→content     | `mb-5` (mixed)         | `mb-4` (16px)  |
+| Inner item padding | `p-3` / `p-3.5` / `p-4`/ `p-5` | `p-3` (12px) for list rows, `p-4` (16px) for feature tiles |
+| Inner gap (lists)  | `gap-2 / 2.5 / 3`      | `gap-2`        |
+| Inner gap (grids)  | `gap-3`                | `gap-3` (kept) |
 
 ## Files
 
-**Edit `src/components/dashboard/WelcomeHeader.tsx`** — rewrite layout:
-- Outer: `bento-hero` keeps soft warm gradient + rounded-[2.5rem] shell; increase padding (`p-8 md:p-12`).
-- Inner: `flex flex-col md:flex-row items-center justify-between gap-10`. Left grows, right is fixed `w-72 md:w-80`.
-- Left column:
-  - Status chip: white pill, border, tiny pinging orange dot, label `AI creator playground` (uppercase, tracking-wider).
-  - Headline: `text-5xl md:text-6xl font-bold tracking-tight` — "Welcome, " + `<span class="text-gradient-hero capitalize">{name}</span>`.
-  - Rotating subtitle (existing `SUBTITLES` + AnimatePresence) — kept, restyled `text-base text-muted-foreground`.
-  - Stats: replace pill chips with a 4-column white card row (`grid grid-cols-2 lg:grid-cols-4 gap-3`). Each card: `bg-white rounded-2xl border border-border/60 shadow-sm p-4`, eyebrow label uppercase tracking-wide, value `text-2xl font-bold` with a small accent suffix (`days`, `+18%` in emerald, etc.). Same four stats: Streak 7d, Reach +18%, Credits 142, Posts 23.
-- Right column (orb):
-  - Container `relative w-64 h-64 md:w-80 md:h-80`.
-  - Ambient: large `bg-primary/20 blur-[100px] rounded-full` halo behind.
-  - Keep existing `<AIOrb />` component (no rewrite) — pass `size={280}` and let CSS halo sit behind it.
-  - Remove the faint sparkline bars behind the orb (cleaner per direction).
-  - Floating "live" pill: small white rounded badge top-left of orb with pinging green dot + "Live".
+**`src/index.css`** — tighten the bento shell:
+- `.card-bento { padding: 1.25rem; }` (was 1.5rem). Keeps 28px radius and shadow.
+- `.card-bento-accent`, `.card-bento-dark` → `padding: 1.25rem`.
+- `.bento-hero` → `padding: 1.5rem` default; override on hero stays `!p-6 md:!p-8`.
 
-**Edit `src/index.css`** — minor:
-- Soften `.bento-hero` background to match the warmer stone tone (keep existing tokens, no new colors).
-- No new utilities required; reuse `text-gradient-hero`, `shadow-bento`, design tokens.
+**`src/pages/DashboardHome.tsx`** — grid gap only:
+- `gap-4` → `gap-3 lg:gap-4`.
 
-## Out of scope
-- Other dashboard tiles (QuickCreate, AISuggestions, Agents, etc.).
-- AIOrb component internals.
-- Stats data source.
-- Mobile dock and sidebar.
+**Each tile (`src/components/dashboard/*.tsx`)** — apply the rhythm:
+- `WelcomeHeader.tsx` — outer `!p-6 md:!p-8`; stat-card inner `p-4` → `p-3`; section gap `gap-6 lg:gap-10` → `gap-6 lg:gap-8`.
+- `QuickCreateBar.tsx` — header block `mb-3` → keep; chip row `mt-4` → `mt-3`; input row `py-2.5` → `py-2`.
+- `AISuggestions.tsx` — header `mb-5` → `mb-4`; primary insight panel `h-[130px]` → `h-[120px]`, inner `p-4` → `p-3.5`; list item `px-2.5 py-2` → `px-2 py-1.5`.
+- `AgentsStrip.tsx` — header `mb-5` → `mb-4`; tile `p-4` → `p-3.5`; icon box `w-10 h-10` → `w-9 h-9`.
+- `TrendingNowFeed.tsx` — header `mb-5` → `mb-4`; row `p-3.5` → `p-3`; inner gap `gap-2.5` → `gap-2`.
+- `WhatsNewCarousel.tsx` — header `mb-5` → `mb-4`; tile `p-5` → `p-4`; carousel `gap-4` → `gap-3`.
+- `TrendingSocialDates.tsx` — header `mb-5` → `mb-4`; row tile `p-4` → `p-3.5`, width `w-[220px]` → `w-[200px]`.
+- `RecentContentPacks.tsx` — header `mb-5` → `mb-4`; row `p-3` → keep; list `space-y-2` → keep.
+- `CreatorMomentum.tsx` — match header `mb-4`; tighten any inner `p-4` → `p-3.5`.
+- `CalendarPreview.tsx` — header `mb-5` → `mb-4`; day cell `p-2` → keep; grid `gap-1.5` → keep.
+- `CoreActionCards.tsx` — header `mb-5` → `mb-4`; row item `p-3` → keep; list `gap-2.5` → `gap-2`.
+
+## Rules
+- No new tokens, components, files, routes, or backend work.
+- No copy / icon / color changes.
+- Preserve all existing data wiring, motion, hover, and grid spans.
+- Headers keep their existing icon + title + right-action pattern, only the bottom margin standardizes to `mb-4`.
 
 ## Acceptance
-- Hero spans full grid row, taller and more premium feel.
-- Headline reads clearly, "Admin" rendered in orange gradient (no broken block).
-- Four white stat cards aligned in a single row at `lg`, 2×2 on mobile.
-- Orb sits on the right with soft halo + floating live pill, no overlapping sparkline.
-- No regression on other tiles.
+- All bento tiles share the same outer padding (`p-5`), same `mb-4` header rhythm, and same inner item padding bands (12 / 16px).
+- Dashboard grid feels visibly tighter (less air, same hierarchy).
+- Adjacent cards in the same row remain visually equal-height (already handled by `h-full`).
+- Hero card still reads as the largest tile, only proportionally smaller padding.
