@@ -18,7 +18,7 @@ const ACTIONS = [
     gradient: "from-violet-500 to-fuchsia-500",
   },
   {
-    title: "Schedule Campaign",
+    title: "Plan Campaign",
     desc: "Plan your week, autopilot it",
     icon: CalendarClock,
     to: "/dashboard/calendar",
@@ -38,7 +38,7 @@ export default function CoreActionCards() {
         >
           <Link
             to={a.to}
-            className="group relative overflow-hidden block rounded-2xl border border-border/40 bg-card p-5 md:p-6 hover:border-primary/40 hover:shadow-card transition-all h-full"
+            className="group relative overflow-hidden block rounded-2xl border border-border/40 bg-card p-5 md:p-6 hover:border-primary/40 hover:shadow-elevated hover:-translate-y-0.5 transition-all h-full edge-glow"
           >
             <div className={`absolute -top-12 -right-12 w-40 h-40 rounded-full bg-gradient-to-br ${a.gradient} opacity-10 blur-2xl group-hover:opacity-20 transition-opacity`} />
             <div className={`relative w-11 h-11 rounded-xl bg-gradient-to-br ${a.gradient} flex items-center justify-center shadow-glow mb-4`}>
