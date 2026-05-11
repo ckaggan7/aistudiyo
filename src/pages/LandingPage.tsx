@@ -12,6 +12,7 @@ import { Sparkles, Twitter, Instagram, Linkedin, Youtube, MessageCircle } from "
 
 export default function LandingPage() {
   return (
+    <>
     <FlowArt aria-label="AISTUDIYO — Cinematic story scroll">
       <HeroScene />
       <QuickCreateScene />
