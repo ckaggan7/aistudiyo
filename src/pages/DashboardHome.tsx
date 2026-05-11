@@ -5,6 +5,9 @@ import WelcomeHeader from "@/components/dashboard/WelcomeHeader";
 import WhatsNewCarousel from "@/components/dashboard/WhatsNewCarousel";
 import RecentContentPacks from "@/components/dashboard/RecentContentPacks";
 import AgentsStrip from "@/components/dashboard/AgentsStrip";
+import CalendarPreview from "@/components/dashboard/CalendarPreview";
+import TrendingSocialDates from "@/components/dashboard/TrendingSocialDates";
+import CreatorMomentum from "@/components/dashboard/CreatorMomentum";
 
 export default function DashboardHome() {
   return (
@@ -12,10 +15,13 @@ export default function DashboardHome() {
       <WelcomeHeader />
       <QuickCreateBar />
       <WhatsNewCarousel />
-      <AISuggestions />
-      <RecentContentPacks />
-      <AgentsStrip />
       <TrendingIdeasStrip />
+      <AISuggestions />
+      <AgentsStrip />
+      <RecentContentPacks />
+      <CalendarPreview />
+      <TrendingSocialDates />
+      <CreatorMomentum />
     </div>
   );
 }
