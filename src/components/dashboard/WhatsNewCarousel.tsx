@@ -43,9 +43,9 @@ export default function WhatsNewCarousel() {
 
   return (
     <motion.section
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.1, duration: 0.35 }}
+      transition={{ delay: 0.05, duration: 0.25 }}
       className="mb-6"
     >
       <div className="flex items-center justify-between mb-3">
@@ -53,14 +53,14 @@ export default function WhatsNewCarousel() {
           <Sparkles className="w-4 h-4 text-primary" />
           <h3 className="font-semibold text-sm">What's new</h3>
         </div>
-        <span className="text-[10px] uppercase tracking-widest text-muted-foreground">Updated daily</span>
+        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Updated daily</span>
       </div>
 
       <div
         ref={scrollerRef}
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
-        className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 -mx-1 px-1 scroll-smooth"
+        className="flex gap-2.5 overflow-x-auto snap-x snap-mandatory pb-2 -mx-1 px-1 scroll-smooth"
         style={{ scrollbarWidth: "none" }}
       >
         {ITEMS.map((it) => (
@@ -68,24 +68,19 @@ export default function WhatsNewCarousel() {
             key={it.title}
             data-card
             to={it.to}
-            className="group relative snap-start shrink-0 w-[280px] sm:w-[340px] rounded-3xl overflow-hidden border border-border/40 bg-card edge-glow hover:-translate-y-0.5 hover:shadow-elevated transition-all"
+            className="group relative snap-start shrink-0 w-[240px] rounded-2xl overflow-hidden border border-border/40 bg-card hover:-translate-y-0.5 hover:border-primary/30 transition-all"
           >
-            <div className={`relative h-32 bg-gradient-to-br ${it.gradient}`}>
-              <div className="absolute inset-0 opacity-30 mix-blend-overlay" style={{ backgroundImage: "radial-gradient(circle at 30% 20%, rgba(255,255,255,.6), transparent 40%)" }} />
-              <div className="absolute -bottom-6 -right-4 w-32 h-32 rounded-full bg-white/10 blur-2xl" />
-              <div className="relative h-full p-4 flex flex-col justify-between">
-                <span className="self-start text-[10px] font-bold tracking-widest text-white/90 px-2 py-0.5 rounded-full bg-black/25 backdrop-blur">
+            <div className={`relative h-24 bg-gradient-to-br ${it.gradient}`}>
+              <div className="relative h-full p-3 flex flex-col justify-between">
+                <span className="self-start text-[10px] font-bold tracking-wider text-white/90 px-2 py-0.5 rounded-full bg-black/25">
                   {it.tag}
                 </span>
-                <it.Icon className="w-7 h-7 text-white drop-shadow self-end" />
+                <it.Icon className="w-5 h-5 text-white self-end" />
               </div>
             </div>
-            <div className="p-4">
+            <div className="p-3">
               <p className="font-semibold text-sm">{it.title}</p>
               <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{it.desc}</p>
-              <span className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary group-hover:gap-1.5 transition-all">
-                Explore <ArrowRight className="w-3 h-3" />
-              </span>
             </div>
           </Link>
         ))}
