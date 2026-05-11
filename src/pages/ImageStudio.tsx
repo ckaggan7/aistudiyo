@@ -81,7 +81,7 @@ export default function ImageStudio() {
   const [mode, setMode] = useState<Mode>(
     initialMode === "sticker" || initialMode === "video" ? initialMode : "image",
   );
-  const [prompt, setPrompt] = useState("");
+  const [prompt, setPrompt] = useState(searchParams.get("prompt") || "");
   const [openStyle, setOpenStyle] = useState<Style | null>(null);
   const [history, setHistory] = useState<Generation[]>([]);
   const [loading, setLoading] = useState(false);
