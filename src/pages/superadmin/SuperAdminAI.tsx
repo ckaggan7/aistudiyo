@@ -68,6 +68,44 @@ export default function SuperAdminAI() {
     return Array.from(m, ([model, count]) => ({ model, count })).sort((a, b) => b.count - a.count).slice(0, 8);
   }, [logs]);
 
+  const costSeries = useMemo(() => {
+    const days = Array.from({ length: 14 }, (_, i) => startOfDay(subDays(new Date(), 13 - i)));
+    return days.map((d) => {
+      const next = new Date(d); next.setDate(next.getDate() + 1);
+      const dayLogs = logs.filter((l) => { const t = new Date(l.created_at); return t >= d && t < next; });
+      return { date: format(d, "MMM d"), cost: dayLogs.reduce((s, l) => s + Number(l.cost_usd ?? 0), 0) };
+    });
+  }, [logs]);
+
+  const costByModel = useMemo(() => {
+    const m = new Map<string, number>();
+    logs.forEach((l) => m.set(l.model_slug, (m.get(l.model_slug) ?? 0) + Number(l.cost_usd ?? 0)));
+    return Array.from(m, ([model, cost]) => ({ model, cost })).sort((a, b) => b.cost - a.cost);
+  }, [logs]);
+
+  const providerHealth = useMemo(() => {
+    const groups = new Map<string, Log[]>();
+    logs.forEach((l) => {
+      const key = l.provider_slug ?? "unknown";
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key)!.push(l);
+    });
+    return Array.from(groups.entries()).map(([slug, arr]) => {
+      const lat = arr.map((l) => l.latency_ms).sort((a, b) => a - b);
+      const pct = (p: number) => lat.length ? lat[Math.min(lat.length - 1, Math.floor(lat.length * p))] : 0;
+      const fails = arr.filter((l) => l.status !== "success").length;
+      const prov = providers.find((p) => p.slug === slug);
+      return {
+        slug,
+        name: prov?.name ?? slug,
+        reqs: arr.length,
+        p50: pct(0.5),
+        p95: pct(0.95),
+        failRate: arr.length ? fails / arr.length : 0,
+      };
+    }).sort((a, b) => b.reqs - a.reqs);
+  }, [logs, providers]);
+
   const toggleProvider = async (id: string, enabled: boolean) => {
     const { error } = await supabase.from("ai_providers").update({ enabled }).eq("id", id);
     if (error) toast.error(error.message); else loadAll();
