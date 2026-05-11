@@ -97,6 +97,7 @@ const CATEGORIES: { id: Category | "all"; label: string }[] = [
 export default function AgentBuilder() {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [selected, setSelected] = useState<Agent | null>(null);
+  const [filter, setFilter] = useState<Category | "all">("all");
 
   const refresh = async () => {
     const { data } = await supabase.from("agents").select("*").order("created_at", { ascending: false });
@@ -105,7 +106,7 @@ export default function AgentBuilder() {
   useEffect(() => { refresh(); }, []);
 
   const createFromTemplate = async (tpl: typeof TEMPLATES[number]) => {
-    const existing = agents.find((a) => a.type === tpl.type);
+    const existing = agents.find((a) => a.name === tpl.name);
     if (existing) { setSelected(existing); return; }
     const { data } = await supabase.from("agents").insert({
       name: tpl.name, type: tpl.type, goal: tpl.goal, system_prompt: tpl.system,
@@ -143,29 +144,41 @@ export default function AgentBuilder() {
       <div className="mb-6"><InstagramConnectCard /></div>
 
       <h2 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">Your agents</h2>
-      <div className="grid md:grid-cols-2 gap-4 mb-10">
-        {TEMPLATES.map((tpl) => {
-          const existing = agents.find((a) => a.type === tpl.type);
+
+      <div className="flex flex-wrap gap-1.5 mb-4">
+        {CATEGORIES.map((c) => (
+          <button
+            key={c.id}
+            onClick={() => setFilter(c.id)}
+            className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+              filter === c.id
+                ? "bg-primary/10 border-primary/40 text-primary"
+                : "bg-background/40 border-border/40 text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {c.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+        {TEMPLATES.filter((t) => filter === "all" || t.category === filter).map((tpl) => {
+          const existing = agents.find((a) => a.name === tpl.name);
           return (
-            <button key={tpl.type} onClick={() => createFromTemplate(tpl)}
-              className="text-left rounded-2xl bg-card border border-border/40 hover:border-primary/40 p-6 transition-all group relative overflow-hidden">
+            <button key={tpl.name} onClick={() => createFromTemplate(tpl)}
+              className="text-left rounded-2xl bg-card border border-border/40 hover:border-primary/40 p-5 transition-all group relative overflow-hidden">
               <div className={`absolute -top-10 -right-10 w-40 h-40 rounded-full bg-gradient-to-br ${tpl.color} opacity-10 blur-2xl group-hover:opacity-20 transition-opacity`} />
-              <div className={`relative w-12 h-12 rounded-xl bg-gradient-to-br ${tpl.color} flex items-center justify-center mb-4 shadow-glow`}>
-                <tpl.icon className="w-5 h-5 text-white" />
+              <div className={`relative w-11 h-11 rounded-xl bg-gradient-to-br ${tpl.color} flex items-center justify-center mb-3 shadow-glow`}>
+                <tpl.icon className="w-4 h-4 text-white" />
               </div>
               <div className="flex items-center gap-2 mb-1">
-                <p className="font-semibold text-base">{tpl.name}</p>
+                <p className="font-semibold text-sm">{tpl.name}</p>
                 {existing && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600">active</span>}
               </div>
-              <p className="text-xs text-muted-foreground mb-4">{tpl.desc}</p>
+              <p className="text-xs text-muted-foreground mb-4 line-clamp-2">{tpl.desc}</p>
               <div className="flex items-center justify-between">
-                <div className="flex flex-wrap gap-1">
-                  {tpl.tools.slice(0, 3).map((t) => (
-                    <span key={t} className="text-[10px] px-1.5 py-0.5 rounded-full bg-secondary text-muted-foreground">{t}</span>
-                  ))}
-                  {tpl.tools.length > 3 && <span className="text-[10px] text-muted-foreground self-center">+{tpl.tools.length - 3}</span>}
-                </div>
-                <span className="text-[11px] text-muted-foreground">{tpl.cost} credits/run</span>
+                <span className="text-[10px] uppercase tracking-wide text-muted-foreground">{tpl.category}</span>
+                <span className="text-[11px] text-muted-foreground">{tpl.cost} cr/run</span>
               </div>
             </button>
           );
