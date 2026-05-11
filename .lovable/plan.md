@@ -1,112 +1,130 @@
 ## Goal
 
-Make `/dashboard` (already the default post-login route) feel like an "AI Creator Command Center": dynamic welcome, profile + theme switcher, What's New carousel, premium buttons, and dark cinematic edge gradients. Preserve current sidebar, orange+black ecosystem, glassmorphism, and all other pages.
+Replace the marketing homepage at `/` with a cinematic GSAP **story-scroll** experience (8 fullscreen pinned sections) adapted for AI creators, and bring the same cinematic visual language into the dashboard so they feel like one product.
 
-## Scope (in)
+## Scope
 
-- New welcome header with animated rotating subtitle
-- Profile dropdown in header (avatar, workspace, settings, logout, **Change Theme**)
-- Dynamic theme system (8 presets) persisted to `localStorage`, applied via CSS variables on `<html>`
-- New What's New horizontal carousel module (auto-scroll, drag, hover-pause, snap)
-- Replace existing `CoreActionCards` "Schedule Campaign" → "Plan Campaign" wording; keep layout
-- Add a Viral Hooks Feed strip (lightweight, links to `/dashboard/generator`)
-- Cinematic dark edge gradients via a reusable wrapper utility
-- Button polish (premium variant: gradient + soft glow + hover lift + active press)
-- Visual refinement: reduce excess glow/padding, increase density
-- Mobile: theme drawer, swipeable carousel
+**In**
+- Install `gsap` + `@gsap/react`
+- New reusable `src/components/ui/story-scroll.tsx` (FlowArt + FlowSection, exactly the uploaded structure)
+- New `/` page: 8 cinematic fullscreen sections (hero → final CTA), creator-themed
+- Dashboard visual polish to match (edge lighting, typography scale, gradient buttons) — no structural changes
+- Performance: respect `prefers-reduced-motion`, lazy section content, GPU-friendly transforms
 
-## Scope (out)
+**Out**
+- New backend tables or auth flow changes
+- Replacing the dashboard layout/cards (only visual polish)
+- Theme system rewrite (already built; reused)
+- AI agent / generator logic
 
-- Super Admin, AgentBuilder, AIGenerator, ImageStudio internals
-- Backend/data model changes (theme is purely client-side)
-- Sidebar redesign / navigation changes
-- Auth flow changes
+## Section content (creator-adapted, no art references)
 
-## Section order on `/dashboard`
+```text
+01 — HERO        bg: matte black + orange radial glow + floating particles
+                 H1: AISTUDIYO — The AI Operating System for Social Media Creators
+                 sub: Create viral content, launch AI agents, automate growth.
+                 CTAs: Start Creating (→/signup), Watch Demo (scroll to §2)
+                 right: floating glass dashboard preview card stack
 
-1. Welcome Header (left: greeting + rotating subtitle; right: profile menu)
-2. Quick Create Bar (existing, kept as hero)
-3. What's New carousel (new)
-4. Core Actions (3 cards, updated copy)
-5. AI Agent Suggestions (reuse existing `AISuggestions`)
-6. Trending Topics (existing `TrendingIdeasStrip`)
-7. Recent Generations (existing grid)
-8. Viral Hooks Feed (new compact strip)
+02 — QUICK CREATE  bg: dark graphite + orange ambient
+                   H2: Create Faster. Grow Smarter.
+                   Animated typing prompt cycler + glowing cursor + chips
+                   ("Create Instagram carousel", "Viral hooks", "LinkedIn post"...)
+
+03 — AI AGENTS   bg: pure black + neon edge gradients
+                 H2: Meet Your AI Social Media Team
+                 5 floating glass cards: Instagram Growth, LinkedIn Branding,
+                 Viral Hook, Trend Hunter, Campaign Strategist (status pulse)
+
+04 — CONTENT ENGINE  bg: warm orange cinematic
+                     H2: One Prompt. Infinite Content.
+                     Animated flow chain: Prompt → Post → Carousel → Thread
+                     → Reel → Caption → CTA → Hashtags (SVG flow lines, framer)
+
+05 — TRENDS      bg: dark premium UI
+                 H2: AI-Powered Trend Intelligence
+                 Two opposing marquees of trending hooks/hashtags
+                 + virality score chips with pulse dots
+
+06 — BRAND VOICE bg: deep black + orange ambient
+                 H2: AI That Understands Your Brand
+                 Neural-network style SVG with 5 orbiting "memory" nodes
+                 (Tone, CTA, Audience, Visual, Personality)
+
+07 — SOCIAL PROOF  bg: graphite black
+                   Stats grid: 1M+ generations · 100K+ creators ·
+                   10M+ reach · 500K+ hooks
+                   3 creator testimonial cards (glass)
+
+08 — FINAL CTA   bg: orange→black cinematic blend, massive glow sphere
+                 H2: Your AI Social Media Team Starts Here.
+                 CTAs: Launch Workspace (→/dashboard), Explore AI Agents
+                 (→/dashboard/agents)
+```
+
+## Files
+
+**New**
+- `src/components/ui/story-scroll.tsx` — copy of the uploaded `FlowArt` + `FlowSection`, unmodified API
+- `src/components/landing/HeroScene.tsx` — Section 1 (with right-side floating preview)
+- `src/components/landing/QuickCreateScene.tsx` — Section 2 (typewriter prompt)
+- `src/components/landing/AgentsScene.tsx` — Section 3 (5 agent cards)
+- `src/components/landing/ContentEngineScene.tsx` — Section 4 (flow chain)
+- `src/components/landing/TrendsScene.tsx` — Section 5 (marquees)
+- `src/components/landing/BrandVoiceScene.tsx` — Section 6 (memory nodes)
+- `src/components/landing/SocialProofScene.tsx` — Section 7 (stats + testimonials)
+- `src/components/landing/FinalCTAScene.tsx` — Section 8
+
+**Edited**
+- `src/pages/LandingPage.tsx` — replace entire body with `<FlowArt>` wrapping the 8 scene sections; keep top-level helmet/title if any; preserve route at `/`
+- `src/index.css` — add small utilities only if needed (`.cinematic-bg`, particle keyframes). Existing `.edge-glow`, `.btn-premium`, gradients, theme tokens already cover most of it.
+- `package.json` — add `gsap`, `@gsap/react` via `bun add`
+
+**Untouched**
+- `/dashboard/*` route structure
+- Existing `WhatsNewCarousel`, `ProfileMenu`, theme system, `useTheme`
+- Edge functions, Supabase schema
 
 ## Technical details
 
-### Theme system
-
-- `src/lib/themes.ts` — array of 8 presets, each containing HSL values for: `--primary`, `--primary-glow`, `--accent`, `--ring`, `--gradient-hero`, `--gradient-accent`, `--shadow-glow`, `--sidebar-primary`, `--sidebar-ring`.
-- `src/hooks/useTheme.tsx` — `ThemeProvider` + `useTheme()`. Reads `localStorage["aistudiyo.theme"]` (default `orange-blaze`), writes CSS vars onto `document.documentElement.style.setProperty(...)` on mount/change. Wrap inside `AuthProvider` in `App.tsx`.
-- All existing components keep using semantic tokens (`bg-primary`, `text-gradient-hero`, `shadow-glow`), so themes propagate automatically without touching consumer code.
-- Themes affect only chroma tokens — base background, foreground, text never change → readability preserved.
-
-Presets:
-1. Orange Blaze (default, current values)
-2. Neon Purple
-3. Cyber Blue
-4. Emerald Flow
-5. Crimson Red
-6. Sunset Gold
-7. Frost White (light primary on neutral)
-8. Midnight Graphite (low-chroma slate)
-
-### Files
-
-**New**
-- `src/hooks/useTheme.tsx`
-- `src/lib/themes.ts`
-- `src/components/dashboard/WelcomeHeader.tsx` — greeting + framer-motion AnimatePresence cycling subtitles every ~4s
-- `src/components/dashboard/ProfileMenu.tsx` — dropdown-menu with avatar (from `useAuth`), workspace shortcut, settings link, logout, "Change theme" submenu opening `ThemeSwitcherDialog`
-- `src/components/dashboard/ThemeSwitcherDialog.tsx` — modal/drawer (responsive) showing 8 preset swatches with live preview-on-hover
-- `src/components/dashboard/WhatsNewCarousel.tsx` — replaces page-level "What's new"; uses existing `embla` (shadcn `carousel`) with `autoplay` via interval, drag, snap; 28px rounded cards with gradient art and CTA links
-- `src/components/dashboard/ViralHooksFeed.tsx` — 4–6 hook cards linking to generator with prefilled topic
-- `src/components/ui/edge-glow.tsx` — wrapper applying radial corner gradients + soft border (cinematic dark edges)
-
-**Edited**
-- `src/index.css` — add `--edge-gradient` token + `.edge-glow` utility; add `.btn-premium` utility (gradient bg, soft inner highlight, drop-shadow, `:hover` translate-y-px, `:active` scale-[0.98])
-- `src/App.tsx` — wrap with `<ThemeProvider>`
-- `src/components/DashboardLayout.tsx` — remove `HeaderAnnouncementCarousel` from header (moves into page); place `<ProfileMenu />` on the right side of header
-- `src/pages/DashboardHome.tsx` — new section order; mount `WelcomeHeader`, `WhatsNewCarousel`, `ViralHooksFeed`; remove standalone header from page (now in `WelcomeHeader`)
-- `src/components/ui/button.tsx` — add `premium` variant via cva
-- `src/components/dashboard/CoreActionCards.tsx` — rename "Schedule Campaign" → "Plan Campaign", apply edge-glow wrapper
-
-**Deleted/retired**
-- `HeaderAnnouncementCarousel` no longer mounted in layout (kept as file in case of reuse), since What's New takes over.
-
-### What's New carousel content (initial seed)
-
-Hardcoded array in `WhatsNewCarousel.tsx` (no backend):
-- New AI Agent: "Trend Hunter" → `/dashboard/agents`
-- Viral Hook Templates Pack → `/dashboard/templates`
-- Carousel Studio Beta → `/dashboard/design`
-- Instagram Auto-Publish → `/dashboard/calendar`
-- ChatGPT-style Brain v2 → `/dashboard/generator`
-- Creator Tip: Best posting time → `/dashboard/trends`
-
-Each card: gradient art, eyebrow tag, title, 1-line desc, CTA arrow, hover lift + glow.
+### Story-scroll integration
+- Paste `story-scroll.tsx` verbatim (`'use client'` removed — Vite/React).
+- Each scene renders inside `<FlowSection style={{ backgroundColor: ... }}>` so the existing rotation/pin logic works untouched.
+- Section content uses `clamp()` typography to match the uploaded scale: `text-[clamp(3rem,10vw,11rem)]` for H1/H2.
 
 ### Animations
+- GSAP ScrollTrigger handles the cinematic rotate-from-30° + pin behavior (provided by `FlowArt`).
+- Framer Motion handles in-section micro-interactions (typewriter, marquee, card hover lift).
+- Particles: lightweight pure-CSS animated `radial-gradient` blobs (no canvas) for perf.
+- Reduced motion: the existing hook in `FlowArt` already disables transitions; scenes also gate framer animations behind a `prefers-reduced-motion` check.
 
-All via existing framer-motion + tailwind keyframes:
-- Subtitle: `AnimatePresence` fade/slide
-- Cards: stagger `fade-in`
-- Carousel: embla autoplay (3.5s), pause on hover/drag
-- Buttons: tailwind transitions + active scale
-- Edge glow: pure CSS radial gradients in pseudo-elements
+### Performance
+- Each scene component is a default export and code-split with `React.lazy` + `Suspense` (loader = blank section) inside `LandingPage.tsx`.
+- `will-change-transform` only on rotating inner (already in FlowArt).
+- No backend calls on landing.
 
-### Mobile
+### Routing
+- `/` stays `<LandingPage />` (already declared in `App.tsx`).
+- "Start Creating" → `/signup` (waitlist), "Launch Workspace" → `/dashboard`.
 
-- Welcome header collapses; profile menu becomes icon-only avatar trigger
-- Theme picker uses `Sheet` (drawer) instead of `Dialog` on `<md`
-- Carousel snaps single-card width, swipe enabled
-- Core Actions stack to 1 column
+### Dashboard visual match (light touches only)
+- Reuse existing `edge-glow` + `btn-premium`. No layout changes.
+- Confirm the Quick Create bar uses the same gradient/edge as Hero scene (it already does via theme tokens).
+- Upgrade primary CTA in dashboard to `variant="premium"` where it currently uses the inline `bg-gradient-hero` (already done previously).
 
 ## Acceptance
 
-- Switching a theme instantly recolors buttons, gradients, active nav highlight, shadows across all pages
-- Theme persists across reload
-- `/dashboard` shows new welcome + profile menu + What's New carousel + reordered sections
-- No regressions on other dashboard pages (semantic tokens drive theming)
-- No backend or schema changes
+- `/` shows 8 fullscreen sections with cinematic pin + rotate transitions
+- All copy is creator/AI-focused (no "art world" residue from demo)
+- Buttons everywhere use gradient + glow + lift treatment
+- Theme switch on `/dashboard` still recolors all gradients (themes already use semantic vars, scenes will too)
+- `prefers-reduced-motion` users see a clean static stacked version
+- No regressions on `/dashboard`, `/signup`, `/login`, super-admin routes
+- Lighthouse: keep performance ≥ 85 on landing (no canvas, lazy scenes)
+
+## Out of scope / deferred
+
+- Real video for "Watch Demo" → button scrolls to §2 for now
+- 3D / WebGL particles
+- Animated stat counters wired to real data (use static numbers)
+- Mobile-specific story-scroll choreography beyond what `FlowArt` already provides
