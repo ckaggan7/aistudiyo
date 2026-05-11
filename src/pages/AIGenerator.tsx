@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Sparkles, Copy, BookmarkPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,13 +15,14 @@ const fadeUp = {
 };
 
 export default function AIGenerator() {
-  const [platform, setPlatform] = useState("instagram");
-  const [contentType, setContentType] = useState("post");
+  const [searchParams] = useSearchParams();
+  const [platform, setPlatform] = useState(searchParams.get("platform") || "instagram");
+  const [contentType, setContentType] = useState(searchParams.get("contentType") || "post");
   const [brand, setBrand] = useState("");
   const [audience, setAudience] = useState("");
   const [tone, setTone] = useState("casual");
   const [language, setLanguage] = useState("native");
-  const [topic, setTopic] = useState("");
+  const [topic, setTopic] = useState(searchParams.get("topic") || "");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{
     hook: string;
@@ -28,6 +30,15 @@ export default function AIGenerator() {
     description: string;
     hashtags: string;
   } | null>(null);
+
+  useEffect(() => {
+    const t = searchParams.get("topic");
+    const p = searchParams.get("platform");
+    const c = searchParams.get("contentType");
+    if (t) setTopic(t);
+    if (p) setPlatform(p);
+    if (c) setContentType(c);
+  }, [searchParams]);
 
   const handleGenerate = async () => {
     if (!topic.trim()) {
