@@ -281,68 +281,6 @@ export default function ImageStudio() {
         </Button>
       </div>
 
-      {/* Filters */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-3 px-1">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-3.5 h-3.5 text-primary" />
-            <h2 className="text-sm font-semibold">Filters</h2>
-            <span className="text-xs text-muted-foreground hidden sm:inline">
-              — tap one, then describe your image
-            </span>
-          </div>
-          {activeFilter && (
-            <button
-              onClick={() => setActiveFilter(null)}
-              className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
-            >
-              Clear <X className="w-3 h-3" />
-            </button>
-          )}
-        </div>
-
-        <div className="flex gap-1.5 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-thin">
-          {FILTER_CATEGORIES.map((c) => (
-            <button
-              key={c}
-              onClick={() => setFilterCategory(c)}
-              className={`shrink-0 text-xs font-medium px-3 py-1.5 rounded-full transition-colors ${
-                filterCategory === c
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-secondary text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {c}
-            </button>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 mt-3">
-          {visibleFilters.map((f) => {
-            const active = activeFilter?.name === f.name;
-            return (
-              <button
-                key={f.name}
-                onClick={() => setActiveFilter(active ? null : f)}
-                className={`group relative aspect-square rounded-xl border transition-all overflow-hidden flex flex-col items-center justify-center gap-1 p-2 ${
-                  active
-                    ? "border-primary bg-primary/10 shadow-glow"
-                    : "border-border/40 bg-card hover:border-primary/40 hover:-translate-y-0.5"
-                }`}
-              >
-                <span className="text-xl leading-none">{f.emoji}</span>
-                <span className="text-[10px] font-medium leading-tight text-center line-clamp-2">
-                  {f.name}
-                </span>
-                {active && (
-                  <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-primary" />
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
       {/* Style strip */}
       <div className="mb-8">
         <h2 className="text-sm font-semibold mb-3 px-1">
