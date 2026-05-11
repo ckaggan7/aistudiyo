@@ -56,17 +56,11 @@ export default function QuickCreateBar({ initial = "" }: { initial?: string }) {
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: 0.05 }}
-      className="relative mb-6"
+      className="relative"
     >
-      {/* glow halo when focused */}
-      <div
-        aria-hidden
-        className={`absolute -inset-px rounded-3xl transition-opacity duration-500 ${focused ? "opacity-100" : "opacity-0"}`}
-        style={{ background: "linear-gradient(135deg, hsl(var(--primary) / 0.35), hsl(var(--accent) / 0.25))", filter: "blur(18px)" }}
-      />
-      <div className="relative surface-floating rounded-2xl p-3 md:p-4">
-        <div className="flex items-stretch gap-2 bg-background/60 rounded-xl border border-border/50 px-2.5 py-2 focus-within:border-primary/50 transition-colors">
-          <div className="self-center shrink-0 w-7 h-7 rounded-lg bg-gradient-hero flex items-center justify-center shadow-glow">
+      <div className="card-bento">
+        <div className="flex items-stretch gap-2 bg-muted/40 rounded-2xl border border-border/60 px-3 py-2 focus-within:border-primary/50 focus-within:bg-white transition-all">
+          <div className="self-center shrink-0 w-8 h-8 rounded-xl bg-gradient-hero flex items-center justify-center shadow-glow">
             <Sparkles className="w-3.5 h-3.5 text-primary-foreground" />
           </div>
           <input
@@ -81,18 +75,18 @@ export default function QuickCreateBar({ initial = "" }: { initial?: string }) {
           <button
             onClick={submit}
             disabled={!value.trim()}
-            className="inline-flex items-center gap-1.5 h-10 px-4 rounded-lg btn-premium text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-1.5 h-10 px-4 rounded-xl btn-premium text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Create <ArrowUp className="w-4 h-4 rotate-45" />
           </button>
         </div>
 
-        <div className="flex gap-1.5 mt-3 overflow-x-auto pb-0.5 scrollbar-thin">
+        <div className="flex gap-2 mt-4 overflow-x-auto pb-0.5 scrollbar-thin">
           {CHIPS.map((c) => (
             <button
               key={c.label}
               onClick={() => setValue(c.prompt)}
-              className="shrink-0 text-xs px-3 py-1.5 rounded-full border border-border/40 bg-background/40 text-muted-foreground hover:text-foreground hover:border-primary/40 hover:bg-primary/5 transition-all"
+              className="shrink-0 text-xs px-3.5 py-2 rounded-full border border-border/60 bg-white text-muted-foreground hover:text-primary hover:border-primary/40 hover:bg-primary/5 transition-all"
             >
               {c.label}
             </button>
