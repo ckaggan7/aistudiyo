@@ -13,15 +13,15 @@ export default function CreatorMomentum() {
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: 0.2 }}
-      className="mb-6"
+      className="surface-floating rounded-2xl p-5"
     >
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-sm">Creator momentum</h3>
         <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Last 30 days</span>
       </div>
-      <div className="grid sm:grid-cols-3 gap-3">
+      <div className="grid sm:grid-cols-3 gap-2">
         {STATS.map((s) => (
-          <div key={s.label} className="surface-floating rounded-2xl p-4 hover-lift">
+          <div key={s.label} className="rounded-xl border border-border/40 bg-background/40 p-4">
             <div className="flex items-center justify-between mb-2">
               <s.icon className={`w-4 h-4 ${s.accent}`} />
               <span className="text-[10px] text-muted-foreground">{s.delta}</span>
