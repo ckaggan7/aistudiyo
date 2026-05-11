@@ -14,31 +14,31 @@ export default function AISuggestions() {
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
-      className="surface-floating rounded-2xl p-5"
+      className="card-bento h-full flex flex-col"
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-primary" />
-          <h3 className="font-semibold text-sm">Suggestions for you</h3>
+          <h3 className="font-semibold text-base">Suggestions</h3>
         </div>
-        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Updated live</span>
+        <span className="chip">Live</span>
       </div>
 
-      <div className="grid sm:grid-cols-3 gap-2">
+      <div className="flex flex-col gap-2.5 flex-1">
         {SUGGESTIONS.map((s) => (
           <Link
             key={s.title}
             to={s.to}
-            className="group rounded-xl border border-border/40 bg-background/40 p-3 hover-lift"
+            className="group flex items-center gap-3 rounded-2xl border border-border/60 bg-muted/30 hover:bg-white hover:border-primary/30 hover:shadow-md p-3.5 transition-all"
           >
-            <div className="w-8 h-8 rounded-lg bg-primary/[0.10] flex items-center justify-center mb-2">
+            <div className="shrink-0 w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
               <s.icon className="w-4 h-4 text-primary" />
             </div>
-            <p className="text-sm font-medium leading-tight">{s.title}</p>
-            <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{s.desc}</p>
-            <span className="mt-2 inline-flex items-center text-[11px] font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-              Start <ArrowRight className="w-3 h-3 ml-0.5" />
-            </span>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold leading-tight">{s.title}</p>
+              <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{s.desc}</p>
+            </div>
+            <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
           </Link>
         ))}
       </div>
