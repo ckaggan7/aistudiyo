@@ -1,136 +1,112 @@
-## Phase 2 — Content Operating System
+## Goal
 
-Turn one prompt into a full creator-ready content package. Highest-leverage: rebuild the generator output into modular AI result cards, ground every generation in a stored brand voice, and add a lightweight viral score. Other items from the brief (Repurposer, Visual Canvas, Trend Engine, Calendar AI, live Agents) are scoped as Phase 3.
+Make `/dashboard` (already the default post-login route) feel like an "AI Creator Command Center": dynamic welcome, profile + theme switcher, What's New carousel, premium buttons, and dark cinematic edge gradients. Preserve current sidebar, orange+black ecosystem, glassmorphism, and all other pages.
 
-### What you'll see after Phase 2
+## Scope (in)
 
-Type *"Create a viral LinkedIn post about AI startups"* → AI returns one structured pack:
+- New welcome header with animated rotating subtitle
+- Profile dropdown in header (avatar, workspace, settings, logout, **Change Theme**)
+- Dynamic theme system (8 presets) persisted to `localStorage`, applied via CSS variables on `<html>`
+- New What's New horizontal carousel module (auto-scroll, drag, hover-pause, snap)
+- Replace existing `CoreActionCards` "Schedule Campaign" → "Plan Campaign" wording; keep layout
+- Add a Viral Hooks Feed strip (lightweight, links to `/dashboard/generator`)
+- Cinematic dark edge gradients via a reusable wrapper utility
+- Button polish (premium variant: gradient + soft glow + hover lift + active press)
+- Visual refinement: reduce excess glow/padding, increase density
+- Mobile: theme drawer, swipeable carousel
 
-```text
-┌─────────────────────────────────────────────────┐
-│  Viral score  87 / 100   Hook 92 · Read 80 · Fit │
-├─────────────────────────────────────────────────┤
-│ ▸ Hook variations (5)        [copy][regen][save]│
-│ ▸ Main caption / post        [copy][regen][save]│
-│ ▸ CTA options (3)            [copy][regen]      │
-│ ▸ Hashtag sets (3 tiers)     [copy]             │
-│ ▸ Carousel outline (5 slides)[expand][to canvas]│
-│ ▸ Visual prompt              [send to studio]   │
-│ ▸ Repurposed thread / reel   [open]             │
-│ ▸ Posting suggestion         [schedule]         │
-└─────────────────────────────────────────────────┘
-```
+## Scope (out)
 
-Every card: **Copy · Regenerate · Improve · Save · Publish**.
+- Super Admin, AgentBuilder, AIGenerator, ImageStudio internals
+- Backend/data model changes (theme is purely client-side)
+- Sidebar redesign / navigation changes
+- Auth flow changes
 
-### 1. Upgrade `generate-content` edge function
+## Section order on `/dashboard`
 
-Replace the current 4-key tool schema with a single richer tool that returns the full content pack in one call (cheaper than chained calls, one round-trip). New tool schema:
+1. Welcome Header (left: greeting + rotating subtitle; right: profile menu)
+2. Quick Create Bar (existing, kept as hero)
+3. What's New carousel (new)
+4. Core Actions (3 cards, updated copy)
+5. AI Agent Suggestions (reuse existing `AISuggestions`)
+6. Trending Topics (existing `TrendingIdeasStrip`)
+7. Recent Generations (existing grid)
+8. Viral Hooks Feed (new compact strip)
 
-```text
-hooks:          string[5]        // 5 hook variants
-caption:        string           // main body
-cta_options:    string[3]
-hashtags:       { broad: string[6], niche: string[6], branded: string[3] }
-carousel:       { title: string, slides: { headline, body }[] }   // 5 slides
-visual_prompt:  string                                            // for image-studio
-repurpose:      { twitter_thread: string[], reel_script: string }
-posting:        { best_time_local: string, rationale: string }
-scores:         { hook: int, readability: int, platform_fit: int, virality: int }   // 0-100
-notes:          string           // 1-2 line strategic note
-```
+## Technical details
 
-Compute `virality` server-side from a blended formula of the other three plus hook keyword heuristics (no extra AI call). Reuse the existing `langMap` and add brand-voice context (see #2) into the system prompt when present.
+### Theme system
 
-Keep backward compat: respond with both old keys (`hook`, `caption`, `description`, `hashtags`) derived from the new pack so other call sites don't break.
+- `src/lib/themes.ts` — array of 8 presets, each containing HSL values for: `--primary`, `--primary-glow`, `--accent`, `--ring`, `--gradient-hero`, `--gradient-accent`, `--shadow-glow`, `--sidebar-primary`, `--sidebar-ring`.
+- `src/hooks/useTheme.tsx` — `ThemeProvider` + `useTheme()`. Reads `localStorage["aistudiyo.theme"]` (default `orange-blaze`), writes CSS vars onto `document.documentElement.style.setProperty(...)` on mount/change. Wrap inside `AuthProvider` in `App.tsx`.
+- All existing components keep using semantic tokens (`bg-primary`, `text-gradient-hero`, `shadow-glow`), so themes propagate automatically without touching consumer code.
+- Themes affect only chroma tokens — base background, foreground, text never change → readability preserved.
 
-### 2. Brand voice memory
+Presets:
+1. Orange Blaze (default, current values)
+2. Neon Purple
+3. Cyber Blue
+4. Emerald Flow
+5. Crimson Red
+6. Sunset Gold
+7. Frost White (light primary on neutral)
+8. Midnight Graphite (low-chroma slate)
 
-Existing `brand_profile` table already has `name, tagline, voice, audience, style_prompt, palette, font_pair`. No DB migration needed.
-
-- Add a compact "Brand voice" editor card at the top of `AIGenerator` (collapsed by default) showing the active brand profile + an **Edit** link to `/dashboard/branding`.
-- `AIGenerator` loads the most recent `brand_profile` row on mount and includes `{ voice, audience, style_prompt }` in the request body.
-- `generate-content` appends `Brand voice: ... Audience: ... Style notes: ...` into the system prompt when present.
-- First-run onboarding: if no `brand_profile` exists when user opens `AIGenerator`, show a 3-question inline drawer ("How does your brand sound?" tone / audience / 1-emoji style) → saves a `brand_profile` row, then runs the generation.
-
-### 3. Result panel rewrite — `AIGenerator.tsx`
-
-Replace the right-hand single column with a **vertical stack of modular `ResultCard`s**:
-
-- `<ScorePanel scores={...} />` — slim header: 4 bars + total. No big charts.
-- `<HookCard hooks={[]} />` — list with regenerate-just-this-block button.
-- `<TextCard label="Caption" value=... />` — copy/regenerate/improve/save.
-- `<CtaCard options={[]} />`
-- `<HashtagCard sets={...} />` — three pills tiers.
-- `<CarouselCard slides={...} />` — collapsible slide preview, "Open in Canvas" (stub button → toast for now, fully wired in Phase 3 Visual Canvas).
-- `<VisualPromptCard prompt=... />` — "Send to Image Studio" → routes `/dashboard/image-studio?prompt=...` (already supported).
-- `<RepurposeCard thread reel />` — two tabs (Twitter / Reel).
-- `<PostingCard time rationale />` — "Schedule" button → routes `/dashboard/calendar?caption=...&time=...`.
-
-Each card extends a small `<ResultCard>` shell with title, content slot, and the standard action row.
-
-### 4. Per-block regenerate
-
-Single endpoint addition in `generate-content`: accept `{ regenerate_block: "hook" | "caption" | ... , context: <existing pack> }` and return just that block, reusing the same system/brand prompt. Avoids re-rolling the whole pack. The `ResultCard` regen button calls this with the block key.
-
-### 5. Light viral score widget
-
-Pure presentation — no model. Card shows 4 horizontal bars (0–100, color: red <40, amber <70, green ≥70) and an overall number. Server-computed from `scores`. No charts library; CSS bars.
-
-### 6. Save / publish glue
-
-- **Save**: insert a row into `generations` (already exists, `mode='text'` allowed) with `prompt` + `image_url='—'` is not great → add a tiny `content_packs` table for text packs:
-  ```text
-  content_packs: id, user_id, prompt, platform, content_type, pack_json, scores_json, created_at
-  ```
-  RLS: owner-only read/write, super_admin read.
-- **Publish**: routes to `/dashboard/calendar` prefilled (existing schedule_posts insert path). No new publishing primitive in Phase 2.
-
-### 7. Files
+### Files
 
 **New**
-- `src/components/generator/ResultCard.tsx` — shared shell (title + actions + slot)
-- `src/components/generator/ScorePanel.tsx`
-- `src/components/generator/HookCard.tsx`
-- `src/components/generator/TextCard.tsx` (used for caption + visual prompt)
-- `src/components/generator/CtaCard.tsx`
-- `src/components/generator/HashtagCard.tsx`
-- `src/components/generator/CarouselCard.tsx`
-- `src/components/generator/RepurposeCard.tsx`
-- `src/components/generator/PostingCard.tsx`
-- `src/components/generator/BrandVoiceBar.tsx` — collapsed strip + first-run drawer
-- `supabase/migrations/<ts>_content_packs.sql` — table + RLS
+- `src/hooks/useTheme.tsx`
+- `src/lib/themes.ts`
+- `src/components/dashboard/WelcomeHeader.tsx` — greeting + framer-motion AnimatePresence cycling subtitles every ~4s
+- `src/components/dashboard/ProfileMenu.tsx` — dropdown-menu with avatar (from `useAuth`), workspace shortcut, settings link, logout, "Change theme" submenu opening `ThemeSwitcherDialog`
+- `src/components/dashboard/ThemeSwitcherDialog.tsx` — modal/drawer (responsive) showing 8 preset swatches with live preview-on-hover
+- `src/components/dashboard/WhatsNewCarousel.tsx` — replaces page-level "What's new"; uses existing `embla` (shadcn `carousel`) with `autoplay` via interval, drag, snap; 28px rounded cards with gradient art and CTA links
+- `src/components/dashboard/ViralHooksFeed.tsx` — 4–6 hook cards linking to generator with prefilled topic
+- `src/components/ui/edge-glow.tsx` — wrapper applying radial corner gradients + soft border (cinematic dark edges)
 
 **Edited**
-- `supabase/functions/generate-content/index.ts` — richer tool schema, brand voice in prompt, `regenerate_block` mode, scores
-- `src/pages/AIGenerator.tsx` — state shape now `pack`, loads brand profile, renders new stack
-- `src/integrations/supabase/types.ts` — auto-regenerated after migration
+- `src/index.css` — add `--edge-gradient` token + `.edge-glow` utility; add `.btn-premium` utility (gradient bg, soft inner highlight, drop-shadow, `:hover` translate-y-px, `:active` scale-[0.98])
+- `src/App.tsx` — wrap with `<ThemeProvider>`
+- `src/components/DashboardLayout.tsx` — remove `HeaderAnnouncementCarousel` from header (moves into page); place `<ProfileMenu />` on the right side of header
+- `src/pages/DashboardHome.tsx` — new section order; mount `WelcomeHeader`, `WhatsNewCarousel`, `ViralHooksFeed`; remove standalone header from page (now in `WelcomeHeader`)
+- `src/components/ui/button.tsx` — add `premium` variant via cva
+- `src/components/dashboard/CoreActionCards.tsx` — rename "Schedule Campaign" → "Plan Campaign", apply edge-glow wrapper
 
-**Untouched**: all `/superadmin/*`, AgentBuilder, dashboard home, header carousel.
+**Deleted/retired**
+- `HeaderAnnouncementCarousel` no longer mounted in layout (kept as file in case of reuse), since What's New takes over.
 
-### 8. Constraints
+### What's New carousel content (initial seed)
 
-- One AI call per full generation (no chained calls).
-- No new dependencies. Use existing Tailwind tokens + Framer Motion.
-- Backward-compatible response shape so the existing simple result UI never breaks during rollout.
-- Mobile: cards stack full-width, action row wraps.
+Hardcoded array in `WhatsNewCarousel.tsx` (no backend):
+- New AI Agent: "Trend Hunter" → `/dashboard/agents`
+- Viral Hook Templates Pack → `/dashboard/templates`
+- Carousel Studio Beta → `/dashboard/design`
+- Instagram Auto-Publish → `/dashboard/calendar`
+- ChatGPT-style Brain v2 → `/dashboard/generator`
+- Creator Tip: Best posting time → `/dashboard/trends`
 
-### 9. Acceptance
+Each card: gradient art, eyebrow tag, title, 1-line desc, CTA arrow, hover lift + glow.
 
-1. Generate a post → page shows score panel + 8 modular cards.
-2. "Regenerate" on just the Hook card returns 5 new hooks within ~3s without changing other cards.
-3. With a brand_profile saved, the caption noticeably matches the saved tone (smoke test: change tone, regenerate, voice shifts).
-4. "Send to Image Studio" from Visual Prompt card opens `/dashboard/image-studio` with prompt prefilled.
-5. "Schedule" from Posting card opens `/dashboard/calendar` prefilled.
-6. Save persists the pack to `content_packs` and shows a toast.
+### Animations
 
-### Out of scope — Phase 3 (next ask)
+All via existing framer-motion + tailwind keyframes:
+- Subtitle: `AnimatePresence` fade/slide
+- Cards: stagger `fade-in`
+- Carousel: embla autoplay (3.5s), pause on hover/drag
+- Buttons: tailwind transitions + active scale
+- Edge glow: pure CSS radial gradients in pseudo-elements
 
-- Full **Content Repurposer** page (LinkedIn → Twitter / Blog → Carousel / YT → Reels) as a standalone tool.
-- **Visual Content Canvas** (Canva-style carousel builder, slide drag-drop).
-- **Live Trend Engine** wiring (currently static seeded ideas).
-- **AI-suggested calendar** ("what to post next") with drag-drop creator-friendly week view.
-- **Proactive Agents** — agents that surface suggestions in a notification dock.
-- **Brand voice fine-tune** — learn voice from pasted samples instead of explicit fields.
+### Mobile
 
-These are deliberately deferred. Phase 2 ships the magic moment (one prompt → full content pack with score + actions) which is the highest-leverage shift toward "AI creator workspace."
+- Welcome header collapses; profile menu becomes icon-only avatar trigger
+- Theme picker uses `Sheet` (drawer) instead of `Dialog` on `<md`
+- Carousel snaps single-card width, swipe enabled
+- Core Actions stack to 1 column
+
+## Acceptance
+
+- Switching a theme instantly recolors buttons, gradients, active nav highlight, shadows across all pages
+- Theme persists across reload
+- `/dashboard` shows new welcome + profile menu + What's New carousel + reordered sections
+- No regressions on other dashboard pages (semantic tokens drive theming)
+- No backend or schema changes
