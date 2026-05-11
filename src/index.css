@@ -6,8 +6,8 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 7%;
+    --background: 0 0% 98.5%;
+    --foreground: 222 20% 12%;
 
     --card: 0 0% 100%;
     --card-foreground: 0 0% 7%;
@@ -31,11 +31,11 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 270 20% 92%;
-    --input: 270 20% 92%;
+    --border: 222 15% 92%;
+    --input: 222 15% 92%;
     --ring: 22 100% 55%;
 
-    --radius: 1rem;
+    --radius: 1.25rem;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 270 20% 25%;
@@ -55,6 +55,7 @@
     --shadow-elevated: 0 6px 20px -8px hsl(280 50% 30% / 0.08);
     --shadow-glow: 0 0 28px -10px hsl(22 100% 55% / 0.18);
     --shadow-purple-glow: 0 0 30px -12px hsl(280 80% 60% / 0.22);
+    --shadow-bento: 0 1px 2px 0 hsl(222 30% 15% / 0.04), 0 8px 24px -12px hsl(222 30% 15% / 0.08);
     --ring-soft: 22 95% 55%;
 
     --success: 142 72% 42%;
