@@ -3,11 +3,11 @@ import { Instagram, Linkedin, Flame, Compass, Megaphone } from "lucide-react";
 import { FlowSection } from "@/components/ui/story-scroll";
 
 const AGENTS = [
-  { Icon: Instagram, name: "Instagram Growth", desc: "Auto-publishes, comments, grows your audience.", status: "Online" },
-  { Icon: Linkedin,  name: "LinkedIn Branding", desc: "Builds authority with daily thoughtful posts.", status: "Online" },
-  { Icon: Flame,     name: "Viral Hook Agent", desc: "Drafts scroll-stopping hooks every morning.",  status: "Thinking" },
-  { Icon: Compass,   name: "Trend Hunter",     desc: "Surfaces niche-specific viral patterns daily.", status: "Online" },
-  { Icon: Megaphone, name: "Campaign Strategist", desc: "Plans 7-day campaigns aligned to your goals.", status: "Online" },
+  { Icon: Instagram, name: "Instagram Growth",    desc: "Auto-publishes, comments, grows your audience.", status: "Online",   accent: "330 88% 62%" }, // pink
+  { Icon: Linkedin,  name: "LinkedIn Branding",   desc: "Builds authority with daily thoughtful posts.",  status: "Online",   accent: "220 90% 60%" }, // blue
+  { Icon: Flame,     name: "Viral Hook Agent",    desc: "Drafts scroll-stopping hooks every morning.",     status: "Thinking", accent: "22 95% 55%"  }, // orange
+  { Icon: Compass,   name: "Trend Hunter",        desc: "Surfaces niche-specific viral patterns daily.",  status: "Online",   accent: "265 85% 62%" }, // violet
+  { Icon: Megaphone, name: "Campaign Strategist", desc: "Plans 7-day campaigns aligned to your goals.",   status: "Online",   accent: "160 75% 50%" }, // emerald
 ];
 
 export default function AgentsScene() {
@@ -35,15 +35,23 @@ export default function AgentsScene() {
           <motion.div key={a.name}
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             transition={{ delay: i * 0.08, duration: 0.5 }}
-            className="group rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-5 edge-glow hover:-translate-y-1 hover:border-orange-400/50 transition-all"
+            className="group relative overflow-hidden rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-5 edge-glow hover:-translate-y-1 hover:border-orange-400/50 transition-all"
           >
-            <div className="w-11 h-11 rounded-xl bg-gradient-hero flex items-center justify-center shadow-glow mb-4">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-0 group-hover:opacity-100 blur-2xl transition-opacity"
+              style={{ background: `radial-gradient(circle, hsl(${a.accent} / 0.55), transparent 60%)` }}
+            />
+            <div className="relative w-11 h-11 rounded-xl bg-gradient-hero flex items-center justify-center shadow-glow mb-4">
               <a.Icon className="w-5 h-5 text-white" />
             </div>
-            <p className="text-sm font-semibold mb-1">{a.name}</p>
-            <p className="text-xs text-white/60 leading-relaxed mb-4 min-h-[44px]">{a.desc}</p>
-            <div className="flex items-center gap-2">
-              <span className={`inline-block w-1.5 h-1.5 rounded-full ${a.status === "Online" ? "bg-emerald-400" : "bg-amber-400"} animate-pulse`} />
+            <p className="relative text-sm font-semibold mb-1">{a.name}</p>
+            <p className="relative text-xs text-white/60 leading-relaxed mb-4 min-h-[44px]">{a.desc}</p>
+            <div className="relative flex items-center gap-2">
+              <span
+                className="inline-block w-1.5 h-1.5 rounded-full animate-pulse"
+                style={{ background: `hsl(${a.accent})`, boxShadow: `0 0 10px hsl(${a.accent} / 0.8)` }}
+              />
               <span className="text-[10px] uppercase tracking-wider text-white/50">{a.status}</span>
             </div>
           </motion.div>
