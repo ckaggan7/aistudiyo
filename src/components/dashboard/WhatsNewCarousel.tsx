@@ -19,7 +19,7 @@ export default function WhatsNewCarousel() {
       transition={{ duration: 0.35, delay: 0.1 }}
       className="card-bento h-full"
     >
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Zap className="w-4 h-4 text-primary" />
           <h3 className="font-semibold text-base">What's new</h3>
@@ -27,15 +27,15 @@ export default function WhatsNewCarousel() {
         <span className="chip">Fresh today</span>
       </div>
 
-      <div className="flex gap-4 overflow-x-auto pb-2 -mx-1 px-1 snap-x scrollbar-thin">
+      <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 snap-x scrollbar-thin">
         {ITEMS.map((it) => (
           <Link
             key={it.title}
             to={it.to}
-            className={`group snap-start shrink-0 w-[260px] rounded-2xl border border-border/60 p-5 bg-gradient-to-br ${it.bg} hover:shadow-md transition-all relative overflow-hidden`}
+            className={`group snap-start shrink-0 w-[240px] rounded-2xl border border-border/60 p-4 bg-gradient-to-br ${it.bg} hover:shadow-md transition-all relative overflow-hidden`}
           >
-            <div className="flex items-center justify-between mb-8">
-              <div className="w-10 h-10 rounded-xl bg-white/80 backdrop-blur flex items-center justify-center shadow-sm">
+            <div className="flex items-center justify-between mb-6">
+              <div className="w-9 h-9 rounded-xl bg-white/80 backdrop-blur flex items-center justify-center shadow-sm">
                 <it.icon className={`w-5 h-5 ${it.fg}`} />
               </div>
               <span className={`text-[10px] font-semibold uppercase tracking-wider ${it.fg}`}>

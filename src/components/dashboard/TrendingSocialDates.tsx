@@ -22,7 +22,7 @@ export default function TrendingSocialDates() {
       transition={{ duration: 0.35, delay: 0.15 }}
       className="card-bento h-full flex flex-col"
     >
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <CalendarHeart className="w-4 h-4 text-primary" />
           <h3 className="font-semibold text-base">Upcoming moments</h3>
@@ -37,7 +37,7 @@ export default function TrendingSocialDates() {
           <Link
             key={it.date}
             to={`/dashboard/generator?topic=${encodeURIComponent(it.title + " — " + it.blurb)}`}
-            className="group snap-start shrink-0 w-[220px] rounded-2xl border border-border/60 bg-muted/30 hover:bg-white hover:border-primary/30 hover:shadow-md p-4 transition-all"
+            className="group snap-start shrink-0 w-[200px] rounded-2xl border border-border/60 bg-muted/30 hover:bg-white hover:border-primary/30 hover:shadow-md p-3.5 transition-all"
           >
             <div className="flex items-center justify-between">
               <span className="text-2xl">{it.emoji}</span>
