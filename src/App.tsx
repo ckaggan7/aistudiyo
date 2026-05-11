@@ -16,6 +16,7 @@ import SettingsPage from "./pages/SettingsPage";
 import WaitlistPage from "./pages/WaitlistPage";
 import LoginPage from "./pages/LoginPage";
 import ContactPage from "./pages/ContactPage";
+import PricingPage from "./pages/PricingPage";
 import BrandingCRM from "./pages/BrandingCRM";
 import TrendingTemplates from "./pages/TrendingTemplates";
 import ImageStudio from "./pages/ImageStudio";
@@ -70,6 +71,7 @@ const App = () => (
           <Route path="/signup" element={<WaitlistPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
           <Route path="/dashboard" element={<DashboardPage><DashboardHome /></DashboardPage>} />
           <Route path="/dashboard/generator" element={<DashboardPage><AIGenerator /></DashboardPage>} />
           <Route path="/dashboard/image-studio" element={<DashboardPage><ImageStudio /></DashboardPage>} />
