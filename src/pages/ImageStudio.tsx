@@ -128,6 +128,8 @@ export default function ImageStudio() {
   const [openStyle, setOpenStyle] = useState<Style | null>(null);
   const [history, setHistory] = useState<Generation[]>([]);
   const [loading, setLoading] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<Filter | null>(null);
+  const [filterCategory, setFilterCategory] = useState<Category>("All");
 
   const setModeAndUrl = (m: Mode) => {
     setMode(m);
@@ -154,11 +156,16 @@ export default function ImageStudio() {
     if (isVideo) return toast.info("Video generation is coming soon");
     if (!prompt.trim()) return toast.error("Describe what you want to create");
     setLoading(true);
-    const stylePrompt =
-      mode === "sticker"
-        ? "as a die-cut sticker with thick white outline, vivid colors, transparent background"
+    const baseStickerPrompt =
+      "as a die-cut sticker with thick white outline, vivid colors, transparent background";
+    const stylePrompt = activeFilter
+      ? mode === "sticker"
+        ? `${activeFilter.prompt}, ${baseStickerPrompt}`
+        : activeFilter.prompt
+      : mode === "sticker"
+        ? baseStickerPrompt
         : "";
-    const styleName = mode === "sticker" ? "Sticker" : "Default";
+    const styleName = activeFilter?.name ?? (mode === "sticker" ? "Sticker" : "Default");
     const { data, error } = await supabase.functions.invoke("generate-image", {
       body: { prompt, style: styleName, stylePrompt, mode: "text" },
     });
@@ -167,10 +174,17 @@ export default function ImageStudio() {
       toast.error((data as any)?.error || error?.message || "Generation failed");
       return;
     }
-    toast.success(`${mode === "sticker" ? "Sticker" : "Image"} generated and saved`);
+    toast.success(
+      activeFilter
+        ? `Generated in "${activeFilter.name}" style`
+        : `${mode === "sticker" ? "Sticker" : "Image"} generated and saved`,
+    );
     setPrompt("");
     loadHistory();
   };
+
+  const visibleFilters =
+    filterCategory === "All" ? FILTERS : FILTERS.filter((f) => f.category === filterCategory);
 
   return (
     <div className="max-w-6xl mx-auto">
