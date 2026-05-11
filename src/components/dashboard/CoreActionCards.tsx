@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Wand2, Bot, CalendarClock, ArrowRight } from "lucide-react";
+import { Wand2, Bot, CalendarClock, ArrowRight, Rocket } from "lucide-react";
 
 const ACTIONS = [
   {
@@ -28,30 +28,37 @@ const ACTIONS = [
 
 export default function CoreActionCards() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 mb-6">
-      {ACTIONS.map((a, i) => (
-        <motion.div
-          key={a.to}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 + i * 0.05, duration: 0.35 }}
-        >
+    <motion.section
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, delay: 0.15 }}
+      className="card-bento h-full flex flex-col"
+    >
+      <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center gap-2">
+          <Rocket className="w-4 h-4 text-primary" />
+          <h3 className="font-semibold text-base">Jump in</h3>
+        </div>
+        <span className="chip">Shortcuts</span>
+      </div>
+      <div className="flex flex-col gap-2.5 flex-1">
+        {ACTIONS.map((a) => (
           <Link
+            key={a.to}
             to={a.to}
-            className="group relative overflow-hidden block rounded-2xl border border-border/40 bg-card p-5 md:p-6 hover:border-primary/40 hover:shadow-elevated hover:-translate-y-0.5 transition-all h-full edge-glow"
+            className="group relative overflow-hidden flex items-center gap-3 rounded-2xl border border-border/60 bg-muted/30 hover:bg-white hover:border-primary/30 hover:shadow-md transition-all p-3"
           >
-            <div className={`absolute -top-12 -right-12 w-40 h-40 rounded-full bg-gradient-to-br ${a.gradient} opacity-10 blur-2xl group-hover:opacity-20 transition-opacity`} />
-            <div className={`relative w-11 h-11 rounded-xl bg-gradient-to-br ${a.gradient} flex items-center justify-center shadow-glow mb-4`}>
+            <div className={`shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br ${a.gradient} flex items-center justify-center shadow-glow`}>
               <a.icon className="w-5 h-5 text-white" />
             </div>
-            <p className="font-semibold text-base mb-1">{a.title}</p>
-            <p className="text-xs text-muted-foreground mb-4">{a.desc}</p>
-            <span className="inline-flex items-center gap-1 text-xs font-medium text-primary group-hover:gap-1.5 transition-all">
-              Start <ArrowRight className="w-3 h-3" />
-            </span>
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-sm leading-tight">{a.title}</p>
+              <p className="text-[11px] text-muted-foreground truncate">{a.desc}</p>
+            </div>
+            <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
           </Link>
-        </motion.div>
-      ))}
-    </div>
+        ))}
+      </div>
+    </motion.section>
   );
 }
