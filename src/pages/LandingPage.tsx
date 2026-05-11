@@ -1,4 +1,5 @@
 import FlowArt from "@/components/ui/story-scroll";
+import LandingHeader from "@/components/landing/LandingHeader";
 import HeroScene from "@/components/landing/HeroScene";
 import QuickCreateScene from "@/components/landing/QuickCreateScene";
 import AgentsScene from "@/components/landing/AgentsScene";
@@ -13,6 +14,7 @@ import { Sparkles, Twitter, Instagram, Linkedin, Youtube, MessageCircle } from "
 export default function LandingPage() {
   return (
     <>
+    <LandingHeader />
     <FlowArt aria-label="AISTUDIYO — Cinematic story scroll">
       <HeroScene />
       <QuickCreateScene />
