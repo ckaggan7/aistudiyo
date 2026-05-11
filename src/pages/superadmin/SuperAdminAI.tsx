@@ -108,9 +108,12 @@ export default function SuperAdminAI() {
       </section>
 
       <Tabs defaultValue="providers" className="w-full">
-        <TabsList>
-          <TabsTrigger value="providers">Providers & Models</TabsTrigger>
+        <TabsList className="sticky top-12 z-10 bg-background/85 backdrop-blur-sm">
+          <TabsTrigger value="providers">Providers</TabsTrigger>
+          <TabsTrigger value="models">Models</TabsTrigger>
           <TabsTrigger value="usage">Usage</TabsTrigger>
+          <TabsTrigger value="costs">Costs</TabsTrigger>
+          <TabsTrigger value="health">Health</TabsTrigger>
           <TabsTrigger value="logs">Logs</TabsTrigger>
           <TabsTrigger value="flags">Rollout</TabsTrigger>
         </TabsList>
@@ -136,17 +139,30 @@ export default function SuperAdminAI() {
                     </div>
                     <Switch checked={p.enabled} onCheckedChange={(v) => toggleProvider(p.id, v)} />
                   </div>
-                  <ul className="space-y-1">
-                    {list.map((m) => (
-                      <li key={m.id} className="flex items-center justify-between gap-2 px-2 py-1.5 rounded-md hover:bg-accent/40">
-                        <div className="min-w-0">
-                          <div className="text-sm font-medium truncate">{m.name}</div>
-                          <div className="text-[11px] text-muted-foreground">{m.context_window.toLocaleString()} ctx · ${m.input_cost_per_1k}/1k in · ${m.output_cost_per_1k}/1k out</div>
-                        </div>
-                        <Switch checked={m.enabled} onCheckedChange={(v) => toggleModel(m.id, v)} />
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="text-[11px] text-muted-foreground">
+                    Manage models in the <span className="font-medium text-foreground/80">Models</span> tab.
+                  </div>
+                </GlowCard>
+              );
+            })}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="models" className="mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {models.map((m) => {
+              const prov = providers.find((p) => p.id === m.provider_id);
+              return (
+                <GlowCard key={m.id} className="p-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="text-sm font-medium truncate">{m.name}</div>
+                      <div className="text-[11px] text-muted-foreground truncate">
+                        {prov?.name ?? "—"} · {m.context_window.toLocaleString()} ctx · ${m.input_cost_per_1k}/1k in · ${m.output_cost_per_1k}/1k out
+                      </div>
+                    </div>
+                    <Switch checked={m.enabled} onCheckedChange={(v) => toggleModel(m.id, v)} />
+                  </div>
                 </GlowCard>
               );
             })}
@@ -157,7 +173,7 @@ export default function SuperAdminAI() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <GlowCard className="p-5 lg:col-span-2">
               <h2 className="text-sm font-semibold mb-4">Requests · 14 days</h2>
-              <div className="h-64">
+              <div className="h-48">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={series}>
                     <defs>
@@ -177,7 +193,7 @@ export default function SuperAdminAI() {
             </GlowCard>
             <GlowCard className="p-5">
               <h2 className="text-sm font-semibold mb-4">Top models</h2>
-              <div className="h-64">
+              <div className="h-48">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={byModel} layout="vertical">
                     <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} />
@@ -188,6 +204,75 @@ export default function SuperAdminAI() {
                 </ResponsiveContainer>
               </div>
             </GlowCard>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="costs" className="mt-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <GlowCard className="p-5 lg:col-span-2">
+              <h2 className="text-sm font-semibold mb-4">Daily cost · 14 days</h2>
+              <div className="h-48">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={costSeries}>
+                    <defs>
+                      <linearGradient id="ai-cost" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.35} />
+                        <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.25} />
+                    <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                    <Tooltip contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }}
+                      formatter={(v: number) => `$${v.toFixed(4)}`} />
+                    <Area type="monotone" dataKey="cost" stroke="hsl(var(--primary))" strokeWidth={1.5} fill="url(#ai-cost)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </GlowCard>
+            <GlowCard className="p-5">
+              <h2 className="text-sm font-semibold mb-3">Top spend by model</h2>
+              <ul className="space-y-1.5">
+                {costByModel.slice(0, 8).map((c) => (
+                  <li key={c.model} className="flex items-center justify-between text-xs">
+                    <span className="font-mono truncate text-foreground/80">{c.model}</span>
+                    <span className="tabular-nums font-medium ml-2">${c.cost.toFixed(2)}</span>
+                  </li>
+                ))}
+                {costByModel.length === 0 && <li className="text-xs text-muted-foreground">No cost data.</li>}
+              </ul>
+            </GlowCard>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="health" className="mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {providerHealth.map((h) => (
+              <GlowCard key={h.slug} className="p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-sm font-semibold truncate">{h.name}</div>
+                  <AIHealthIndicator status={h.failRate > 0.1 ? "degraded" : h.failRate > 0 ? "degraded" : "healthy"} />
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  <div>
+                    <div className="text-base font-bold tabular-nums">{h.p50}ms</div>
+                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground">p50</div>
+                  </div>
+                  <div>
+                    <div className="text-base font-bold tabular-nums">{h.p95}ms</div>
+                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground">p95</div>
+                  </div>
+                  <div>
+                    <div className="text-base font-bold tabular-nums">{(h.failRate * 100).toFixed(1)}%</div>
+                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground">fail</div>
+                  </div>
+                </div>
+                <div className="mt-2 text-[10px] text-muted-foreground text-center">{h.reqs.toLocaleString()} req · 14d</div>
+              </GlowCard>
+            ))}
+            {providerHealth.length === 0 && (
+              <div className="text-sm text-muted-foreground col-span-full text-center py-6">No traffic in the last 14 days.</div>
+            )}
           </div>
         </TabsContent>
 
