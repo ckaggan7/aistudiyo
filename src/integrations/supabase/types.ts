@@ -376,6 +376,42 @@ export type Database = {
         }
         Relationships: []
       }
+      content_packs: {
+        Row: {
+          content_type: string
+          created_at: string
+          id: string
+          pack_json: Json
+          platform: string
+          prompt: string
+          scores_json: Json
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          content_type?: string
+          created_at?: string
+          id?: string
+          pack_json?: Json
+          platform?: string
+          prompt: string
+          scores_json?: Json
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          content_type?: string
+          created_at?: string
+          id?: string
+          pack_json?: Json
+          platform?: string
+          prompt?: string
+          scores_json?: Json
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       content_pillars: {
         Row: {
           cadence: string | null
