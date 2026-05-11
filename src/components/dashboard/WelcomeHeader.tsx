@@ -40,7 +40,7 @@ export default function WelcomeHeader() {
             <Sparkles className="w-3 h-3" /> AI creator playground
           </span>
           <h1 className="text-display-xl">
-            Welcome, <span className="capitalize bg-gradient-hero bg-clip-text text-transparent">{name}</span>
+            Welcome, <span className="capitalize text-gradient-hero">{name}</span>
           </h1>
           <div className="h-6 mt-3 relative overflow-hidden">
             <AnimatePresence mode="wait">
