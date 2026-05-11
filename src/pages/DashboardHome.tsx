@@ -7,6 +7,8 @@ import QuickCreateBar from "@/components/dashboard/QuickCreateBar";
 import CoreActionCards from "@/components/dashboard/CoreActionCards";
 import TrendingIdeasStrip from "@/components/dashboard/TrendingIdeasStrip";
 import AISuggestions from "@/components/dashboard/AISuggestions";
+import WelcomeHeader from "@/components/dashboard/WelcomeHeader";
+import WhatsNewCarousel from "@/components/dashboard/WhatsNewCarousel";
 
 type Generation = {
   id: string;
@@ -29,22 +31,11 @@ export default function DashboardHome() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <motion.div
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35 }}
-        className="mb-4"
-      >
-        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-          Good to see you, <span className="text-gradient-hero">Creator</span>
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          What are we making today?
-        </p>
-      </motion.div>
-
+      <WelcomeHeader />
       <QuickCreateBar />
+      <WhatsNewCarousel />
       <CoreActionCards />
+      <AISuggestions />
       <TrendingIdeasStrip />
 
       {recent.length > 0 && (
@@ -83,8 +74,6 @@ export default function DashboardHome() {
           </div>
         </motion.section>
       )}
-
-      <AISuggestions />
     </div>
   );
 }
