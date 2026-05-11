@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import WorkspaceSwitcher from "./workspace/WorkspaceSwitcher";
 import ProfileMenu from "./dashboard/ProfileMenu";
 import AIDock from "./dashboard/AIDock";
+import MobileDock from "./dashboard/MobileDock";
 import { AmbientBackdrop } from "./ui/ambient-backdrop";
 
 type NavItem = { icon: any; label: string; path: string };
@@ -122,6 +123,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </div>
 
       <AIDock open={dockOpen} onClose={() => setDockOpen(false)} />
+      <MobileDock />
     </div>
   );
 }
