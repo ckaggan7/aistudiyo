@@ -18,7 +18,7 @@ export default function TrendingNowFeed() {
       transition={{ duration: 0.35 }}
       className="card-bento h-full flex flex-col overflow-hidden"
     >
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Flame className="w-4 h-4 text-orange-500" />
           <h3 className="font-semibold text-base">Trending now</h3>
@@ -28,12 +28,12 @@ export default function TrendingNowFeed() {
         </span>
       </div>
 
-      <div className="flex flex-col gap-2.5 flex-1">
+      <div className="flex flex-col gap-2 flex-1">
         {HOOKS.map((h, i) => (
           <Link
             key={i}
             to={`/dashboard/generator?topic=${encodeURIComponent(h.hook)}`}
-            className="group rounded-2xl border border-border/60 bg-gradient-to-br from-muted/30 to-transparent hover:from-white hover:border-primary/30 hover:shadow-md p-3.5 transition-all"
+            className="group rounded-2xl border border-border/60 bg-gradient-to-br from-muted/30 to-transparent hover:from-white hover:border-primary/30 hover:shadow-md p-3 transition-all"
           >
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[10px] uppercase tracking-wider text-primary font-semibold">{h.platform}</span>
@@ -48,7 +48,7 @@ export default function TrendingNowFeed() {
       </div>
 
       {/* hashtag marquee */}
-      <div className="relative mt-4 -mx-6 -mb-6 overflow-hidden border-t border-border/60 bg-muted/20 py-3">
+      <div className="relative mt-4 -mx-5 -mb-5 overflow-hidden border-t border-border/60 bg-muted/20 py-2.5">
         <div className="flex gap-2 marquee-track whitespace-nowrap w-max">
           {[...TAGS, ...TAGS].map((t, i) => (
             <span
