@@ -3,11 +3,11 @@ import { Mic, Target, Users, Image as ImageIcon, Heart } from "lucide-react";
 import { FlowSection } from "@/components/ui/story-scroll";
 
 const NODES = [
-  { Icon: Mic,        label: "Tone",      x: 18, y: 28 },
-  { Icon: Target,     label: "CTA",       x: 82, y: 22 },
-  { Icon: Users,      label: "Audience",  x: 14, y: 70 },
-  { Icon: ImageIcon,  label: "Visual",    x: 86, y: 72 },
-  { Icon: Heart,      label: "Personality", x: 50, y: 88 },
+  { Icon: Mic,        label: "Tone",        x: 18, y: 28, accent: "265 85% 62%" }, // violet
+  { Icon: Target,     label: "CTA",         x: 82, y: 22, accent: "160 75% 50%" }, // emerald
+  { Icon: Users,      label: "Audience",    x: 14, y: 70, accent: "220 90% 60%" }, // blue
+  { Icon: ImageIcon,  label: "Visual",      x: 86, y: 72, accent: "330 88% 62%" }, // pink
+  { Icon: Heart,      label: "Personality", x: 50, y: 88, accent: "45 95% 58%"  }, // amber
 ];
 
 export default function BrandVoiceScene() {
@@ -38,7 +38,7 @@ export default function BrandVoiceScene() {
           <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
             {NODES.map((n, i) => (
               <line key={i} x1="50" y1="50" x2={n.x} y2={n.y}
-                    stroke="hsl(22 95% 55% / 0.4)" strokeWidth="0.2" strokeDasharray="0.6 0.6" />
+                    stroke={`hsl(${n.accent} / 0.45)`} strokeWidth="0.2" strokeDasharray="0.6 0.6" />
             ))}
             <circle cx="50" cy="50" r="2.5" fill="hsl(22 95% 55%)" />
           </svg>
@@ -55,8 +55,11 @@ export default function BrandVoiceScene() {
               style={{ left: `${n.x}%`, top: `${n.y}%` }}
               className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1.5"
             >
-              <div className="w-12 h-12 rounded-2xl bg-white/8 backdrop-blur-xl border border-white/20 flex items-center justify-center edge-glow">
-                <n.Icon className="w-5 h-5 text-orange-300" />
+              <div
+                className="w-12 h-12 rounded-2xl bg-white/8 backdrop-blur-xl border flex items-center justify-center edge-glow"
+                style={{ borderColor: `hsl(${n.accent} / 0.4)`, boxShadow: `0 0 20px -4px hsl(${n.accent} / 0.5)` }}
+              >
+                <n.Icon className="w-5 h-5" style={{ color: `hsl(${n.accent})` }} />
               </div>
               <span className="text-[10px] uppercase tracking-widest text-white/60">{n.label}</span>
             </motion.div>
