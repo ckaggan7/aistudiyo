@@ -59,9 +59,13 @@ export default function QuickCreateBar({ initial = "" }: { initial?: string }) {
       className="relative"
     >
       <div className="card-bento">
-        <div className="flex items-stretch gap-2 bg-muted/40 rounded-2xl border border-border/60 px-3 py-2 focus-within:border-primary/50 focus-within:bg-white transition-all">
-          <div className="self-center shrink-0 w-8 h-8 rounded-xl bg-gradient-hero flex items-center justify-center shadow-glow">
-            <Sparkles className="w-3.5 h-3.5 text-primary-foreground" />
+        <div className="mb-3">
+          <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-1">Quick create</p>
+          <h3 className="text-xl font-semibold tracking-tight">What do you want to create?</h3>
+        </div>
+        <div className={`relative flex items-stretch gap-2 bg-white rounded-2xl border-2 px-3 py-2.5 transition-all ${focused ? "border-primary/60 shadow-[0_0_0_4px_hsl(22_100%_55%/0.12)]" : "border-border/60"}`}>
+          <div className="self-center shrink-0 w-10 h-10 rounded-xl bg-gradient-hero flex items-center justify-center shadow-glow">
+            <Sparkles className="w-4 h-4 text-primary-foreground" />
           </div>
           <input
             value={value}
@@ -70,14 +74,14 @@ export default function QuickCreateBar({ initial = "" }: { initial?: string }) {
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && submit()}
             placeholder={PLACEHOLDERS[phIdx]}
-            className="flex-1 bg-transparent outline-none px-1 text-sm md:text-base placeholder:text-muted-foreground/60"
+            className="flex-1 bg-transparent outline-none px-2 text-base md:text-lg placeholder:text-muted-foreground/60"
           />
           <button
             onClick={submit}
             disabled={!value.trim()}
-            className="inline-flex items-center gap-1.5 h-10 px-4 rounded-xl btn-premium text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed"
+            className="magnetic-btn inline-flex items-center gap-1.5 h-11 px-5 rounded-xl btn-premium text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            Create <ArrowUp className="w-4 h-4 rotate-45" />
+            Generate <ArrowUp className="w-4 h-4 rotate-45" />
           </button>
         </div>
 
