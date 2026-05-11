@@ -26,7 +26,6 @@ import WorkflowBuilder from "./pages/workflows/WorkflowBuilder";
 import WorkflowRuns from "./pages/workflows/WorkflowRuns";
 import { AuthProvider } from "./hooks/useAuth";
 import { WorkspaceProvider } from "./hooks/useWorkspace";
-import ProtectedRoute from "./components/auth/ProtectedRoute";
 import CommandPalette from "./components/CommandPalette";
 import SuperAdminLogin from "./pages/superadmin/SuperAdminLogin";
 import SuperAdminOverview from "./pages/superadmin/SuperAdminOverview";
