@@ -82,51 +82,52 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center px-6">
-      {/* Ambient glow orbs */}
+    <div className="min-h-screen bg-[#070707] relative overflow-hidden flex items-center justify-center px-6">
+      {/* Soft orange edge lighting */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute top-1/4 -left-32 w-[500px] h-[500px] rounded-full bg-primary/8 blur-[120px]" />
-        <div className="absolute bottom-1/4 -right-32 w-[400px] h-[400px] rounded-full bg-[hsl(260_85%_60%/0.08)] blur-[120px]" />
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[680px] h-[420px] rounded-full blur-[120px]"
+             style={{ background: "radial-gradient(ellipse, rgba(255,122,26,0.18), transparent 65%)" }} />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[hsl(22_100%_55%)]/30 to-transparent" />
       </div>
 
       <motion.div
-        initial={{ opacity: 0, y: 24 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-        className="relative z-10 w-full max-w-sm"
+        transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+        className="relative z-10 w-full max-w-[420px]"
       >
         {/* Back link */}
         <Link
           to="/"
-          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-10"
+          className="inline-flex items-center gap-1 text-sm text-white/50 hover:text-white transition-colors mb-8"
         >
           <ArrowLeft className="w-4 h-4" /> Back
         </Link>
 
         {/* Logo */}
-        <div className="text-center mb-10">
-          <Link to="/" className="text-2xl font-bold tracking-tight">
-            AI <span className="text-gradient-hero">STUDIYO</span>
+        <div className="text-center mb-8">
+          <Link to="/" className="text-xl font-semibold tracking-tight text-white">
+            AI <span className="text-[hsl(22_100%_55%)]">STUDIYO</span>
           </Link>
         </div>
 
         {/* Card */}
-        <div className="rounded-3xl border border-border/50 bg-card/80 backdrop-blur-xl p-8 shadow-elevated">
-          <h1 className="text-2xl font-bold tracking-tight text-center mb-1">
-            {mode === "signin" ? "Welcome back" : "Create your account"}
+        <div className="rounded-2xl border border-white/[0.06] bg-[#0F0F10]/80 backdrop-blur-xl p-7">
+          <h1 className="text-[22px] font-semibold tracking-tight text-center mb-1 text-white">
+            {mode === "signin" ? "Welcome back" : "Start creating with AI"}
           </h1>
-          <p className="text-sm text-muted-foreground text-center mb-8">
-            {mode === "signin" ? "Sign in to your account" : "Start creating in seconds"}
+          <p className="text-sm text-[#A1A1AA] text-center mb-7">
+            {mode === "signin" ? "Create smarter with AI." : "Your AI content workspace is ready."}
           </p>
 
-          <div className="grid grid-cols-2 gap-1 p-1 mb-6 rounded-xl bg-muted/40 text-sm">
+          <div className="grid grid-cols-2 gap-1 p-1 mb-5 rounded-xl bg-white/[0.04] text-sm">
             {(["signin", "signup"] as const).map((m) => (
               <button
                 key={m}
                 type="button"
                 onClick={() => setMode(m)}
                 className={`h-9 rounded-lg font-medium transition-colors ${
-                  mode === m ? "bg-background shadow-sm" : "text-muted-foreground hover:text-foreground"
+                  mode === m ? "bg-[hsl(22_100%_55%)]/15 text-[hsl(22_100%_60%)]" : "text-white/55 hover:text-white"
                 }`}
               >
                 {m === "signin" ? "Sign In" : "Sign Up"}
@@ -137,50 +138,44 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === "signup" && (
               <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider">
-                  Name
-                </label>
+                <label className="text-xs font-medium text-white/55 mb-1.5 block">Name</label>
                 <Input
                   type="text"
                   placeholder="Your name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="h-12 bg-background/60 border-border/50 text-base"
+                  className="h-11 rounded-xl bg-white/[0.03] border-white/[0.06] text-sm focus-visible:border-[hsl(22_100%_55%)]/40 focus-visible:ring-[hsl(22_100%_55%)]/15"
                   disabled={loading}
                 />
               </div>
             )}
             <div>
-              <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider">
-                Email
-              </label>
+              <label className="text-xs font-medium text-white/55 mb-1.5 block">Email</label>
               <Input
                 type="email"
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="h-12 bg-background/60 border-border/50 text-base"
+                className="h-11 rounded-xl bg-white/[0.03] border-white/[0.06] text-sm focus-visible:border-[hsl(22_100%_55%)]/40 focus-visible:ring-[hsl(22_100%_55%)]/15"
                 disabled={loading}
               />
             </div>
 
             <div>
-              <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider">
-                Password
-              </label>
+              <label className="text-xs font-medium text-white/55 mb-1.5 block">Password</label>
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="h-12 bg-background/60 border-border/50 text-base pr-12"
+                  className="h-11 rounded-xl bg-white/[0.03] border-white/[0.06] text-sm pr-11 focus-visible:border-[hsl(22_100%_55%)]/40 focus-visible:ring-[hsl(22_100%_55%)]/15"
                   disabled={loading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -190,7 +185,7 @@ export default function LoginPage() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-12 text-base bg-gradient-hero text-primary-foreground hover:opacity-90 transition-opacity rounded-xl"
+              className="w-full h-11 text-sm font-semibold rounded-xl bg-gradient-to-b from-[hsl(22_100%_60%)] to-[hsl(22_100%_50%)] text-white shadow-[0_1px_0_0_rgba(255,255,255,0.18)_inset,0_4px_14px_-6px_rgba(255,122,26,0.4)] hover:brightness-110 transition-all"
             >
               {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -203,17 +198,17 @@ export default function LoginPage() {
           </form>
 
           {/* Divider */}
-          <div className="flex items-center gap-3 my-6">
-            <div className="flex-1 h-px bg-border" />
-            <span className="text-xs text-muted-foreground uppercase tracking-wider">or</span>
-            <div className="flex-1 h-px bg-border" />
+          <div className="flex items-center gap-3 my-5">
+            <div className="flex-1 h-px bg-white/[0.06]" />
+            <span className="text-[11px] text-white/40 uppercase tracking-wider">or</span>
+            <div className="flex-1 h-px bg-white/[0.06]" />
           </div>
 
           <Button
             variant="outline"
             type="button"
             disabled={loading}
-            className="w-full h-12 text-base rounded-xl border-border/50 bg-background/60"
+            className="w-full h-11 text-sm rounded-xl border-white/[0.06] bg-white/[0.03] text-white hover:bg-white/[0.05]"
             onClick={handleGoogle}
           >
             <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
