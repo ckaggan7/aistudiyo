@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import AnnouncementBanner from "@/components/dashboard/AnnouncementBanner";
 import QuickCreateBar from "@/components/dashboard/QuickCreateBar";
 import CoreActionCards from "@/components/dashboard/CoreActionCards";
 import TrendingIdeasStrip from "@/components/dashboard/TrendingIdeasStrip";
@@ -30,8 +29,6 @@ export default function DashboardHome() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <AnnouncementBanner />
-
       <motion.div
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}

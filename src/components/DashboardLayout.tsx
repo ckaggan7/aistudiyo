@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import WorkspaceSwitcher from "./workspace/WorkspaceSwitcher";
+import HeaderAnnouncementCarousel from "./dashboard/HeaderAnnouncementCarousel";
 
 type NavLeaf = { label: string; path: string };
 type NavItem =
@@ -166,6 +167,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </button>
           <div className="flex-1 flex items-center gap-3">
             <WorkspaceSwitcher />
+            <HeaderAnnouncementCarousel />
           </div>
           <kbd className="hidden md:inline-flex items-center gap-1 px-2 h-7 rounded-md border border-border/60 bg-muted/40 text-[10px] font-mono text-muted-foreground">
             <span>⌘</span>K
