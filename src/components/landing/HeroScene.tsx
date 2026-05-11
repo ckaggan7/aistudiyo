@@ -5,13 +5,13 @@ import { FlowSection } from "@/components/ui/story-scroll";
 
 export default function HeroScene() {
   return (
-    <FlowSection aria-label="Hero" style={{ backgroundColor: "#0a0a0a", color: "#fff" }}>
+    <FlowSection aria-label="Hero" style={{ backgroundColor: "#070707", color: "#F5F5F5" }}>
       {/* ambient glows */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-32 -left-32 w-[40rem] h-[40rem] rounded-full opacity-40 blur-3xl"
-             style={{ background: "radial-gradient(circle, hsl(22 95% 55% / 0.55), transparent 60%)" }} />
-        <div className="absolute -bottom-40 right-0 w-[36rem] h-[36rem] rounded-full opacity-30 blur-3xl"
-             style={{ background: "radial-gradient(circle, hsl(280 80% 58% / 0.45), transparent 60%)" }} />
+        <div className="absolute -top-32 -left-32 w-[40rem] h-[40rem] rounded-full opacity-30 blur-3xl"
+             style={{ background: "radial-gradient(circle, rgba(255,122,26,0.30), transparent 60%)" }} />
+        <div className="absolute -bottom-40 right-0 w-[36rem] h-[36rem] rounded-full opacity-20 blur-3xl"
+             style={{ background: "radial-gradient(circle, rgba(255,155,82,0.22), transparent 60%)" }} />
         {[...Array(14)].map((_, i) => (
           <span key={i}
             className="absolute rounded-full bg-white/40"
@@ -26,30 +26,30 @@ export default function HeroScene() {
         ))}
       </div>
 
-      <p className="relative text-[10px] font-bold uppercase tracking-[0.3em] text-orange-400/90">
+      <p className="relative text-[10px] font-bold uppercase tracking-[0.3em] text-[hsl(22_100%_60%)]/90">
         01 — AISTUDIYO
       </p>
-      <hr className="relative my-[1.5vw] border-none border-t border-white/15" />
+      <hr className="relative my-[1.5vw] border-none border-t border-white/[0.06]" />
 
       <div className="relative grid lg:grid-cols-[1.3fr_1fr] gap-8 items-end flex-1">
         <div>
           <motion.h1
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}
-            className="text-[clamp(2.8rem,9vw,9rem)] font-bold leading-[0.9] tracking-tight"
+            className="text-[clamp(2.375rem,7vw,4.5rem)] font-bold leading-[1.02] tracking-tight"
           >
             The AI <span className="text-gradient-hero">Operating System</span><br />
             for Social Media Creators
           </motion.h1>
-          <p className="mt-6 max-w-[52ch] text-[clamp(1rem,1.6vw,1.4rem)] text-white/70 leading-relaxed">
+          <p className="mt-5 max-w-[620px] text-[clamp(1rem,1.2vw,1.125rem)] text-[#A1A1AA] leading-relaxed">
             Create viral content, launch AI agents, automate workflows, and grow your audience — all from one cinematic creator OS.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link to="/signup" className="btn-premium px-6 h-12 rounded-full inline-flex items-center gap-2 text-sm font-semibold">
+          <div className="mt-7 flex flex-wrap gap-3">
+            <Link to="/signup" className="btn-premium px-6 h-12 rounded-xl inline-flex items-center gap-2 text-sm font-semibold">
               Start Creating <ArrowRight className="w-4 h-4" />
             </Link>
             <button
               onClick={() => document.querySelector('[aria-label="Quick Create"]')?.scrollIntoView({ behavior: "smooth" })}
-              className="px-6 h-12 rounded-full inline-flex items-center gap-2 text-sm font-semibold border border-white/20 bg-white/5 backdrop-blur hover:bg-white/10 transition-colors"
+              className="px-6 h-12 rounded-xl inline-flex items-center gap-2 text-sm font-semibold border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] transition-colors"
             >
               <PlayCircle className="w-4 h-4" /> Watch Demo
             </button>
@@ -69,7 +69,7 @@ export default function HeroScene() {
               animate={{ opacity: 1, y: 0, rotate: parseFloat(c.rot) }}
               transition={{ duration: 0.7, delay: c.delay }}
               style={{ top: c.top, left: c.left }}
-              className="absolute w-56 rounded-2xl bg-white/8 backdrop-blur-xl border border-white/15 p-3 shadow-elevated edge-glow"
+              className="absolute w-56 rounded-2xl bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] p-3"
             >
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-8 h-8 rounded-lg bg-gradient-hero flex items-center justify-center shadow-glow">
