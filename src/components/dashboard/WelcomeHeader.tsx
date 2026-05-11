@@ -36,9 +36,9 @@ export default function WelcomeHeader() {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="bento-hero !p-8 md:!p-12"
+      className="bento-hero !p-6 md:!p-10"
     >
-      <div className="flex flex-col md:flex-row items-center justify-between gap-10 relative">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-6 lg:gap-10 relative">
         {/* Left: copy + stat cards */}
         <div className="flex-1 w-full space-y-8 z-10">
           <div className="space-y-4">
@@ -74,11 +74,11 @@ export default function WelcomeHeader() {
           </div>
 
           {/* Stats Row */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
             {STATS.map((s) => (
               <div
                 key={s.label}
-                className="bg-white p-4 rounded-2xl border border-border/70 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
+                className="min-w-0 bg-white p-4 rounded-2xl border border-border/70 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
               >
                 <p className="text-muted-foreground text-[10px] font-semibold uppercase tracking-wider mb-1.5">
                   {s.label}
@@ -97,9 +97,9 @@ export default function WelcomeHeader() {
         </div>
 
         {/* Right: AI orb */}
-        <div className="relative flex items-center justify-center w-64 h-64 md:w-80 md:h-80 shrink-0">
-          <div className="absolute inset-0 bg-primary/20 blur-[100px] rounded-full pointer-events-none" />
-          <AIOrb size={280} />
+        <div className="relative flex items-center justify-center w-52 h-52 lg:w-64 lg:h-64 shrink-0">
+          <div className="absolute inset-0 bg-primary/25 blur-[90px] rounded-full pointer-events-none" />
+          <AIOrb size={220} />
         </div>
       </div>
     </motion.section>
