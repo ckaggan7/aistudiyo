@@ -1,11 +1,7 @@
 import { motion } from "framer-motion";
-import { Flame, Send, TrendingUp } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 
-const STATS = [
-  { icon: Flame,      label: "Posting streak", value: "7 days",  delta: "+2d this week",      accent: "text-orange-400" },
-  { icon: Send,       label: "Posts shipped",  value: "23",      delta: "8 scheduled",        accent: "text-primary" },
-  { icon: TrendingUp, label: "Reach delta",    value: "+18.4%",  delta: "vs. last 30 days",   accent: "text-emerald-400" },
-];
+const BARS = [38, 52, 41, 65, 48, 72, 58, 81, 67, 92, 78, 88];
 
 export default function CreatorMomentum() {
   return (
@@ -13,23 +9,29 @@ export default function CreatorMomentum() {
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: 0.2 }}
-      className="surface-floating rounded-2xl p-5"
+      className="card-bento h-full flex flex-col"
     >
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-sm">Creator momentum</h3>
-        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Last 30 days</span>
+      <div className="flex items-start justify-between mb-2">
+        <div>
+          <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Creator momentum</p>
+          <h3 className="text-2xl font-semibold tracking-tight mt-1">Last 30 days</h3>
+        </div>
+        <span className="chip chip-success">
+          <TrendingUp className="w-3 h-3" /> +18.4%
+        </span>
       </div>
-      <div className="grid sm:grid-cols-3 gap-2">
-        {STATS.map((s) => (
-          <div key={s.label} className="rounded-xl border border-border/40 bg-background/40 p-4">
-            <div className="flex items-center justify-between mb-2">
-              <s.icon className={`w-4 h-4 ${s.accent}`} />
-              <span className="text-[10px] text-muted-foreground">{s.delta}</span>
-            </div>
-            <p className="text-2xl font-semibold tracking-tight text-display">{s.value}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">{s.label}</p>
-          </div>
+      <div className="flex-1 flex items-end gap-1.5 mt-6 h-32">
+        {BARS.map((h, i) => (
+          <div
+            key={i}
+            className="flex-1 rounded-t-md bg-gradient-to-t from-primary/70 to-primary/30 hover:from-primary hover:to-primary/60 transition-colors"
+            style={{ height: `${h}%` }}
+          />
         ))}
+      </div>
+      <div className="flex items-center justify-between mt-3 text-[11px] text-muted-foreground">
+        <span>30d ago</span>
+        <span>Today</span>
       </div>
     </motion.section>
   );

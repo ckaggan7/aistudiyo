@@ -14,16 +14,8 @@ export function AmbientBackdrop({ className }: { className?: string }) {
       )}
     >
       <div
-        className="absolute -top-32 -left-32 h-[42rem] w-[42rem] rounded-full opacity-[0.18] blur-3xl"
+        className="absolute -top-40 -right-32 h-[36rem] w-[36rem] rounded-full opacity-[0.07] blur-3xl"
         style={{ background: "radial-gradient(closest-side, hsl(var(--primary)), transparent 70%)" }}
-      />
-      <div
-        className="absolute top-1/3 -right-40 h-[38rem] w-[38rem] rounded-full opacity-[0.12] blur-3xl"
-        style={{ background: "radial-gradient(closest-side, hsl(var(--accent)), transparent 70%)" }}
-      />
-      <div
-        className="absolute -bottom-40 left-1/3 h-[34rem] w-[34rem] rounded-full opacity-[0.10] blur-3xl"
-        style={{ background: "radial-gradient(closest-side, hsl(var(--primary-glow)), transparent 70%)" }}
       />
     </div>
   );

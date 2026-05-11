@@ -33,12 +33,12 @@ export default function RecentContentPacks() {
       initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.12, duration: 0.25 }}
-      className="surface-floating rounded-2xl p-5"
+      className="card-bento"
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
           <FolderOpen className="w-4 h-4 text-primary" />
-          <h3 className="font-semibold text-sm">Recent content packs</h3>
+          <h3 className="font-semibold text-base">Recent content packs</h3>
         </div>
         <Link
           to="/dashboard/media"
@@ -48,26 +48,26 @@ export default function RecentContentPacks() {
         </Link>
       </div>
 
-      <div className="space-y-1">
+      <div className="space-y-2">
         {packs.map((p) => (
           <div
             key={p.id}
-            className="group flex items-center gap-3 p-2 rounded-xl hover:bg-secondary/40 transition-colors"
+            className="group flex items-center gap-3 p-3 rounded-2xl border border-border/60 bg-muted/30 hover:bg-white hover:border-primary/30 hover:shadow-md transition-all"
           >
             <Link to="/dashboard/media" className="shrink-0">
               <img
                 src={p.image_url}
                 alt={p.prompt}
-                className="w-12 h-12 rounded-lg object-cover bg-secondary"
+                className="w-14 h-14 rounded-xl object-cover bg-secondary"
               />
             </Link>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{p.prompt || "Untitled pack"}</p>
-              <div className="flex gap-1 mt-1">
+              <p className="text-sm font-semibold truncate">{p.prompt || "Untitled pack"}</p>
+              <div className="flex gap-1.5 mt-1.5">
                 {BLOCKS.map((b) => (
                   <span
                     key={b}
-                    className="text-[10px] px-1.5 py-0.5 rounded-full bg-background border border-border/40 text-muted-foreground"
+                    className="text-[10px] px-2 py-0.5 rounded-full bg-white border border-border text-muted-foreground"
                   >
                     {b}
                   </span>
