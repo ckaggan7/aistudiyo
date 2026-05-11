@@ -1,24 +1,31 @@
 import { FlowSection } from "@/components/ui/story-scroll";
 import { motion } from "framer-motion";
 
-const HOOKS_A = [
-  "Nobody tells you this about scaling on Instagram…",
-  "I tested 50 viral hooks. Only 3 worked.",
-  "The 1 prompt that 10x'd my engagement.",
-  "Stop writing captions. Do this instead.",
-  "Your LinkedIn is leaving money on the table.",
-  "5 underrated AI tools for creators in 2026.",
+type Hook = { text: string; score: number };
+const HOOKS_A: Hook[] = [
+  { text: "Nobody tells you this about scaling on Instagram…", score: 94 },
+  { text: "I tested 50 viral hooks. Only 3 worked.",            score: 88 },
+  { text: "The 1 prompt that 10x'd my engagement.",             score: 96 },
+  { text: "Stop writing captions. Do this instead.",            score: 72 },
+  { text: "Your LinkedIn is leaving money on the table.",       score: 81 },
+  { text: "5 underrated AI tools for creators in 2026.",        score: 67 },
 ];
-const HOOKS_B = [
-  "#AIMarketing surging +312%",
-  "#FounderStory · top niche",
-  "#CreatorEconomy +180%",
-  "#Productivity · steady",
-  "#BrandBuilding +94%",
-  "#ViralHooks · fire",
+const HOOKS_B: Hook[] = [
+  { text: "#AIMarketing surging +312%", score: 98 },
+  { text: "#FounderStory · top niche",  score: 85 },
+  { text: "#CreatorEconomy +180%",      score: 91 },
+  { text: "#Productivity · steady",     score: 64 },
+  { text: "#BrandBuilding +94%",        score: 78 },
+  { text: "#ViralHooks · fire",         score: 95 },
 ];
 
-function Row({ items, dir = "left" }: { items: string[]; dir?: "left" | "right" }) {
+function scoreColor(score: number) {
+  if (score >= 90) return "330 88% 62%"; // hot pink
+  if (score >= 70) return "22 95% 55%";  // orange
+  return "45 95% 58%";                    // amber
+}
+
+function Row({ items, dir = "left" }: { items: Hook[]; dir?: "left" | "right" }) {
   const dup = [...items, ...items];
   return (
     <div className="relative overflow-hidden">
@@ -27,12 +34,23 @@ function Row({ items, dir = "left" }: { items: string[]; dir?: "left" | "right" 
         animate={{ x: dir === "left" ? ["0%", "-50%"] : ["-50%", "0%"] }}
         transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
       >
-        {dup.map((t, i) => (
-          <span key={i} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm text-white/80 backdrop-blur shrink-0">
-            <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" />
-            {t}
-          </span>
-        ))}
+        {dup.map((t, i) => {
+          const c = scoreColor(t.score);
+          return (
+            <span
+              key={i}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/5 border text-sm text-white/85 backdrop-blur shrink-0"
+              style={{ borderColor: `hsl(${c} / 0.3)` }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full animate-pulse"
+                style={{ background: `hsl(${c})`, boxShadow: `0 0 8px hsl(${c} / 0.9)` }} />
+              {t.text}
+              <span className="ml-1 text-[10px] font-bold tracking-wider" style={{ color: `hsl(${c})` }}>
+                {t.score}
+              </span>
+            </span>
+          );
+        })}
       </motion.div>
     </div>
   );
