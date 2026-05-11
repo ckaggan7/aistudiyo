@@ -14,7 +14,7 @@ export default function DashboardHome() {
   return (
     <div className="max-w-[1440px] mx-auto pb-24 lg:pb-6">
       {/* Unified bento mosaic — every section is a tile */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 auto-rows-min">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 auto-rows-min">
         {/* Row 1 — hero spans full width */}
         <div className="lg:col-span-12">
           <WelcomeHeader />
