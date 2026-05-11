@@ -65,6 +65,49 @@ const VIDEO_ENGINES = [
   { id: "pika-2", name: "Pika 2.0", desc: "Stylised short clips", badge: "Stylised", gradient: "from-pink-400 to-accent" },
 ];
 
+// Quick-apply filter presets — clicking a filter bakes its prompt into generation.
+type Filter = { name: string; emoji: string; category: string; prompt: string };
+const FILTERS: Filter[] = [
+  // Photo
+  { name: "Cinematic", emoji: "🎬", category: "Photo", prompt: "cinematic photo, dramatic lighting, shallow depth of field, color graded, anamorphic lens, film grain" },
+  { name: "Golden Hour", emoji: "🌅", category: "Photo", prompt: "warm golden hour sunlight, soft amber tones, hazy backlight, lens flare, magazine photography" },
+  { name: "Studio Portrait", emoji: "📸", category: "Photo", prompt: "studio portrait, softbox lighting, clean grey backdrop, sharp focus, editorial photography" },
+  { name: "Film Grain", emoji: "🎞️", category: "Photo", prompt: "35mm film photo, kodak portra 400, natural grain, warm tones, analog feel" },
+  { name: "Black & White", emoji: "⚫", category: "Photo", prompt: "dramatic black and white photograph, high contrast, deep shadows, fine grain, gallery print" },
+  { name: "Macro", emoji: "🔍", category: "Photo", prompt: "extreme macro photo, ultra detailed, shallow focus, dewdrop reflections, studio lighting" },
+  // Art
+  { name: "Watercolor", emoji: "🎨", category: "Art", prompt: "loose watercolor painting on textured paper, soft washes, bleed edges, light pencil sketch underlay" },
+  { name: "Oil Painting", emoji: "🖼️", category: "Art", prompt: "classical oil painting, thick impasto brush strokes, rich color palette, Rembrandt lighting" },
+  { name: "Sketch", emoji: "✏️", category: "Art", prompt: "graphite pencil sketch on textured paper, cross-hatching, expressive lines, artist study" },
+  { name: "Ink Doodle", emoji: "🖊️", category: "Art", prompt: "loose hand-drawn ink doodle, playful imperfect lines on white paper, scribble cartoon style" },
+  { name: "Pop Art", emoji: "💥", category: "Art", prompt: "bold pop art illustration, halftone dots, thick black outlines, saturated primary colors, Lichtenstein style" },
+  // 3D
+  { name: "3D Clay", emoji: "🧱", category: "3D", prompt: "cute 3D clay render character, soft matte material, studio lighting, octane render, isometric angle" },
+  { name: "Pixar", emoji: "✨", category: "3D", prompt: "Pixar style 3D animated character, expressive big eyes, polished render, cinematic key light, friendly mood" },
+  { name: "Isometric", emoji: "📦", category: "3D", prompt: "clean isometric 3D illustration, pastel palette, miniature diorama, soft shadows, blender render" },
+  { name: "Low Poly", emoji: "🔺", category: "3D", prompt: "low-poly 3D render, faceted geometry, flat shaded triangles, modern minimal aesthetic" },
+  // Anime
+  { name: "Anime", emoji: "🌸", category: "Anime", prompt: "vibrant anime illustration, cel shading, expressive line art, studio ghibli inspired color palette" },
+  { name: "Chibi", emoji: "🍡", category: "Anime", prompt: "cute chibi anime character, big sparkly eyes, pastel pastel background, sticker style, kawaii vibes" },
+  { name: "Manga B&W", emoji: "🖋️", category: "Anime", prompt: "black and white manga panel, screentone shading, dynamic ink lines, comic book composition" },
+  // Retro
+  { name: "80s Synthwave", emoji: "🌴", category: "Retro", prompt: "80s synthwave aesthetic, neon magenta and cyan grid horizon, retro chrome, vaporwave sun, palm silhouette" },
+  { name: "70s Groovy", emoji: "🪩", category: "Retro", prompt: "70s groovy retro illustration, warm orange mustard brown palette, halftone texture, vintage typography vibe" },
+  { name: "Polaroid", emoji: "📷", category: "Retro", prompt: "vintage polaroid photo, faded warm colors, soft focus, light leak, white border, nostalgic mood" },
+  { name: "Risograph", emoji: "🟪", category: "Retro", prompt: "risograph print, 2 ink colors only, halftone dots, slight misregistration, bold graphic design feel" },
+  // Futuristic
+  { name: "Cyberpunk", emoji: "🌃", category: "Futuristic", prompt: "cyberpunk neon city scene, holographic signage, rain-soaked streets, dramatic teal and magenta lighting, blade runner aesthetic" },
+  { name: "Holographic", emoji: "💿", category: "Futuristic", prompt: "iridescent holographic chrome surface, rainbow shimmer, glossy metallic foil, ultra clean reflections" },
+  { name: "Glassmorph", emoji: "🧊", category: "Futuristic", prompt: "frosted glass morphism aesthetic, soft pastel light, translucent layers, subtle highlights, premium product render" },
+  // Mood
+  { name: "Dreamy", emoji: "☁️", category: "Mood", prompt: "soft dreamy ethereal scene, pastel haze, glowing rim light, fairytale atmosphere, gentle gradients" },
+  { name: "Dark Moody", emoji: "🌑", category: "Mood", prompt: "dark moody scene, deep shadows, single warm light source, rich blacks, atmospheric depth, noir feel" },
+  { name: "Minimal", emoji: "⚪", category: "Mood", prompt: "minimalist composition, lots of negative space, single subject, neutral palette, editorial clean look" },
+];
+
+const FILTER_CATEGORIES = ["All", "Photo", "Art", "3D", "Anime", "Retro", "Futuristic", "Mood"] as const;
+type Category = typeof FILTER_CATEGORIES[number];
+
 type Generation = {
   id: string;
   prompt: string;
