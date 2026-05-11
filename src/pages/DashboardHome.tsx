@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import ScheduledPostsPanel from "@/components/scheduled/ScheduledPostsPanel";
+import AnnouncementBanner from "@/components/dashboard/AnnouncementBanner";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 10 },
@@ -44,6 +45,7 @@ export default function DashboardHome() {
 
   return (
     <div className="max-w-6xl mx-auto">
+      <AnnouncementBanner />
       {/* Hero */}
       <motion.section
         initial="hidden" animate="visible" variants={fadeUp} custom={0}
