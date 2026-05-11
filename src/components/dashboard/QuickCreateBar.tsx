@@ -63,7 +63,7 @@ export default function QuickCreateBar({ initial = "" }: { initial?: string }) {
           <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-1">Quick create</p>
           <h3 className="text-xl font-semibold tracking-tight">What do you want to create?</h3>
         </div>
-        <div className={`relative flex items-stretch gap-2 bg-white rounded-2xl border-2 px-3 py-2.5 transition-all ${focused ? "border-primary/60 shadow-[0_0_0_4px_hsl(22_100%_55%/0.12)]" : "border-border/60"}`}>
+        <div className={`relative flex items-stretch gap-2 bg-white rounded-2xl border-2 px-3 py-2 transition-all ${focused ? "border-primary/60 shadow-[0_0_0_4px_hsl(22_100%_55%/0.12)]" : "border-border/60"}`}>
           <div className="self-center shrink-0 w-10 h-10 rounded-xl bg-gradient-hero flex items-center justify-center shadow-glow">
             <Sparkles className="w-4 h-4 text-primary-foreground" />
           </div>
@@ -85,7 +85,7 @@ export default function QuickCreateBar({ initial = "" }: { initial?: string }) {
           </button>
         </div>
 
-        <div className="flex gap-2 mt-4 overflow-x-auto pb-0.5 scrollbar-thin">
+        <div className="flex gap-2 mt-3 overflow-x-auto pb-0.5 scrollbar-thin">
           {CHIPS.map((c) => (
             <button
               key={c.label}
