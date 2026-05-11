@@ -1,87 +1,50 @@
-import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import {
-  Sparkles, Bot, LayoutTemplate, Image as ImageIcon,
-  CalendarClock, Brain, Flame,
-} from "lucide-react";
+import { Sparkles, Bot, Zap, Palette, Film, ArrowRight } from "lucide-react";
 
-type Item = {
-  tag: string;
-  title: string;
-  desc: string;
-  to: string;
-  gradient: string;
-  Icon: React.ComponentType<{ className?: string }>;
-};
-
-const ITEMS: Item[] = [
-  { tag: "NEW AGENT",     title: "Trend Hunter Agent",    desc: "Auto-detects viral trends in your niche, daily.", to: "/dashboard/agents",    gradient: "from-violet-500 via-fuchsia-500 to-primary",  Icon: Bot },
-  { tag: "TEMPLATES",     title: "Viral Hook Pack v3",    desc: "120 scroll-stopping hooks across 8 niches.",      to: "/dashboard/templates", gradient: "from-primary via-orange-500 to-rose-500",     Icon: LayoutTemplate },
-  { tag: "STUDIO BETA",   title: "Carousel Studio",       desc: "Generate 10-slide carousels in one prompt.",      to: "/dashboard/design",    gradient: "from-cyan-500 via-blue-500 to-indigo-500",    Icon: ImageIcon },
-  { tag: "AUTOPILOT",     title: "Instagram Auto-Publish",desc: "Schedule + publish without lifting a finger.",    to: "/dashboard/calendar",  gradient: "from-pink-500 via-rose-500 to-orange-500",    Icon: CalendarClock },
-  { tag: "AI BRAIN v2",   title: "Smarter Content Pack",  desc: "Hooks, captions, CTAs, scores — in one call.",    to: "/dashboard/generator", gradient: "from-emerald-500 via-teal-500 to-cyan-500",   Icon: Brain },
-  { tag: "CREATOR TIP",   title: "Best Posting Times",    desc: "Audience data says Tue 7:42pm. Don't sleep on it.",to: "/dashboard/trends",   gradient: "from-amber-400 via-orange-500 to-rose-500",   Icon: Flame },
+const ITEMS = [
+  { icon: Bot,      tag: "New agent",   title: "Viral Hook AI",      desc: "Ship 10 hooks in 30s",    to: "/dashboard/agents",                  bg: "from-orange-500/15 to-pink-500/15",    fg: "text-orange-700" },
+  { icon: Film,     tag: "Trend pack",  title: "POV Creator Desk",   desc: "Reels +38% this week",    to: "/dashboard/trends",                  bg: "from-violet-500/15 to-blue-500/15",    fg: "text-violet-700" },
+  { icon: Palette,  tag: "Template",    title: "Pastel Carousel",    desc: "10-slide LinkedIn pack",  to: "/dashboard/generator?contentType=carousel", bg: "from-sky-500/15 to-cyan-400/15", fg: "text-sky-700" },
+  { icon: Zap,      tag: "AI release",  title: "Gemini 3 Flash",     desc: "2× faster, sharper hooks", to: "/dashboard/generator",              bg: "from-emerald-500/15 to-teal-500/15",   fg: "text-emerald-700" },
+  { icon: Sparkles, tag: "Format",      title: "9:16 Story Reels",   desc: "Auto-format for shorts",  to: "/dashboard/image-studio",            bg: "from-pink-500/15 to-rose-500/15",      fg: "text-pink-700" },
+  { icon: Bot,      tag: "New agent",   title: "Campaign Strategist", desc: "7-day plans, hands-free", to: "/dashboard/agents",                 bg: "from-amber-500/15 to-orange-500/15",   fg: "text-amber-700" },
 ];
 
 export default function WhatsNewCarousel() {
-  const scrollerRef = useRef<HTMLDivElement>(null);
-  const [paused, setPaused] = useState(false);
-
-  useEffect(() => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    const t = setInterval(() => {
-      if (paused) return;
-      const card = el.querySelector<HTMLElement>("[data-card]");
-      const step = card ? card.offsetWidth + 12 : 320;
-      const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4;
-      el.scrollTo({ left: atEnd ? 0 : el.scrollLeft + step, behavior: "smooth" });
-    }, 3500);
-    return () => clearInterval(t);
-  }, [paused]);
-
   return (
     <motion.section
-      initial={{ opacity: 0, y: 4 }}
+      initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.05, duration: 0.25 }}
-      className="mb-6"
+      transition={{ duration: 0.35, delay: 0.1 }}
+      className="card-bento"
     >
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-primary" />
-          <h3 className="font-semibold text-sm">What's new</h3>
+          <Zap className="w-4 h-4 text-primary" />
+          <h3 className="font-semibold text-base">What's new</h3>
         </div>
-        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Updated daily</span>
+        <span className="chip">Fresh today</span>
       </div>
 
-      <div
-        ref={scrollerRef}
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-        className="flex gap-2.5 overflow-x-auto snap-x snap-mandatory pb-2 -mx-1 px-1 scroll-smooth"
-        style={{ scrollbarWidth: "none" }}
-      >
+      <div className="flex gap-4 overflow-x-auto pb-2 -mx-1 px-1 snap-x scrollbar-thin">
         {ITEMS.map((it) => (
           <Link
             key={it.title}
-            data-card
             to={it.to}
-            className="group relative snap-start shrink-0 w-[240px] rounded-2xl overflow-hidden border border-border/40 bg-card hover:-translate-y-0.5 hover:border-primary/30 transition-all"
+            className={`group snap-start shrink-0 w-[260px] rounded-2xl border border-border/60 p-5 bg-gradient-to-br ${it.bg} hover:shadow-md transition-all relative overflow-hidden`}
           >
-            <div className={`relative h-24 bg-gradient-to-br ${it.gradient}`}>
-              <div className="relative h-full p-3 flex flex-col justify-between">
-                <span className="self-start text-[10px] font-bold tracking-wider text-white/90 px-2 py-0.5 rounded-full bg-black/25">
-                  {it.tag}
-                </span>
-                <it.Icon className="w-5 h-5 text-white self-end" />
+            <div className="flex items-center justify-between mb-8">
+              <div className="w-10 h-10 rounded-xl bg-white/80 backdrop-blur flex items-center justify-center shadow-sm">
+                <it.icon className={`w-5 h-5 ${it.fg}`} />
               </div>
+              <span className={`text-[10px] font-semibold uppercase tracking-wider ${it.fg}`}>
+                {it.tag}
+              </span>
             </div>
-            <div className="p-3">
-              <p className="font-semibold text-sm">{it.title}</p>
-              <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{it.desc}</p>
-            </div>
+            <p className="text-base font-semibold tracking-tight">{it.title}</p>
+            <p className="text-xs text-foreground/60 mt-1">{it.desc}</p>
+            <ArrowRight className="absolute bottom-4 right-4 w-4 h-4 text-foreground/40 group-hover:translate-x-0.5 group-hover:text-foreground transition-all" />
           </Link>
         ))}
       </div>
