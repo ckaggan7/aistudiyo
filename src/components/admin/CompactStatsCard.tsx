@@ -16,17 +16,17 @@ export function CompactStatsCard({ label, value, hint, icon: Icon, loading, tren
   const positive = (trend ?? 0) >= 0;
   return (
     <div className={cn(
-      "rounded-xl border border-border/50 bg-card/60 backdrop-blur p-4 hover:border-primary/30 transition-colors",
+      "rounded-xl border border-border/40 bg-card/95 p-3 hover:border-primary/30 transition-colors",
       className,
     )}>
       <div className="flex items-center justify-between gap-2">
-        <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">{label}</span>
-        {Icon && <Icon className="w-3.5 h-3.5 text-muted-foreground" />}
+        <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">{label}</span>
+        {Icon && <Icon className="w-3 h-3 text-muted-foreground" />}
       </div>
       {loading ? (
-        <Skeleton className="h-7 w-20 mt-2" />
+        <Skeleton className="h-6 w-16 mt-1.5" />
       ) : (
-        <div className="mt-1 text-2xl font-bold tabular-nums tracking-tight">{value}</div>
+        <div className="mt-0.5 text-xl font-bold tabular-nums tracking-tight">{value}</div>
       )}
       <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-muted-foreground">
         {typeof trend === "number" && (
