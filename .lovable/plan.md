@@ -1,122 +1,61 @@
 
-# AISTUDIYO — Pro Max Creator OS Plan
+# Gen-Z × Apple Bento Dashboard Redesign
 
-A focused, phased redesign that keeps the existing architecture (routes, Supabase, auth, theme presets) and upgrades the visual + interaction layer into a cinematic, creator-first AI OS.
+Restyle the `/dashboard` route into a light, Apple-grade bento grid. Frontend/presentation only — no backend, no data changes.
 
-## Phase 1 — Global Design Intelligence System
+## Design tokens (src/index.css)
 
-Goal: one connected look across every page.
+- Canvas: `--background: 0 0% 98.5%`, `--foreground: 222 20% 12%`
+- Surface: pure white cards with subtle border `222 15% 92%` and soft shadow `0 1px 2px rgba(15,23,42,.04), 0 8px 24px -12px rgba(15,23,42,.08)`
+- Keep orange `--primary: 22 100% 55%` as the single accent
+- Add utility classes:
+  - `.card-bento` — `bg-white rounded-[28px] border border-border/60 shadow-[var(--shadow-bento)] p-6 transition-all hover:shadow-lg hover:-translate-y-0.5`
+  - `.card-bento-accent` — orange-filled variant, white text
+  - `.card-bento-dark` — slate-900 variant for the AI hero tile
+  - `.text-display` — `text-4xl md:text-5xl font-semibold tracking-tight`
+  - `.chip` — small pill for labels/metrics
 
-- `src/index.css`
-  - Refine dark tokens to spec: bg `#0A0A0B` matte, text `#F5F5F5`, secondary `#A1A1AA`, border `rgba(255,255,255,0.06)`, primary `#FF7A1A`, soft `#FFB06A`.
-  - Add utilities: `.surface-glass`, `.surface-floating`, `.ambient-bg`, `.edge-light`, `.ring-soft`, `.text-display`, `.hover-lift`, `.motion-rise`.
-  - Reduce shadow weight; replace heavy glows with subtle edge lighting + 1px inner highlight.
-  - Add ambient gradient blobs as a reusable `<AmbientBackdrop />` component (3 soft orange/violet orbs, blurred, fixed behind app).
-- `src/lib/themes.ts` — keep 6 presets (Orange Blaze, Cyber Blue, Neon Purple, Emerald Flow, Crimson Red, Midnight Graphite). Already mostly there; tune values to new neutral baseline.
-- New `src/components/ui/ambient-backdrop.tsx` and `src/components/ui/floating-panel.tsx` (glass card with consistent radius/border/shadow) used everywhere instead of ad-hoc styling.
-- Motion: add `src/lib/motion.ts` with shared Framer variants (`rise`, `fadeUp`, `stagger`, `pressable`).
+## Layout shell (src/components/DashboardLayout.tsx)
 
-## Phase 2 — Dashboard Shell (3-column OS layout)
+- Off-white page background, remove heavy ambient orbs (keep one faint gradient blob top-right)
+- Sidebar: solid white, rounded-[24px] island with 16px gap from edges, orange logo tile, nav items as `rounded-2xl`, active = `bg-orange-50 text-primary`
+- AI Dock: white pill on right rail
 
-`src/components/DashboardLayout.tsx` becomes:
+## DashboardHome bento grid (src/pages/DashboardHome.tsx)
 
-```text
-┌─────────────────────────────────────────────────────────┐
-│  Floating Sidebar │     Workspace      │   AI Dock      │
-│  (icons + labels) │   (page content)   │  (collapsible) │
-└─────────────────────────────────────────────────────────┘
-```
-
-- Sidebar: floating glass panel (`m-3 rounded-2xl`), icon-first, soft orange active pill, collapsible to icon-only on `<lg`.
-- Top header: slimmer (h-14), workspace switcher left, ⌘K + profile right, no border — separated by ambient backdrop.
-- New `src/components/dashboard/AIDock.tsx` (right rail, 320px, collapsible): sections for AI suggestions, trend alerts, posting reminders, creator insights. Hidden on `<xl`, toggle button in header.
-- Mobile: sidebar becomes drawer; AI Dock becomes bottom sheet trigger.
-
-## Phase 3 — Home ("Mission Control")
-
-`src/pages/DashboardHome.tsx` reordered + restyled:
-
-1. `WelcomeHero` (rebuilt) — left greeting + dynamic subtitle rotation; right floating mini-analytics + last content snapshot.
-2. `QuickCreateBar` (upgraded) — large floating input with animated placeholder rotation, glow focus ring, typing shimmer, suggestion chips below.
-3. `WhatsNewCarousel` — cinematic horizontal scroller with snap + glow hover.
-4. `TrendingIdeasStrip`
-5. `AISuggestions`
-6. `AgentsStrip`
-7. `RecentContentPacks`
-8. New `CalendarPreview` (next 7 days mini-strip linking to /calendar)
-9. New `TrendingSocialDates` (compact strip)
-10. New `CreatorMomentum` (3 KPI tiles: streak, posts, reach delta)
-
-All sections wrapped in `<FloatingPanel>` for visual consistency; spacing rhythm 24/32/48.
-
-## Phase 4 — Image Studio Pro Max
-
-`src/pages/ImageStudio.tsx` restructured to 3-pane:
+12-col grid, `gap-6`, max-w-[1400px]:
 
 ```text
-[Prompt Tools] [ Canvas ] [Generation Controls]
+┌───────────────────────── Welcome (12) ─────────────────────────┐
+├──── Streak (3) ──┬── Posts (3) ──┬── Reach accent (3) ──┬ Credits (3) ┤
+├──────── Quick Create (8) ────────┬──── AI Suggestions stack (4) ──────┤
+├──────── Creator Momentum chart (8) ──────┬──── AI Team tiles (4) ─────┤
+├──────────────── Upcoming moments horizontal scroll (12) ──────────────┤
+└──────────────────── Recent content packs (12) ────────────────────────┘
 ```
 
-- Left: prompt input, style preset chips (existing FILTERS system kept), aspect-ratio presets (1:1, 9:16, 4:5, 16:9), brand color picker.
-- Center: large dark canvas, floating toolbar (download, regenerate, variations, edit), drag-zoom.
-- Right: model, quality, seed, count, history thumbnails.
-- New tabs at top: Image / Carousel / Thumbnail / Reel Cover / Ad Creative (each preloads prompt scaffolds + ratio).
+Remove duplicates: drop the standalone stat row inside `CreatorMomentum` (stats now live in top bento), keep only the chart.
 
-## Phase 5 — AI Agents Pro Max
+## Component restyling (presentation only)
 
-`src/pages/AgentBuilder.tsx` (or agents route) gets a grid of "team" cards:
+- `WelcomeHeader.tsx` — large display headline + subtle subline, no card wrapper
+- `QuickCreateBar.tsx` — `.card-bento`, chips become rounded-2xl tappable tiles
+- `CreatorMomentum.tsx` — `.card-bento`, chart only, soft gridlines
+- `AgentsStrip.tsx` — 2×2 mini-tiles inside a single `.card-bento`, each agent is a rounded-2xl inner tile with icon + 2-line label
+- `AISuggestions.tsx` — 3 stacked rounded-2xl rows inside one `.card-bento`, primary CTA on hover
+- `TrendingSocialDates.tsx` — `.card-bento`, horizontal snap-scroll row of date pills
+- `RecentContentPacks.tsx` — `.card-bento`, 4-column grid of pack cards
+- `AIDock.tsx` — white floating pill, orange send button
+- `ambient-backdrop.tsx` — reduce opacity to ~0.06, single blob
 
-- 8 agent personas (Instagram Growth, Viral Hook, LinkedIn Branding, Repurposing, Trend Hunter, Engagement, Campaign Strategist, Research).
-- Each card: avatar orb (themed gradient), pulse "online" dot, one-line personality, current task, quick actions (Run, Configure, Pause).
-- Detail drawer on click: recent outputs, suggestions, schedule.
+## Stat cards (new inline in DashboardHome)
 
-## Phase 6 — Calendar Sync + Social Dates Engine
+Four equal cards: Streak (white), Posts shipped (white), **Reach +18% (`.card-bento-accent` orange)**, Credits (white). Each: tiny label, big number, delta chip.
 
-`src/pages/ContentCalendar.tsx`:
+## Out of scope
 
-- Dark month/week view, orange highlight for today, glow ring for AI-suggested slots, event chips with platform icon.
-- Drag-drop scheduled posts (dnd-kit already in deps or add `@dnd-kit/core`).
-- Right side panel: AI suggestions for empty slots ("Post a reel at 7pm — peak audience").
-- New `socialDates.ts` dataset (holidays, IPL, AI Day, Friendship Day, awareness days) shown as marker pills under date cells with "Generate post" CTA → routes to generator prefilled.
+Calendar, Image Studio, Agents, Trends, Analytics, Auth, marketing pages. They inherit the new light tokens automatically; no further edits.
 
-## Phase 7 — Content Packs Pro Max
+## Files touched
 
-Pack viewer (used after generation) restructured into modular swipeable cards:
-
-1. Viral Hooks · 2. Caption · 3. CTAs · 4. Hashtags · 5. Carousel Slides · 6. Reel Script · 7. Image Prompts · 8. Posting Strategy.
-
-Each card: regenerate button, copy, edit-in-place, status pill. Mobile uses horizontal snap; desktop shows 2-col masonry.
-
-## Phase 8 — Animation + Mobile Polish
-
-- Framer Motion page transitions (fade+rise 200ms).
-- Hover lift on all interactive cards (-2px translate, border brighten).
-- Mobile: sidebar drawer, AI dock bottom sheet, QuickCreate sticky bottom on dashboard home, swipe between pack cards.
-
-## Technical Details
-
-- Files created (new):
-  - `src/components/ui/ambient-backdrop.tsx`
-  - `src/components/ui/floating-panel.tsx`
-  - `src/components/dashboard/AIDock.tsx`
-  - `src/components/dashboard/CalendarPreview.tsx`
-  - `src/components/dashboard/TrendingSocialDates.tsx`
-  - `src/components/dashboard/CreatorMomentum.tsx`
-  - `src/lib/motion.ts`
-  - `src/lib/socialDates.ts`
-- Files edited (major): `index.css`, `DashboardLayout.tsx`, `DashboardHome.tsx`, `WelcomeHeader.tsx`, `QuickCreateBar.tsx`, `WhatsNewCarousel.tsx`, `ImageStudio.tsx`, `ContentCalendar.tsx`, `AgentBuilder.tsx`, pack viewer components.
-- No backend / schema changes. No new dependencies required (framer-motion + dnd already in tree; add `@dnd-kit/core` only if calendar drag is in scope this round).
-- Theme switching stays in ProfileMenu via existing `ThemeSwitcherDialog`.
-
-## Suggested execution order (per turn)
-
-1. Tokens + AmbientBackdrop + FloatingPanel + motion lib.
-2. DashboardLayout shell (sidebar + AI dock).
-3. Home redesign (Hero + QuickCreate + new strips).
-4. Image Studio 3-pane.
-5. Agents grid.
-6. Calendar + Social Dates.
-7. Content Pack viewer.
-8. Mobile + animation polish pass.
-
-This keeps each step shippable and lets you preview progress without breaking other routes.
+`src/index.css`, `src/components/DashboardLayout.tsx`, `src/components/ambient-backdrop.tsx`, `src/components/dashboard/WelcomeHeader.tsx`, `QuickCreateBar.tsx`, `CreatorMomentum.tsx`, `AgentsStrip.tsx`, `AISuggestions.tsx`, `TrendingSocialDates.tsx`, `RecentContentPacks.tsx`, `AIDock.tsx`, `src/pages/DashboardHome.tsx`.
