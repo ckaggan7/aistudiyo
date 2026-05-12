@@ -23,6 +23,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useSearchParams } from "react-router-dom";
+import {
+  IMAGE_STYLES,
+  IMAGE_STYLE_CATEGORIES,
+  type ImageStyle,
+  type ImageStyleCategory,
+} from "@/lib/imageStyles";
 
 type Style = {
   name: string;
@@ -30,24 +36,6 @@ type Style = {
   thumb: string;
   prompt: string;
 };
-
-const IMAGE_STYLES: Style[] = [
-  { name: "Scribble", desc: "Hand-drawn cartoon doodle style", thumb: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=600&h=600&fit=crop", prompt: "as a loose hand-drawn cartoon scribble doodle in black ink with playful imperfect lines on white paper" },
-  { name: "Animal Infographic", desc: "Educational dark blue with diagrams", thumb: "https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=600&h=600&fit=crop", prompt: "as an educational infographic on a deep navy background with cream callouts, dotted lines, vintage scientific diagram aesthetic" },
-  { name: "Chibi Stickers", desc: "Cute anime chibi on pastel", thumb: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&h=600&fit=crop", prompt: "in a cute chibi anime sticker style with big eyes, pastel pink background, sparkles and heart decorations, clean vector illustration" },
-  { name: "Luxe Collage", desc: "Photorealistic fashion editorial", thumb: "https://images.unsplash.com/photo-1485518882345-15568b007407?w=600&h=600&fit=crop", prompt: "as a luxe high-fashion editorial photo collage, 35mm film grain, cinematic lighting, magazine cover composition" },
-  { name: "Makeup Guide", desc: "Beauty tutorial grid layout", thumb: "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=600&h=600&fit=crop", prompt: "as a beauty tutorial grid layout with arrows, swatches and step labels in clean editorial typography" },
-  { name: "Monochrome", desc: "Dramatic black & white portrait", thumb: "https://images.unsplash.com/photo-1463453091185-61582044d556?w=600&h=600&fit=crop", prompt: "as a dramatic high-contrast black and white portrait, deep shadows, fine grain, gallery photography" },
-  { name: "Technicolor", desc: "Bold geometric colorblock", thumb: "https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=600&h=600&fit=crop", prompt: "as a bold technicolor geometric colorblock composition with dramatic shadows, saturated reds, blues and yellows" },
-  { name: "Gothic Clay", desc: "3D clay character, gothic mood", thumb: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=600&h=600&fit=crop", prompt: "as a detailed 3D clay render in a gothic Victorian environment with dramatic candlelight, dark stone walls, and moody atmosphere" },
-  { name: "Risograph", desc: "2-color riso print, halftone", thumb: "https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=600&h=600&fit=crop", prompt: "as a risograph print with only 2 ink colors, halftone dots, slight misregistration, bold graphic design aesthetic" },
-  { name: "Dynamite", desc: "Cinematic action movie poster", thumb: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=600&h=600&fit=crop", prompt: "as a cinematic action movie poster with explosive lighting, lens flares, bold typography space, dramatic hero pose" },
-  { name: "Salon", desc: "Editorial fashion portrait, neutral", thumb: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&h=600&fit=crop", prompt: "as an editorial salon fashion portrait with neutral tones, soft window light, minimalist composition" },
-  { name: "Steampunk", desc: "Victorian sci-fi, dramatic skies", thumb: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=600&h=600&fit=crop", prompt: "in steampunk style with brass gears, Victorian sci-fi architecture, dramatic stormy skies, sepia color palette" },
-  { name: "Sketch", desc: "Pencil drawing on paper", thumb: "https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8?w=600&h=600&fit=crop", prompt: "as a detailed graphite pencil sketch on textured paper, cross-hatching, artistic shading" },
-  { name: "Noir Room", desc: "Moody dimly lit interior", thumb: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=600&h=600&fit=crop", prompt: "as a film noir scene in a dimly lit interior, harsh window blinds shadows, smoke, 1940s cinematography" },
-  { name: "Golden Hour", desc: "Warm sunset landscape", thumb: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&h=600&fit=crop", prompt: "in golden hour landscape lighting, warm amber sun rays, soft haze, breathtaking natural scenery" },
-];
 
 const STICKER_STYLES: Style[] = [
   { name: "Cartoon Pop", desc: "Bold cartoon sticker", thumb: "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=600&h=600&fit=crop", prompt: "as a die-cut cartoon sticker with thick white outline, vivid pop colors, transparent background, bold and playful" },
