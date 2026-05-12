@@ -22,6 +22,9 @@ export default function DashboardHome() {
         <div className="lg:col-span-5"><AISuggestions /></div>
       </div>
 
+      {/* What's new — full row */}
+      <WhatsNewCarousel />
+
       {/* Band 3 — Discover */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         <div className="lg:col-span-5"><AgentsStrip /></div>
@@ -31,9 +34,8 @@ export default function DashboardHome() {
 
       {/* Band 4 — Plan */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        <div className="lg:col-span-5"><WhatsNewCarousel /></div>
-        <div className="lg:col-span-4"><RecentContentPacks /></div>
-        <div className="lg:col-span-3"><CalendarPreview /></div>
+        <div className="lg:col-span-8"><RecentContentPacks /></div>
+        <div className="lg:col-span-4"><CalendarPreview /></div>
       </div>
 
       {/* Band 5 — Pulse */}
