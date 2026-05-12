@@ -43,7 +43,9 @@ export default function BrandVoiceBar({
       const { data } = await supabase.from("brand_profile").update(payload).eq("id", profile.id).select().single();
       row = data;
     } else {
-      const { data } = await supabase.from("brand_profile").insert(payload).select().single();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setSaving(false); toast.error("Please sign in"); return; }
+      const { data } = await supabase.from("brand_profile").insert({ ...payload, user_id: user.id }).select().single();
       row = data;
     }
     setSaving(false);
