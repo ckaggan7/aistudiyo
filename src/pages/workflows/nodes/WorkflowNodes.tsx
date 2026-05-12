@@ -1,8 +1,21 @@
 import { Handle, Position, NodeProps } from "@xyflow/react";
 import { Zap, Sparkles, Image as ImageIcon, GitBranch, Wand2, Send, Database } from "lucide-react";
+import type { ElementType } from "react";
 import { cn } from "@/lib/utils";
 
-const NODE_META: Record<string, { icon: any; label: string; color: string }> = {
+export type NodeData = {
+  nodeType: string;
+  label?: string;
+  description?: string;
+  config?: {
+    prompt?: string;
+    template?: string;
+    left?: string;
+    [key: string]: unknown;
+  };
+};
+
+const NODE_META: Record<string, { icon: ElementType; label: string; color: string }> = {
   trigger: { icon: Zap, label: "Trigger", color: "from-amber-500 to-orange-600" },
   "ai-text": { icon: Sparkles, label: "AI Text", color: "from-orange-500 to-rose-500" },
   "ai-image": { icon: ImageIcon, label: "AI Image", color: "from-fuchsia-500 to-orange-500" },
@@ -13,14 +26,15 @@ const NODE_META: Record<string, { icon: any; label: string; color: string }> = {
 };
 
 function NodeShell({ data, selected, isEntry, isExit }: NodeProps & { isEntry?: boolean; isExit?: boolean }) {
-  const meta = NODE_META[(data as any).nodeType] ?? NODE_META.trigger;
+  const d = data as NodeData;
+  const meta = NODE_META[d.nodeType] ?? NODE_META.trigger;
   const Icon = meta.icon;
-  const cfg = (data as any).config ?? {};
+  const cfg = d.config ?? {};
   const summary =
     cfg.prompt?.slice(0, 60) ||
     cfg.template?.slice(0, 60) ||
     cfg.left ||
-    (data as any).description ||
+    d.description ||
     "Click to configure";
 
   return (
@@ -45,7 +59,7 @@ function NodeShell({ data, selected, isEntry, isExit }: NodeProps & { isEntry?: 
       </div>
       <div className="px-3 py-2.5">
         <p className="text-sm font-semibold text-foreground truncate">
-          {(data as any).label ?? meta.label}
+          {d.label ?? meta.label}
         </p>
         <p className="text-[11px] text-muted-foreground line-clamp-2 mt-0.5">{summary}</p>
       </div>

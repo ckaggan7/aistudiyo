@@ -35,16 +35,21 @@ export default function AIInsightsDock() {
       supabase.from("ai_providers").select("name,status,enabled"),
     ]);
 
-    const sum = (rows: any[] | null) => (rows ?? []).reduce((s, r) => s + Number(r.cost_usd ?? 0), 0);
+    const sum = (rows: { cost_usd?: string | number | null }[] | null) =>
+      (rows ?? []).reduce((s, r) => s + Number(r.cost_usd ?? 0), 0);
     const tCost = sum(todayCost.data);
     const yCost = sum(yesterdayCost.data);
     const delta = yCost > 0 ? ((tCost - yCost) / yCost) * 100 : 0;
 
     const modelMap = new Map<string, number>();
-    (modelCounts.data ?? []).forEach((r: any) => modelMap.set(r.model_slug, (modelMap.get(r.model_slug) ?? 0) + 1));
+    (modelCounts.data ?? []).forEach((r: { model_slug: string }) =>
+      modelMap.set(r.model_slug, (modelMap.get(r.model_slug) ?? 0) + 1),
+    );
     const topModel = Array.from(modelMap.entries()).sort((a, b) => b[1] - a[1])[0];
 
-    const degraded = (providers.data ?? []).filter((p: any) => p.enabled && p.status !== "healthy");
+    const degraded = (providers.data ?? []).filter(
+      (p: { enabled: boolean; status: string }) => p.enabled && p.status !== "healthy",
+    );
 
     const out: Insight[] = [];
     if (tCost > 0 || yCost > 0) {

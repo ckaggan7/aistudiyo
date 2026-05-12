@@ -170,7 +170,7 @@ export default function SuperAdminAI() {
                       <div>
                         <h2 className="text-sm font-semibold">{p.name}</h2>
                         <div className="flex items-center gap-2">
-                          <AIHealthIndicator status={(p.status as any) || "unknown"} />
+                          <AIHealthIndicator status={(p.status as "healthy" | "degraded" | "down" | "unknown") || "unknown"} />
                           <span className="text-[11px] text-muted-foreground">· {list.length} model{list.length === 1 ? "" : "s"}</span>
                         </div>
                       </div>

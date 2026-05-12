@@ -26,7 +26,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, Save, Play, ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { nodeTypes, PALETTE } from "./nodes/WorkflowNodes";
+import { nodeTypes, PALETTE, type NodeData } from "./nodes/WorkflowNodes";
 import { useAuth } from "@/hooks/useAuth";
 
 function uid() {
@@ -49,7 +49,7 @@ function BuilderInner() {
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   const [selected, setSelected] = useState<Node | null>(null);
-  const [runOutput, setRunOutput] = useState<any>(null);
+  const [runOutput, setRunOutput] = useState<{ status: string; output?: unknown; error?: string } | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -67,7 +67,7 @@ function BuilderInner() {
       setName(data.name);
       setDescription(data.description ?? "");
       setStatus(data.status);
-      const g = (data.graph as any) ?? { nodes: [], edges: [] };
+      const g = (data.graph as unknown as { nodes?: Node[]; edges?: Edge[] }) ?? { nodes: [], edges: [] };
       setNodes(g.nodes ?? []);
       setEdges(g.edges ?? []);
       setLoading(false);
@@ -98,16 +98,17 @@ function BuilderInner() {
     ]);
   };
 
-  const updateSelected = (patch: any) => {
+  const updateSelected = (patch: Record<string, unknown>) => {
     if (!selected) return;
+    const patchConfig = (patch.config as Record<string, unknown> | undefined) ?? {};
     setNodes((ns) =>
       ns.map((n) =>
         n.id === selected.id
-          ? { ...n, data: { ...n.data, ...patch, config: { ...((n.data as any).config ?? {}), ...(patch.config ?? {}) } } }
+          ? { ...n, data: { ...n.data, ...patch, config: { ...((n.data as NodeData).config ?? {}), ...patchConfig } } }
           : n,
       ),
     );
-    setSelected((s) => (s ? { ...s, data: { ...s.data, ...patch, config: { ...((s.data as any).config ?? {}), ...(patch.config ?? {}) } } } : s));
+    setSelected((s) => (s ? { ...s, data: { ...s.data, ...patch, config: { ...((s.data as NodeData).config ?? {}), ...patchConfig } } } : s));
   };
 
   const deleteSelected = () => {
@@ -122,7 +123,7 @@ function BuilderInner() {
     setSaving(true);
     const { error } = await supabase
       .from("workflows")
-      .update({ name, description, status, graph: { nodes, edges } as any })
+      .update({ name, description, status, graph: { nodes, edges } as unknown as Record<string, unknown> })
       .eq("id", id);
     setSaving(false);
     if (error) toast.error(error.message);
@@ -142,15 +143,16 @@ function BuilderInner() {
       setRunOutput(data);
       if (data?.status === "success") toast.success("Run completed");
       else toast.error(data?.error ?? "Run failed");
-    } catch (e: any) {
-      toast.error(e.message ?? "Run failed");
+    } catch (e: unknown) {
+      toast.error((e as Error).message ?? "Run failed");
     } finally {
       setRunning(false);
     }
   };
 
-  const cfg = (selected?.data as any)?.config ?? {};
-  const nodeType = (selected?.data as any)?.nodeType;
+  const selectedData = selected?.data as NodeData | undefined;
+  const cfg = selectedData?.config ?? {};
+  const nodeType = selectedData?.nodeType;
 
   if (loading) {
     return (
@@ -286,7 +288,7 @@ function BuilderInner() {
               <div className="space-y-1.5">
                 <Label className="text-xs">Label</Label>
                 <Input
-                  value={(selected.data as any).label ?? ""}
+                  value={(selected.data as NodeData).label ?? ""}
                   onChange={(e) => updateSelected({ label: e.target.value })}
                   className="h-8 text-xs"
                 />

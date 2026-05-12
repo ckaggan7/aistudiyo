@@ -31,7 +31,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setThemeId(id);
     try {
       localStorage.setItem(THEME_STORAGE_KEY, id);
-    } catch {}
+    } catch (_e) {
+      /* storage unavailable */
+    }
   }, []);
 
   return (

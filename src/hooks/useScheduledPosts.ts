@@ -36,7 +36,7 @@ export function useScheduledPosts() {
     refresh();
   };
   const create = async (post: Partial<ScheduledPost>) => {
-    await supabase.from("scheduled_posts").insert(post as any);
+    await supabase.from("scheduled_posts").insert(post as Record<string, unknown>);
     refresh();
   };
 

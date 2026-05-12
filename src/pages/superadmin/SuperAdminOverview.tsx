@@ -44,14 +44,19 @@ export default function SuperAdminOverview() {
         supabase.from("profiles").select("user_id,created_at").gte("created_at", twoWeeksAgo),
       ]);
       const dist: Record<string, number> = {};
-      (roles.data ?? []).forEach((r: any) => { dist[r.role] = (dist[r.role] ?? 0) + 1; });
+      (roles.data ?? []).forEach((r: { role: string }) => { dist[r.role] = (dist[r.role] ?? 0) + 1; });
       const total = (prov.data ?? []).length;
-      const ok = (prov.data ?? []).filter((p: any) => p.enabled && p.status === "healthy").length;
-      const cost = (aiCost.data ?? []).reduce((s: number, r: any) => s + Number(r.cost_usd ?? 0), 0);
+      const ok = (prov.data ?? []).filter((p: { enabled: boolean; status: string }) => p.enabled && p.status === "healthy").length;
+      const cost = (aiCost.data ?? []).reduce(
+        (s: number, r: { cost_usd?: string | number | null }) => s + Number(r.cost_usd ?? 0),
+        0,
+      );
 
       // Top model in last 24h
       const counts = new Map<string, number>();
-      (ai.data ?? []).forEach((r: any) => counts.set(r.model_slug, (counts.get(r.model_slug) ?? 0) + 1));
+      (ai.data ?? []).forEach((r: { model_slug: string }) =>
+        counts.set(r.model_slug, (counts.get(r.model_slug) ?? 0) + 1),
+      );
       const top = Array.from(counts.entries()).sort((a, b) => b[1] - a[1])[0];
 
       setProvidersOk({ ok, total });
@@ -67,8 +72,8 @@ export default function SuperAdminOverview() {
       });
       setTopModel(top ? { slug: top[0], count: top[1] } : null);
       setRecent((recentRes.data ?? []) as Recent[]);
-      setAiFails((fails.data ?? []) as any);
-      setSignups((sig.data ?? []) as any);
+      setAiFails((fails.data ?? []) as { id: string; model_slug: string; status: string; created_at: string }[]);
+      setSignups((sig.data ?? []) as { user_id: string; created_at: string }[]);
       setLoading(false);
     })();
   }, []);

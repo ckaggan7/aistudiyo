@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ElementType } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Sparkles, BarChart3, Settings, Menu, X,
@@ -11,7 +11,7 @@ import AIDock from "./dashboard/AIDock";
 import MobileDock from "./dashboard/MobileDock";
 import { AmbientBackdrop } from "./ui/ambient-backdrop";
 
-type NavItem = { icon: any; label: string; path: string };
+type NavItem = { icon: ElementType; label: string; path: string };
 
 const navItems: NavItem[] = [
   { icon: LayoutDashboard, label: "Home",          path: "/dashboard" },

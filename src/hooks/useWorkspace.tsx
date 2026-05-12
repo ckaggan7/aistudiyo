@@ -42,7 +42,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       .from("workspace_members")
       .select("workspace_id")
       .eq("user_id", user.id);
-    const ids = (members ?? []).map((m: any) => m.workspace_id);
+    const ids = (members ?? []).map((m: { workspace_id: string }) => m.workspace_id);
     if (!ids.length) {
       setWorkspaces([]);
       setCurrent(null);

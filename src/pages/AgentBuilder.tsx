@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ElementType } from "react";
 import { motion } from "framer-motion";
 import {
   Bot, Send, Search, Plus, Play, Loader2, Check, ArrowLeft, Clock, Trash2, FileText, Inbox, Settings,
@@ -27,7 +27,7 @@ type Run = { id: string; agent_id: string; status: string; started_at: string };
 
 type Category = "growth" | "content" | "strategy" | "research";
 
-const TEMPLATES: { type: AgentType; category: Category; name: string; icon: any; color: string; goal: string; system: string; tools: string[]; cost: number; desc: string }[] = [
+const TEMPLATES: { type: AgentType; category: Category; name: string; icon: ElementType; color: string; goal: string; system: string; tools: string[]; cost: number; desc: string }[] = [
   {
     type: "publisher", category: "growth", name: "Instagram Growth", icon: Instagram, color: "from-pink-500 to-fuchsia-500",
     goal: "Plan, post, and hashtag-optimize for Instagram growth",
@@ -238,7 +238,7 @@ function AgentDetail({ agent, onBack, onDelete }: { agent: Agent; onBack: () => 
     setRunning(false);
     if (error) { toast.error(error.message); return; }
     setOutput(data.output);
-    setLogs((data.logs ?? []).map((l: any) => l.msg));
+    setLogs((data.logs ?? []).map((l: { msg: string }) => l.msg));
     toast.success(`Run complete · -${cost} credits`);
     refreshWallet();
     loadRuns();

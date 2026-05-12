@@ -23,7 +23,7 @@ type Step = {
   status: string;
   duration_ms: number | null;
   step_index: number;
-  output: any;
+  output: unknown;
   error: string | null;
 };
 
@@ -48,7 +48,7 @@ export default function WorkflowRuns() {
         .select("id,workflow_id,status,trigger_source,duration_ms,error,created_at,workflows(name)")
         .order("created_at", { ascending: false })
         .limit(50);
-      setRuns((data ?? []) as any);
+      setRuns((data ?? []) as Run[]);
       setLoading(false);
     })();
 
@@ -60,7 +60,7 @@ export default function WorkflowRuns() {
           .select("id,workflow_id,status,trigger_source,duration_ms,error,created_at,workflows(name)")
           .order("created_at", { ascending: false })
           .limit(50)
-          .then(({ data }) => setRuns((data ?? []) as any));
+          .then(({ data }) => setRuns((data ?? []) as Run[]));
       })
       .subscribe();
     return () => {

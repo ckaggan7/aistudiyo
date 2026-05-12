@@ -166,12 +166,13 @@ export default function ImageStudio() {
         ? baseStickerPrompt
         : "";
     const styleName = activeFilter?.name ?? (mode === "sticker" ? "Sticker" : "Default");
-    const { data, error } = await supabase.functions.invoke("generate-image", {
+    type GenResp = { error?: string; image_url?: string; generated_prompt?: string };
+    const { data, error } = await supabase.functions.invoke<GenResp>("generate-image", {
       body: { prompt, style: styleName, stylePrompt, mode: "text" },
     });
     setLoading(false);
-    if (error || (data as any)?.error) {
-      toast.error((data as any)?.error || error?.message || "Generation failed");
+    if (error || data?.error) {
+      toast.error(data?.error || error?.message || "Generation failed");
       return;
     }
     toast.success(
@@ -361,14 +362,15 @@ function StyleModal({ style, onClose }: { style: Style; onClose: () => void }) {
     if (tab === "text" && !desc.trim()) { setBusy(false); return toast.error("Describe your image"); }
     if (tab === "image" && !file) { setBusy(false); return toast.error("Upload an image first"); }
 
-    const { data, error } = await supabase.functions.invoke("generate-image", { body });
+    type GenResp = { error?: string; image_url?: string; generated_prompt?: string };
+    const { data, error } = await supabase.functions.invoke<GenResp>("generate-image", { body });
     setBusy(false);
-    if (error || (data as any)?.error) {
-      toast.error((data as any)?.error || error?.message || "Generation failed");
+    if (error || data?.error) {
+      toast.error(data?.error || error?.message || "Generation failed");
       return;
     }
-    setResultUrl((data as any).image_url);
-    setGenPrompt((data as any).generated_prompt || null);
+    setResultUrl(data?.image_url ?? null);
+    setGenPrompt(data?.generated_prompt || null);
     toast.success("Saved to Media Library");
   };
 
@@ -394,7 +396,7 @@ function StyleModal({ style, onClose }: { style: Style; onClose: () => void }) {
         </div>
 
         <div className="p-6">
-          <Tabs value={tab} onValueChange={(v) => setTab(v as any)}>
+          <Tabs value={tab} onValueChange={(v) => setTab(v as "text" | "image")}>
             <TabsList className="grid grid-cols-2 w-full">
               <TabsTrigger value="text">Text to Image</TabsTrigger>
               <TabsTrigger value="image">Modify My Image</TabsTrigger>

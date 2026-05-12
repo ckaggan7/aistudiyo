@@ -83,9 +83,9 @@ export default function AIGenerator() {
       if (!data?.pack) throw new Error("Invalid response");
       setPack(data.pack as Pack);
       toast.success("Content pack ready");
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
-      toast.error(e.message || "Failed to generate");
+      toast.error((e as Error).message || "Failed to generate");
     } finally {
       setLoading(false);
     }
@@ -107,8 +107,8 @@ export default function AIGenerator() {
       if (data?.error) throw new Error(data.error);
       setPack((prev) => prev ? ({ ...prev, [block]: data.value }) : prev);
       toast.success(`${block.replace("_", " ")} refreshed`);
-    } catch (e: any) {
-      toast.error(e.message || "Could not regenerate");
+    } catch (e: unknown) {
+      toast.error((e as Error).message || "Could not regenerate");
     } finally {
       setRegenBlock(null);
     }

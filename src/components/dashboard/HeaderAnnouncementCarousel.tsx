@@ -20,7 +20,7 @@ const STORAGE_KEY = "announce-dismissed-v1";
 export default function HeaderAnnouncementCarousel() {
   const [idx, setIdx] = useState(0);
   const [visible, setVisible] = useState<boolean>(() => {
-    try { return localStorage.getItem(STORAGE_KEY) !== "1"; } catch { return true; }
+    try { return localStorage.getItem(STORAGE_KEY) !== "1"; } catch (_e) { /* storage unavailable */ return true; }
   });
   const [paused, setPaused] = useState(false);
 
@@ -32,13 +32,13 @@ export default function HeaderAnnouncementCarousel() {
 
   const dismiss = () => {
     setVisible(false);
-    try { localStorage.setItem(STORAGE_KEY, "1"); } catch {}
+    try { localStorage.setItem(STORAGE_KEY, "1"); } catch (_e) { /* storage unavailable */ }
   };
 
   if (!visible) {
     return (
       <button
-        onClick={() => { try { localStorage.removeItem(STORAGE_KEY); } catch {}; setVisible(true); }}
+        onClick={() => { try { localStorage.removeItem(STORAGE_KEY); } catch (_e) { /* storage unavailable */ } setVisible(true); }}
         title="Show what's new"
         className="hidden md:inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 h-7 rounded-full border border-border/50 text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors"
       >

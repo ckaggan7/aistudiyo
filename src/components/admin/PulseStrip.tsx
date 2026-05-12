@@ -21,7 +21,7 @@ export default function PulseStrip() {
     for (let i = 59; i >= 0; i--) {
       buckets.set(Math.floor((now - i * 60_000) / 60_000), 0);
     }
-    (data ?? []).forEach((r: any) => {
+    (data ?? []).forEach((r: { created_at: string }) => {
       const m = Math.floor(new Date(r.created_at).getTime() / 60_000);
       if (buckets.has(m)) buckets.set(m, (buckets.get(m) ?? 0) + 1);
     });

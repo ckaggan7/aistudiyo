@@ -24,10 +24,10 @@ export default function SuperAdminAnalytics() {
         supabase.from("ai_request_logs").select("user_id,created_at").gte("created_at", since),
         supabase.from("activity_logs").select("user_id,created_at").gte("created_at", since),
       ]);
-      setProfiles((p.data ?? []) as any);
-      setWorkspaces((w.data ?? []) as any);
-      setAiLogs((ai.data ?? []) as any);
-      setActivity((a.data ?? []) as any);
+      setProfiles((p.data ?? []) as { user_id: string; email: string | null; display_name: string | null; created_at: string }[]);
+      setWorkspaces((w.data ?? []) as { id: string; name: string; created_at: string; credits: number }[]);
+      setAiLogs((ai.data ?? []) as { user_id: string | null; created_at: string }[]);
+      setActivity((a.data ?? []) as { user_id: string | null; created_at: string }[]);
     })();
   }, []);
 

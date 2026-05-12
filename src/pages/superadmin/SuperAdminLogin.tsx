@@ -68,8 +68,8 @@ export default function SuperAdminLogin() {
       }
       toast.success("Welcome, Super Admin");
       navigate("/superadmin", { replace: true });
-    } catch (err: any) {
-      toast.error(err.message ?? "Sign-in failed");
+    } catch (err: unknown) {
+      toast.error((err as Error).message ?? "Sign-in failed");
     } finally {
       setLoading(false);
     }

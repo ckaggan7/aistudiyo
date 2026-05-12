@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
+import type { ElementType } from "react";
 import { Sparkles, TrendingUp, CalendarClock, Lightbulb, ChevronRight, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 type Item = {
-  icon: any;
+  icon: ElementType;
   title: string;
   desc: string;
   to: string;

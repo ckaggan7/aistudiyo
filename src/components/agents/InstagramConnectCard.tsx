@@ -5,14 +5,15 @@ import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+type Connection = { id: string; provider: string; ig_user_id: string | null };
 export function InstagramConnectCard() {
-  const [connection, setConnection] = useState<any>(null);
+  const [connection, setConnection] = useState<Connection | null>(null);
   const [handle, setHandle] = useState("");
   const [busy, setBusy] = useState(false);
 
   const refresh = async () => {
     const { data } = await supabase.from("meta_connections").select("*").eq("provider", "instagram").maybeSingle();
-    setConnection(data);
+    setConnection((data as Connection | null) ?? null);
   };
   useEffect(() => { refresh(); }, []);
 
@@ -28,6 +29,7 @@ export function InstagramConnectCard() {
     refresh();
   };
   const disconnect = async () => {
+    if (!connection) return;
     await supabase.from("meta_connections").delete().eq("id", connection.id);
     setConnection(null);
     toast.success("Disconnected");
