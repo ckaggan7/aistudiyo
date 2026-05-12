@@ -14,7 +14,7 @@ export const MISSIONS: Mission[] = [
   { id: "m2", title: "Generate 10 viral hooks",        blurb: "Open Hook Lab and stack the wins.",       xp: 80,  progress: 0.4, emoji: "🎣", cta: "Continue",  to: "/dashboard/generator" },
   { id: "m3", title: "Publish your first content pack",blurb: "Caption + image + CTA — all in one flow.", xp: 100, progress: 0.2, emoji: "📦", cta: "Continue",  to: "/dashboard/image-studio" },
   { id: "m4", title: "Optimize your Google profile",   blurb: "Run the Growth audit and apply 3 fixes.",  xp: 150, progress: 0.0, emoji: "📍", cta: "Open",      to: "/dashboard/growth" },
-  { id: "m5", title: "Score 90+ in Practice Lab",      blurb: "Polish an ad until the AI rates it gold.", xp: 200, progress: 0.0, emoji: "🥇", cta: "Try lab",   to: "/dashboard/academy/lab" },
+  { id: "m5", title: "Score 90+ in Practice Lab",      blurb: "Polish an ad until the AI rates it gold.", xp: 200, progress: 0.0, emoji: "🥇", cta: "Try lab",   to: "/dashboard/academy/practice-lab" },
 ];
 
 export const LEADERBOARD = [
