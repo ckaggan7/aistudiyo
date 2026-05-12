@@ -27,10 +27,12 @@ export default function DashboardHome() {
 
       {/* Band 3 — Discover */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        <div className="lg:col-span-5"><AgentsStrip /></div>
-        <div className="lg:col-span-4"><TrendingNowFeed /></div>
-        <div className="lg:col-span-3"><TrendingSocialDates /></div>
+        <div className="lg:col-span-7"><AgentsStrip /></div>
+        <div className="lg:col-span-5"><TrendingNowFeed /></div>
       </div>
+
+      {/* Upcoming moments — full row */}
+      <TrendingSocialDates />
 
       {/* Band 4 — Plan */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
