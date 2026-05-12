@@ -56,9 +56,9 @@ export default function QuickCreateBar({ initial = "" }: { initial?: string }) {
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: 0.05 }}
-      className="relative"
+      className="relative h-full"
     >
-      <div className="card-bento">
+      <div className="card-bento h-full flex flex-col">
         <div className="mb-3">
           <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-1">Quick create</p>
           <h3 className="text-xl font-semibold tracking-tight">What do you want to create?</h3>
@@ -85,7 +85,7 @@ export default function QuickCreateBar({ initial = "" }: { initial?: string }) {
           </button>
         </div>
 
-        <div className="flex gap-2 mt-3 overflow-x-auto pb-0.5 scrollbar-thin">
+        <div className="flex gap-2 mt-auto pt-3 overflow-x-auto pb-0.5 scrollbar-thin">
           {CHIPS.map((c) => (
             <button
               key={c.label}
