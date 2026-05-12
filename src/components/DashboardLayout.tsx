@@ -10,6 +10,7 @@ import ProfileMenu from "./dashboard/ProfileMenu";
 import AIDock from "./dashboard/AIDock";
 import MobileDock from "./dashboard/MobileDock";
 import { AmbientBackdrop } from "./ui/ambient-backdrop";
+import MentorDock from "./academy/MentorDock";
 
 type NavItem = { icon: ElementType; label: string; path: string };
 
@@ -125,6 +126,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       <AIDock open={dockOpen} onClose={() => setDockOpen(false)} />
       <MobileDock />
+      <MentorDock />
     </div>
   );
 }
