@@ -17,29 +17,29 @@ export default function DashboardHome() {
       <WelcomeHeader />
 
       {/* Band 2 — Act now */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
-        <div className="lg:col-span-7 flex"><QuickCreateBar /></div>
-        <div className="lg:col-span-5 flex"><AISuggestions /></div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <div className="lg:col-span-7"><QuickCreateBar /></div>
+        <div className="lg:col-span-5"><AISuggestions /></div>
       </div>
 
       {/* Band 3 — Discover */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
-        <div className="lg:col-span-5 flex"><AgentsStrip /></div>
-        <div className="lg:col-span-4 flex"><TrendingNowFeed /></div>
-        <div className="lg:col-span-3 flex"><TrendingSocialDates /></div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <div className="lg:col-span-5"><AgentsStrip /></div>
+        <div className="lg:col-span-4"><TrendingNowFeed /></div>
+        <div className="lg:col-span-3"><TrendingSocialDates /></div>
       </div>
 
       {/* Band 4 — Plan */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
-        <div className="lg:col-span-5 flex"><WhatsNewCarousel /></div>
-        <div className="lg:col-span-4 flex"><RecentContentPacks /></div>
-        <div className="lg:col-span-3 flex"><CalendarPreview /></div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <div className="lg:col-span-5"><WhatsNewCarousel /></div>
+        <div className="lg:col-span-4"><RecentContentPacks /></div>
+        <div className="lg:col-span-3"><CalendarPreview /></div>
       </div>
 
       {/* Band 5 — Pulse */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
-        <div className="lg:col-span-8 flex"><CreatorMomentum /></div>
-        <div className="lg:col-span-4 flex"><CoreActionCards /></div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <div className="lg:col-span-8"><CreatorMomentum /></div>
+        <div className="lg:col-span-4"><CoreActionCards /></div>
       </div>
     </div>
   );
