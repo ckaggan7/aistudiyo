@@ -1,93 +1,70 @@
-# Ads Academy — Final Wiring & Integration
+## Brand AI Studio — transform Create page into AI Brand CRM
 
-Scope: connect what exists. Reuse the 17 components and 7 pages already in `src/components/academy/` and `src/pages/academy/`. No rebuilds.
+Refactor `/dashboard/generator` into `/dashboard/studio` ("Brand AI Studio"). Keep the existing generator (AIGenerator.tsx) as the foundation — embed it as Section 2, wrap it with new Brand Brain (Section 1) and Brand Assets/Memory (Section 3) sections in a bento layout.
 
-## 1. Route wiring (`src/App.tsx`)
+### Routing & nav
+- `src/App.tsx` — add `/dashboard/studio` route → new `BrandStudio` page; keep `/dashboard/generator` as redirect to `/dashboard/studio` (back-compat with QuickCreateBar links).
+- `src/components/DashboardLayout.tsx` — rename "Create" → "Brand AI Studio" (icon `Brain` from lucide), point to `/dashboard/studio`.
 
-Add Academy routes under `/dashboard/academy/*`, wrapped in `DashboardPage` (sidebar + auth + workspace shell), using `React.lazy` + `Suspense` so the Academy bundle only loads on entry.
+### New page — `src/pages/BrandStudio.tsx`
+Bento dark/glass layout, three stacked sections + floating right-side AI Assistant.
 
 ```text
-/dashboard/academy                 -> AcademyHome (existing)
-/dashboard/academy/tracks          -> AcademyTracks (new thin wrapper)
-/dashboard/academy/track/:id       -> TrackDetail (existing)
-/dashboard/academy/courses         -> AcademyCourses (new thin wrapper)
-/dashboard/academy/course/:id      -> CourseDetail (existing)
-/dashboard/academy/practice-lab    -> PracticeLab (existing)
-/dashboard/academy/mentor          -> MentorPage (existing)
-/dashboard/academy/missions        -> MissionsPage (existing)
-/dashboard/academy/certificates    -> AcademyCertificates (new thin wrapper)
-/dashboard/academy/certificate/:id -> CertificatePage (existing)
-/dashboard/academy/videos          -> AcademyVideos (new thin wrapper)
-/dashboard/academy/community       -> AcademyCommunity (new thin wrapper)
-/dashboard/academy/progress        -> AcademyProgress (new thin wrapper)
+┌─────────── Hero: Train Your AI Brand Brain ────────────┐
+│  AI scan progress · "Analyze Brand" CTA                │
+├─────── Bento row: connect sources + uploads ──────────┤
+│ [Website][IG][LinkedIn][X][YT]  │  Drag-drop uploads  │
+│ Attached chips · sync animation │  PDF/DOC/decks      │
+├──────────── Brand Identity Hub (bento) ────────────────┤
+│ Logo │ Colors (AI palette) │ Fonts │ Moodboard        │
+├──────────── Business Identity Card ────────────────────┤
+│ Name · category · phone · email · web · socials · addr │
+├──────────── Brand Memory + Score ──────────────────────┤
+│ Tone · audience · CTA style · hashtags  │ Score ring  │
+├──────────── Content Generator (existing) ──────────────┤
+│ Embedded <AIGenerator /> + brand-aware suggestions     │
+└────────────────────────────────────────────────────────┘
+        ⌐ floating Brand AI Assistant (right) ¬
 ```
 
-Each new wrapper page is ~20 lines: `<AcademyPageShell>` + section header + existing component (`LearningTracks`, `FeaturedCoursesCarousel`, `CertificationsShowcase`, `VideoLearningHub`, `CommunityFeed`, `ProgressDashboard`).
+### New components (`src/components/studio/`)
+- `BrandBrainHero.tsx` — title, subtext, "Analyze Brand" button, scan-progress orb.
+- `BrandSourceConnectors.tsx` — connect chips (Website / IG / LinkedIn / X / YT) with input + status.
+- `BrandUploadZone.tsx` — drag-drop (PDF, DOC, decks, brand guidelines, ChatGPT/Gemini exports), shows attachment chips with sync animation.
+- `BrandScanResults.tsx` — AI-generated tone summary, audience profile, comm style, visual personality, content strategy, keywords (cards).
+- `VisualIdentityHub.tsx` — logo upload, AI color palette (primary/secondary/accent/gradient/dark preview, editable chips), fonts, moodboard grid.
+- `BusinessIdentityCard.tsx` — form fields (name, category, phone, email, website, address, socials).
+- `BrandMemoryPanel.tsx` — persistent memory items (writing style, audience, hashtags, CTA, emojis, formatting), edit-in-place chips.
+- `BrandScoreRing.tsx` — consistency score (tone, CTA quality, visual alignment, audience relevance) as ring + breakdown.
+- `BrandAISuggestionsFeed.tsx` — recommendation cards ("Audience prefers storytelling hooks", etc.).
+- `BrandAIAssistant.tsx` — floating right panel; chat with brand-aware AI; suggestions, improvements, inconsistency detection.
 
-## 2. Sidebar entry (`src/components/DashboardLayout.tsx`)
+Reuse: `AIGenerator` embedded in a "Content Generator" section wrapper that pre-fills brand voice from new memory.
 
-Insert one item between Trends and Analytics:
+### Data / backend
+Extend existing `brand_profile` table (already has name, tagline, voice, audience, palette, font_pair, style_prompt) with new columns via migration:
+- `logo_url text`, `category text`, `phone text`, `email text`, `website text`, `address text`, `socials jsonb`, `memory jsonb` (tone, audience, hashtags, cta_style, emojis, formatting, keywords), `score jsonb`, `sources jsonb` (connected URLs + uploaded file metadata), `scan_summary jsonb`.
 
-```ts
-{ icon: GraduationCap, label: "Academy", path: "/dashboard/academy" }
-```
+New table `brand_assets` (id, user_id, brand_id, kind enum [logo, moodboard, product, campaign, document], url, meta jsonb, created_at) with RLS owner-only.
 
-Update the active-state check so any `/dashboard/academy/*` route keeps the entry highlighted (`pathname.startsWith(path)` for this entry).
+Storage: new public bucket `brand-assets` with owner-write RLS for logos/moodboard/uploads.
 
-## 3. Dashboard Home bento card
+### AI edge functions (`supabase/functions/`)
+- `brand-scan/index.ts` — accepts URLs + uploaded file URLs, fetches/parses (text from PDFs via `pdf-parse` npm, sites via fetch + cheerio), feeds to Lovable AI Gateway (`google/gemini-3-flash-preview`) with `Output.object` schema → returns `{tone, audience, voice, style_prompt, palette, keywords, cta_style, hashtags, content_strategy}`. Persists to `brand_profile.memory` + `scan_summary`.
+- `brand-assistant/index.ts` — streamed chat using AI SDK `streamText`, system prompt seeded with brand memory; serves the floating assistant.
+- Update existing `generate-content` to read `memory` from `brand_profile` and inject into system prompt so generations apply brand tone automatically.
 
-New compact component `src/components/dashboard/AcademyProgressCard.tsx` in the existing `card-bento` style:
+### Visual style
+- Cinematic dark surface only inside Studio page (use existing tokens; add `studio-dark` wrapper class with `bg-background` deepened + glow accents). Glassmorphism cards via existing `surface-floating` + `card-bento`.
+- Floating panels, asymmetric bento, soft gradients, AI glow ring on hero & assistant.
+- Framer Motion: stagger reveal, hover-lift, scan-progress shimmer.
 
-- `LevelRing` for XP / next level (reuses existing SVG component)
-- Active track name + one-line mentor tip (read from `lib/academy/tracks.ts`)
-- Certificates earned count (from `useCompletions`)
-- "Continue learning" button → `/dashboard/academy`
-- Reads progress from existing `useXp` / `useCompletions` hooks
+### Out of scope
+- No changes to other dashboard pages, Academy, Growth, etc.
+- No replacement of existing generator UI/cards — embedded as-is.
+- No new auth flows, no payment changes.
+- Real social-account OAuth (IG/LinkedIn/X/YT) is **not** wired — connectors show URL input + "coming soon" tag for OAuth; only website + uploads are scanned in v1.
 
-Slot it into `src/pages/DashboardHome.tsx` as a new compact row between the Discover band and the Plan band — keeps current layout untouched.
-
-## 4. Visual consistency sweep (light, not a redesign)
-
-Pass over existing Academy components only to:
-- Replace any stray hardcoded colors (`bg-black`, hex values) with semantic tokens (`bg-background`, `card-bento`, `primary`, `muted`, `accent`).
-- Tone down oversized headings if any exceed the dashboard's `text-3xl` baseline.
-- Soften glow intensity where it visually breaks from the dashboard look.
-
-No new gradients, no new animations, no structural changes.
-
-## 5. Out of scope (deliberately not doing)
-
-- Rebuilding AI Mentor, Practice Lab, Certificates, Course player, Video Hub, or Community UIs — they already exist and are good per the brief.
-- New animation systems, shaders, or motion frameworks.
-- Backend / DB / migrations — XP and progress remain in `localStorage` per existing `progress.ts`.
-- Mobile redesign — existing responsive grids handle it; we only verify.
-
-## Technical details
-
-New files (7):
-- `src/pages/academy/AcademyTracks.tsx`
-- `src/pages/academy/AcademyCourses.tsx`
-- `src/pages/academy/AcademyCertificates.tsx`
-- `src/pages/academy/AcademyVideos.tsx`
-- `src/pages/academy/AcademyCommunity.tsx`
-- `src/pages/academy/AcademyProgress.tsx`
-- `src/components/dashboard/AcademyProgressCard.tsx`
-
-Edited files (3):
-- `src/App.tsx` — lazy imports + 12 Academy routes
-- `src/components/DashboardLayout.tsx` — sidebar entry + active-state tweak
-- `src/pages/DashboardHome.tsx` — slot the new bento card
-
-Lazy pattern:
-```tsx
-const AcademyHome = lazy(() => import("./pages/academy/AcademyHome"));
-// wrap Academy routes in <Suspense fallback={<div className="p-8 animate-pulse" />}>
-```
-
-## Acceptance
-
-- Sidebar shows "Academy" between Trends and Analytics; click lands on `/dashboard/academy`.
-- All 12 Academy routes resolve (no 404).
-- Academy pages render inside the dashboard shell with sidebar visible.
-- Dashboard Home shows a compact Academy bento with XP ring + "Continue learning".
-- Academy code is split out of the main dashboard bundle.
+### Files
+**New:** `src/pages/BrandStudio.tsx`, `src/components/studio/*` (10 files), `supabase/functions/brand-scan/index.ts`, `supabase/functions/brand-assistant/index.ts`, 1 migration.
+**Edited:** `src/App.tsx`, `src/components/DashboardLayout.tsx`, `supabase/functions/generate-content/index.ts`.
