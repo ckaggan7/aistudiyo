@@ -139,7 +139,7 @@ const App = () => (
           <Route path="/dashboard/academy/mentor" element={<A><MentorPage /></A>} />
           <Route path="/dashboard/academy/missions" element={<A><MissionsPage /></A>} />
           <Route path="/dashboard/academy/certificates" element={<A><AcademyCertificates /></A>} />
-          <Route path="/dashboard/academy/certificate/:id" element={<A><CertificatePage /></A>} />
+          <Route path="/dashboard/academy/certificate/:certId" element={<A><CertificatePage /></A>} />
           <Route path="/dashboard/academy/videos" element={<A><AcademyVideos /></A>} />
           <Route path="/dashboard/academy/community" element={<A><AcademyCommunity /></A>} />
           <Route path="/dashboard/academy/progress" element={<A><AcademyProgress /></A>} />
