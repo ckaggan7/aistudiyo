@@ -28,6 +28,7 @@ import { Loader2, Save, Play, ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { nodeTypes, PALETTE, type NodeData } from "./nodes/WorkflowNodes";
 import { useAuth } from "@/hooks/useAuth";
+import type { Json } from "@/integrations/supabase/types";
 
 function uid() {
   return "n_" + Math.random().toString(36).slice(2, 9);
@@ -123,7 +124,7 @@ function BuilderInner() {
     setSaving(true);
     const { error } = await supabase
       .from("workflows")
-      .update({ name, description, status, graph: { nodes, edges } as unknown as Record<string, unknown> })
+      .update({ name, description, status, graph: { nodes, edges } as unknown as Json })
       .eq("id", id);
     setSaving(false);
     if (error) toast.error(error.message);
@@ -151,7 +152,7 @@ function BuilderInner() {
   };
 
   const selectedData = selected?.data as NodeData | undefined;
-  const cfg = selectedData?.config ?? {};
+  const cfg = (selectedData?.config ?? {}) as Record<string, string | undefined>;
   const nodeType = selectedData?.nodeType;
 
   if (loading) {

@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { TablesInsert } from "@/integrations/supabase/types";
 
 export type ScheduledPost = {
   id: string;
@@ -36,7 +37,7 @@ export function useScheduledPosts() {
     refresh();
   };
   const create = async (post: Partial<ScheduledPost>) => {
-    await supabase.from("scheduled_posts").insert(post as Record<string, unknown>);
+    await supabase.from("scheduled_posts").insert(post as TablesInsert<"scheduled_posts">);
     refresh();
   };
 
