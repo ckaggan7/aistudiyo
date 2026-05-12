@@ -102,7 +102,7 @@ export function ReusableTable<T>({
   };
   const selectedRows = data.filter((r) => selected.has(rowKey(r)));
 
-  const escapeCsv = (v: any) => {
+  const escapeCsv = (v: unknown) => {
     const s = v == null ? "" : String(v);
     if (/[",\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
     return s;
@@ -114,7 +114,7 @@ export function ReusableTable<T>({
       columns
         .map((c) => {
           const v = c.sortValue ? c.sortValue(r) : "";
-          return escapeCsv(v as any);
+          return escapeCsv(v);
         })
         .join(","),
     );
