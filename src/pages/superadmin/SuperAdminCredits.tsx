@@ -38,11 +38,13 @@ export default function SuperAdminCredits() {
       supabase.from("credit_transactions").select("user_id, amount, created_at"),
     ]);
 
-    const wMap = new Map((wallets ?? []).map((w: any) => [w.user_id, w.balance]));
+    const wMap = new Map(
+      (wallets ?? []).map((w: { user_id: string; balance: number }) => [w.user_id, w.balance] as const),
+    );
     const spentMap = new Map<string, number>();
     const lastMap = new Map<string, string>();
     const cutoff = Date.now() - 30 * 86400000;
-    (txns ?? []).forEach((t: any) => {
+    (txns ?? []).forEach((t: { user_id: string | null; created_at: string; amount: number }) => {
       if (!t.user_id) return;
       const ts = new Date(t.created_at).getTime();
       if (t.amount < 0 && ts >= cutoff) {
@@ -52,11 +54,11 @@ export default function SuperAdminCredits() {
       if (!prev || new Date(prev).getTime() < ts) lastMap.set(t.user_id, t.created_at);
     });
 
-    const merged: Row[] = (profiles ?? []).map((p: any) => ({
+    const merged: Row[] = (profiles ?? []).map((p: { user_id: string; email: string | null; display_name: string | null }) => ({
       user_id: p.user_id,
       email: p.email,
       display_name: p.display_name,
-      balance: (wMap.get(p.user_id) as number) ?? 0,
+      balance: wMap.get(p.user_id) ?? 0,
       spent30: spentMap.get(p.user_id) ?? 0,
       last_activity: lastMap.get(p.user_id) ?? null,
     }));

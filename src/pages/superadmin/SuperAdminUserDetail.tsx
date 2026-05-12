@@ -8,12 +8,16 @@ import { ArrowLeft, Pause, Play } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
+type Profile = { user_id: string; email: string | null; display_name: string | null; status: string; created_at: string };
+type WorkspaceRow = { id: string; name: string; plan: string; credits: number; created_at: string };
+type ActivityRow = { action: string; target: string | null; created_at: string; ip: string | null };
+
 export default function SuperAdminUserDetail() {
   const { userId } = useParams<{ userId: string }>();
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [roles, setRoles] = useState<string[]>([]);
-  const [workspaces, setWorkspaces] = useState<any[]>([]);
-  const [activity, setActivity] = useState<any[]>([]);
+  const [workspaces, setWorkspaces] = useState<WorkspaceRow[]>([]);
+  const [activity, setActivity] = useState<ActivityRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
@@ -30,10 +34,10 @@ export default function SuperAdminUserDetail() {
         .order("created_at", { ascending: false })
         .limit(20),
     ]);
-    setProfile(p);
-    setRoles(((r ?? []) as any[]).map((x) => x.role));
-    setWorkspaces(ws ?? []);
-    setActivity(act ?? []);
+    setProfile((p as Profile | null) ?? null);
+    setRoles(((r ?? []) as { role: string }[]).map((x) => x.role));
+    setWorkspaces((ws ?? []) as WorkspaceRow[]);
+    setActivity((act ?? []) as ActivityRow[]);
     setLoading(false);
   };
 

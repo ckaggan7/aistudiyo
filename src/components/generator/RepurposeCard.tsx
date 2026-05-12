@@ -27,7 +27,7 @@ export default function RepurposeCard({
         ].map((t) => (
           <button
             key={t.id}
-            onClick={() => setTab(t.id as any)}
+            onClick={() => setTab(t.id as "thread" | "reel")}
             className={`text-xs px-3 py-1 rounded-md transition-colors ${
               tab === t.id ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
             }`}

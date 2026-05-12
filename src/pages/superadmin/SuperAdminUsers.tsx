@@ -16,6 +16,7 @@ import {
 import { MoreHorizontal, Pause, Play, Shield, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import type { AppRole } from "@/hooks/useAuth";
 
 type Profile = {
   user_id: string;
@@ -85,7 +86,7 @@ export default function SuperAdminUsers() {
   }, [profiles, query, roleFilter, statusFilter, rolesByUser]);
 
   const grantRole = async (uid: string, role: (typeof ROLES)[number]) => {
-    const { error } = await supabase.from("user_roles").insert({ user_id: uid, role: role as any });
+    const { error } = await supabase.from("user_roles").insert({ user_id: uid, role: role as AppRole });
     if (error) toast.error(error.message);
     else toast.success(`Granted ${role.replace("_", " ")}`);
   };
@@ -94,7 +95,7 @@ export default function SuperAdminUsers() {
       .from("user_roles")
       .delete()
       .eq("user_id", uid)
-      .eq("role", role as any);
+      .eq("role", role as AppRole);
     if (error) toast.error(error.message);
     else toast.success(`Revoked ${role.replace("_", " ")}`);
   };

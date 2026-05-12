@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ElementType } from "react";
 import { format, isSameDay, parseISO, addDays, startOfDay } from "date-fns";
 import {
   Calendar as CalendarIcon, List, Instagram, Facebook, Twitter, Linkedin,
@@ -17,7 +17,7 @@ import { useScheduledPosts, ScheduledPost } from "@/hooks/useScheduledPosts";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-const PLATFORM_ICON: Record<string, any> = {
+const PLATFORM_ICON: Record<string, ElementType> = {
   instagram: Instagram, facebook: Facebook, x: Twitter, twitter: Twitter, linkedin: Linkedin,
 };
 const STATUS_STYLE: Record<string, string> = {
@@ -221,7 +221,7 @@ function RescheduleQuick({
           { label: "In 1 hour", ms: 60 * 60 * 1000 },
           { label: "Tomorrow 9am", date: () => { const d = addDays(new Date(), 1); d.setHours(9, 0, 0, 0); return d; } },
           { label: "Next week", date: () => addDays(new Date(), 7) },
-        ].map((opt: any) => (
+        ].map((opt: { label: string; ms?: number; date?: () => Date }) => (
           <DropdownMenuItem key={opt.label} onClick={() => {
             const newDate = opt.date ? opt.date() : new Date(Date.now() + opt.ms);
             onUpdate(post.id, { scheduled_for: newDate.toISOString() });

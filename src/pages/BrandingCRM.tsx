@@ -533,7 +533,7 @@ function BrandDetail({ brand, onBack, onUpdate }: { brand: Brand; onBack: () => 
   );
 }
 
-function StatCard({ icon: Icon, label, value, hint }: { icon: any; label: string; value: string; hint: string }) {
+function StatCard({ icon: Icon, label, value, hint }: { icon: React.ElementType; label: string; value: string; hint: string }) {
   return (
     <div className="bg-card rounded-2xl p-5 shadow-card border border-border/40">
       <div className="w-10 h-10 rounded-xl bg-gradient-soft flex items-center justify-center mb-3">
@@ -546,7 +546,7 @@ function StatCard({ icon: Icon, label, value, hint }: { icon: any; label: string
   );
 }
 
-function ContactRow({ icon: Icon, label, value, onChange, placeholder }: { icon: any; label: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
+function ContactRow({ icon: Icon, label, value, onChange, placeholder }: { icon: React.ElementType; label: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
   return (
     <div className="flex items-center gap-3">
       <div className="w-10 h-10 rounded-xl bg-secondary/60 flex items-center justify-center">

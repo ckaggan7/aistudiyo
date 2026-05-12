@@ -1,49 +1,57 @@
-## Goal
-Tighten dashboard density and visual consistency by standardizing **padding, gaps, header rhythm, and inner item padding** across every bento tile. No layout/grid restructure, no copy or color changes.
+# Type-Safety Pass — AISTUDIYO
 
-## Spacing system (single source of truth)
+Goal: eliminate every `any`, empty `catch{}`, and empty-extends interface flagged by the audit. No behavior, UI, or feature changes.
 
-| Token              | Old (mixed)            | New (standard) |
-|--------------------|------------------------|----------------|
-| Grid gap           | `gap-4` (16)           | `gap-3 lg:gap-4` (12 / 16) |
-| Card padding       | 24 (`p-6` / 1.5rem)    | `p-5` (20px) — `p-6` only at `lg` for hero |
-| Hero padding       | `p-6 md:p-10`          | `p-6 md:p-8`   |
-| Header→content     | `mb-5` (mixed)         | `mb-4` (16px)  |
-| Inner item padding | `p-3` / `p-3.5` / `p-4`/ `p-5` | `p-3` (12px) for list rows, `p-4` (16px) for feature tiles |
-| Inner gap (lists)  | `gap-2 / 2.5 / 3`      | `gap-2`        |
-| Inner gap (grids)  | `gap-3`                | `gap-3` (kept) |
+## Scope of changes (file by file)
 
-## Files
+### Hooks
+- **src/hooks/useWorkspace.tsx** — `(m: any)` → `(m: { workspace_id: string })`.
+- **src/hooks/useScheduledPosts.ts** — `insert(post as any)` → `insert(post as Record<string, unknown>)`.
+- **src/hooks/useTheme.tsx** — `catch {}` → `catch (_e) { /* storage unavailable */ }`.
 
-**`src/index.css`** — tighten the bento shell:
-- `.card-bento { padding: 1.25rem; }` (was 1.5rem). Keeps 28px radius and shadow.
-- `.card-bento-accent`, `.card-bento-dark` → `padding: 1.25rem`.
-- `.bento-hero` → `padding: 1.5rem` default; override on hero stays `!p-6 md:!p-8`.
+### Layout & dashboard
+- **src/components/DashboardLayout.tsx** — `NavItem.icon: any` → `React.ElementType`.
+- **src/components/dashboard/AIDock.tsx** — `icon: any` → `React.ElementType`.
+- **src/components/dashboard/HeaderAnnouncementCarousel.tsx** — three `catch {}`/`catch { return true }` → `catch (_e) { /* storage unavailable */ }` (preserve the `return true`).
 
-**`src/pages/DashboardHome.tsx`** — grid gap only:
-- `gap-4` → `gap-3 lg:gap-4`.
+### Pages
+- **src/pages/AIGenerator.tsx** — two `catch (e: any)` → `catch (e: unknown)` with `(e as Error).message`.
+- **src/pages/LoginPage.tsx** — `catch (err: any)` → `catch (err: unknown)` + `(err as Error).message`.
+- **src/pages/ImageStudio.tsx** — type the edge-function response as `{ error?: string; image_url?: string; generated_prompt?: string }`; remove 5× `as any`. Tabs `setTab(v as any)` → `setTab(v as "text" | "image")`.
+- **src/pages/AgentBuilder.tsx** — TEMPLATES `icon: any` → `React.ElementType`; logs map `(l: any)` → `(l: { msg: string })`.
+- **src/pages/BrandingCRM.tsx** — `StatCard`/`ContactRow` `icon: any` → `React.ElementType`.
+- **src/components/branding/BrandWorkspace.tsx** — `BridgeCard` `icon: any` → `React.ElementType`.
+- **src/components/agents/InstagramConnectCard.tsx** — `useState<any>` → `useState<{ provider: string; handle?: string } | null>`.
+- **src/components/scheduled/ScheduledPostsPanel.tsx** — `PLATFORM_ICON: Record<string, any>` → `Record<string, React.ElementType>`; `(opt: any)` → typed `{ label: string; ms?: number; date?: () => Date }`.
+- **src/components/generator/RepurposeCard.tsx** — `setTab(t.id as any)` → `setTab(t.id as "thread" | "reel")`.
 
-**Each tile (`src/components/dashboard/*.tsx`)** — apply the rhythm:
-- `WelcomeHeader.tsx` — outer `!p-6 md:!p-8`; stat-card inner `p-4` → `p-3`; section gap `gap-6 lg:gap-10` → `gap-6 lg:gap-8`.
-- `QuickCreateBar.tsx` — header block `mb-3` → keep; chip row `mt-4` → `mt-3`; input row `py-2.5` → `py-2`.
-- `AISuggestions.tsx` — header `mb-5` → `mb-4`; primary insight panel `h-[130px]` → `h-[120px]`, inner `p-4` → `p-3.5`; list item `px-2.5 py-2` → `px-2 py-1.5`.
-- `AgentsStrip.tsx` — header `mb-5` → `mb-4`; tile `p-4` → `p-3.5`; icon box `w-10 h-10` → `w-9 h-9`.
-- `TrendingNowFeed.tsx` — header `mb-5` → `mb-4`; row `p-3.5` → `p-3`; inner gap `gap-2.5` → `gap-2`.
-- `WhatsNewCarousel.tsx` — header `mb-5` → `mb-4`; tile `p-5` → `p-4`; carousel `gap-4` → `gap-3`.
-- `TrendingSocialDates.tsx` — header `mb-5` → `mb-4`; row tile `p-4` → `p-3.5`, width `w-[220px]` → `w-[200px]`.
-- `RecentContentPacks.tsx` — header `mb-5` → `mb-4`; row `p-3` → keep; list `space-y-2` → keep.
-- `CreatorMomentum.tsx` — match header `mb-4`; tighten any inner `p-4` → `p-3.5`.
-- `CalendarPreview.tsx` — header `mb-5` → `mb-4`; day cell `p-2` → keep; grid `gap-1.5` → keep.
-- `CoreActionCards.tsx` — header `mb-5` → `mb-4`; row item `p-3` → keep; list `gap-2.5` → `gap-2`.
+### Workflows
+- **src/pages/workflows/nodes/WorkflowNodes.tsx** — add `NodeData` interface `{ nodeType: string; label?: string; description?: string; config?: { prompt?: string; template?: string; left?: string; [k: string]: unknown } }`. NODE_META `icon: any` → `React.ElementType`. Replace `(data as any)` with `(data as NodeData)`.
+- **src/pages/workflows/WorkflowBuilder.tsx** — share/import the same `NodeData`. `runOutput` → `{ status: string; output?: unknown; error?: string } | null`. `updateSelected(patch: any)` → `Record<string, unknown>` and remove inner `as any` casts using NodeData. `graph as any` → `unknown as Record<string, unknown>`. `catch (e: any)` → `catch (e: unknown)`.
+- **src/pages/workflows/WorkflowRuns.tsx** — `output: any` → `output: unknown`; replace `as any` casts with `as Run[]`.
 
-## Rules
-- No new tokens, components, files, routes, or backend work.
-- No copy / icon / color changes.
-- Preserve all existing data wiring, motion, hover, and grid spans.
-- Headers keep their existing icon + title + right-action pattern, only the bottom margin standardizes to `mb-4`.
+### Superadmin
+- **src/pages/superadmin/SuperAdminOverview.tsx** — type role/provider/ai-cost/model-count/fails/signups callbacks with concrete row shapes (`{ role: string }`, `{ enabled: boolean; status: string }`, `{ cost_usd?: string | number | null }`, `{ model_slug: string }`, etc.). Cast `setAiFails`/`setSignups` to their state types instead of `as any`.
+- **src/pages/superadmin/SuperAdminWorkspaces.tsx** — type profile/member forEach params.
+- **src/pages/superadmin/SuperAdminUsers.tsx** — `role as any` (2×) → `role as AppRole` (import from `useAuth`).
+- **src/pages/superadmin/SuperAdminAI.tsx** — `p.status as any` → cast to `"healthy" | "degraded" | "down" | "unknown"`.
+- **src/pages/superadmin/SuperAdminAnalytics.tsx** — replace 4× `as any` with typed interfaces for profiles/workspaces/aiLogs/activity.
+- **src/pages/superadmin/SuperAdminCredits.tsx** — wallets/txns/profiles forEach + map typed per spec.
+- **src/pages/superadmin/SuperAdminUserDetail.tsx** — replace `useState<any>` with typed Profile/Workspace/ActivityLog shapes; roles map typed.
+- **src/pages/superadmin/SuperAdminSystem.tsx** — type ws/providers reduce/filter callbacks.
+- **src/pages/superadmin/SuperAdminLogin.tsx** — `catch (err: any)` → `unknown`.
+- **src/components/admin/PulseStrip.tsx** — forEach `(r: any)` → `{ created_at: string }`.
+- **src/components/admin/AIInsightsDock.tsx** — `rows: any[]` → `{ cost_usd?: string | number | null }[] | null`; modelCounts forEach `{ model_slug: string }`; providers filter `{ enabled: boolean; status: string }`.
 
-## Acceptance
-- All bento tiles share the same outer padding (`p-5`), same `mb-4` header rhythm, and same inner item padding bands (12 / 16px).
-- Dashboard grid feels visibly tighter (less air, same hierarchy).
-- Adjacent cards in the same row remain visually equal-height (already handled by `h-full`).
-- Hero card still reads as the largest tile, only proportionally smaller padding.
+### Empty interfaces (shadcn ui)
+- **src/components/ui/textarea.tsx** — `interface TextareaProps extends … {}` → `type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement>`.
+- **src/components/ui/command.tsx** — `interface CommandDialogProps extends DialogProps {}` → `type CommandDialogProps = DialogProps`.
+- **src/components/ui/badge.tsx** — convert to `type BadgeProps = React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof badgeVariants>`.
+
+## Out of scope
+- No new pages, components, edge functions, tables, or migrations.
+- No styling, copy, routing, or behavioral changes.
+- `src/integrations/supabase/types.ts` is auto-generated and not touched.
+
+## Verification
+Run `npx tsc --noEmit` and `npx eslint src --ext .ts,.tsx` after the pass; fix only regressions caused by the retypes.

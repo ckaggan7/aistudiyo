@@ -39,12 +39,12 @@ export default function SuperAdminWorkspaces() {
       if (ownerIds.length) {
         const { data: ps } = await supabase.from("profiles").select("user_id,email,display_name").in("user_id", ownerIds);
         const map: OwnerMap = {};
-        (ps ?? []).forEach((p: any) => { map[p.user_id] = { email: p.email, display_name: p.display_name }; });
+        (ps ?? []).forEach((p: { user_id: string; email: string | null; display_name: string | null }) => { map[p.user_id] = { email: p.email, display_name: p.display_name }; });
         setOwners(map);
       }
       const { data: members } = await supabase.from("workspace_members").select("workspace_id");
       const counts: Record<string, number> = {};
-      (members ?? []).forEach((m: any) => { counts[m.workspace_id] = (counts[m.workspace_id] ?? 0) + 1; });
+      (members ?? []).forEach((m: { workspace_id: string }) => { counts[m.workspace_id] = (counts[m.workspace_id] ?? 0) + 1; });
       setMemberCounts(counts);
       setLoading(false);
     })();

@@ -22,9 +22,9 @@ export default function SuperAdminSystem() {
         supabase.from("ai_providers").select("status,enabled"),
       ]);
       setLogs((l ?? []) as Log[]);
-      setStorage((ws ?? []).reduce((s: number, w: any) => s + (w.storage_used_mb ?? 0), 0));
+      setStorage((ws ?? []).reduce((s: number, w: { storage_used_mb?: number | null }) => s + (w.storage_used_mb ?? 0), 0));
       const total = (p ?? []).length;
-      const ok = (p ?? []).filter((x: any) => x.enabled && x.status === "healthy").length;
+      const ok = (p ?? []).filter((x: { enabled: boolean; status: string }) => x.enabled && x.status === "healthy").length;
       setProvidersHealthy({ ok, total });
     })();
   }, []);

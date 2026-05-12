@@ -127,7 +127,7 @@ export default function BrandWorkspace() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return <div><label className="text-xs font-medium mb-1 block">{label}</label>{children}</div>;
 }
-function BridgeCard({ icon: Icon, title, desc, to }: { icon: any; title: string; desc: string; to: string }) {
+function BridgeCard({ icon: Icon, title, desc, to }: { icon: React.ElementType; title: string; desc: string; to: string }) {
   return (
     <Link to={to} className="group rounded-xl border border-border/40 bg-secondary/40 hover:bg-secondary/70 hover:border-primary/30 p-4 transition-all flex flex-col gap-2">
       <div className="flex items-center justify-between">
