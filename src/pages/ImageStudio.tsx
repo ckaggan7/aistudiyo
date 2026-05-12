@@ -118,6 +118,7 @@ export default function ImageStudio() {
   const [loading, setLoading] = useState(false);
   const [activeFilter, setActiveFilter] = useState<Filter | null>(null);
   const [filterCategory, setFilterCategory] = useState<Category>("All");
+  const [styleCategory, setStyleCategory] = useState<ImageStyleCategory>("All");
 
   const setModeAndUrl = (m: Mode) => {
     setMode(m);
@@ -127,7 +128,12 @@ export default function ImageStudio() {
     setSearchParams(next, { replace: true });
   };
 
-  const styles = mode === "sticker" ? STICKER_STYLES : IMAGE_STYLES;
+  const styles: (Style | ImageStyle)[] =
+    mode === "sticker"
+      ? STICKER_STYLES
+      : styleCategory === "All"
+        ? IMAGE_STYLES
+        : IMAGE_STYLES.filter((s) => s.category === styleCategory);
   const isVideo = mode === "video";
 
   const loadHistory = async () => {
@@ -275,11 +281,28 @@ export default function ImageStudio() {
         <h2 className="text-sm font-semibold mb-3 px-1">
           {mode === "sticker" ? "Pick a sticker style" : "Create an image"}
         </h2>
+        {mode !== "sticker" && (
+          <div className="flex gap-2 overflow-x-auto pb-3 -mx-1 px-1 scrollbar-thin mb-1">
+            {IMAGE_STYLE_CATEGORIES.map((c) => (
+              <button
+                key={c}
+                onClick={() => setStyleCategory(c)}
+                className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                  styleCategory === c
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-secondary text-muted-foreground border-border/40 hover:text-foreground"
+                }`}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+        )}
         <div className="flex gap-3 overflow-x-auto pb-3 -mx-1 px-1 scrollbar-thin">
           {styles.map((s) => (
             <button
               key={s.name}
-              onClick={() => setOpenStyle(s)}
+              onClick={() => setOpenStyle({ name: s.name, desc: s.desc, thumb: s.thumb, prompt: s.prompt })}
               className="group relative shrink-0 w-44 aspect-[4/5] rounded-2xl overflow-hidden border border-border/40 hover:border-primary/50 transition-all"
             >
               <img src={s.thumb} alt={s.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
