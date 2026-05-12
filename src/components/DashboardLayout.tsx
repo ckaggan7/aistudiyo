@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Sparkles, BarChart3, Settings, Menu, X,
   Bot, Calendar, FolderOpen, TrendingUp, Image as ImageIcon, PanelRightOpen, Megaphone, Brain,
+  GraduationCap, Workflow, Coins,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import WorkspaceSwitcher from "./workspace/WorkspaceSwitcher";
@@ -19,11 +20,14 @@ const navItems: NavItem[] = [
   { icon: Brain,           label: "Brand AI Studio", path: "/dashboard/studio" },
   { icon: ImageIcon,       label: "Image Studio",  path: "/dashboard/image-studio" },
   { icon: Bot,             label: "Agents",        path: "/dashboard/agents" },
+  { icon: Workflow,        label: "Workflows",     path: "/dashboard/workflows" },
   { icon: Calendar,        label: "Calendar",      path: "/dashboard/calendar" },
   { icon: TrendingUp,      label: "Trends",        path: "/dashboard/trends" },
   { icon: FolderOpen,      label: "Content Packs", path: "/dashboard/media" },
   { icon: BarChart3,       label: "Analytics",     path: "/dashboard/analytics" },
   { icon: Megaphone,       label: "Growth",        path: "/dashboard/growth" },
+  { icon: GraduationCap,   label: "Academy",       path: "/dashboard/academy" },
+  { icon: Coins,           label: "Credits",       path: "/dashboard/credits" },
   { icon: Settings,        label: "Settings",      path: "/dashboard/settings" },
 ];
 
