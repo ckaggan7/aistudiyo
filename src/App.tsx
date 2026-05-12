@@ -43,6 +43,14 @@ import SuperAdminSupport from "./pages/superadmin/SuperAdminSupport";
 import SuperAdminSystem from "./pages/superadmin/SuperAdminSystem";
 import SuperAdminSettings from "./pages/superadmin/SuperAdminSettings";
 import CreditsPage from "./pages/CreditsPage";
+import GrowthHub from "./pages/growth/GrowthHub";
+import GoogleAds from "./pages/growth/GoogleAds";
+import GoogleAnalyticsAI from "./pages/growth/GoogleAnalyticsAI";
+import BusinessProfile from "./pages/growth/BusinessProfile";
+import Reviews from "./pages/growth/Reviews";
+import LocalSEO from "./pages/growth/LocalSEO";
+import GrowthAgent from "./pages/growth/GrowthAgent";
+import ConnectGoogle from "./pages/growth/ConnectGoogle";
 
 const queryClient = new QueryClient();
 
@@ -88,6 +96,14 @@ const App = () => (
           <Route path="/dashboard/workflows/runs" element={<DashboardPage><WorkflowRuns /></DashboardPage>} />
           <Route path="/dashboard/workflows/:id" element={<DashboardPage><WorkflowBuilder /></DashboardPage>} />
           <Route path="/dashboard/analytics" element={<DashboardPage><Analytics /></DashboardPage>} />
+          <Route path="/dashboard/growth" element={<DashboardPage><GrowthHub /></DashboardPage>} />
+          <Route path="/dashboard/growth/ads" element={<DashboardPage><GoogleAds /></DashboardPage>} />
+          <Route path="/dashboard/growth/analytics" element={<DashboardPage><GoogleAnalyticsAI /></DashboardPage>} />
+          <Route path="/dashboard/growth/profile" element={<DashboardPage><BusinessProfile /></DashboardPage>} />
+          <Route path="/dashboard/growth/reviews" element={<DashboardPage><Reviews /></DashboardPage>} />
+          <Route path="/dashboard/growth/seo" element={<DashboardPage><LocalSEO /></DashboardPage>} />
+          <Route path="/dashboard/growth/agent" element={<DashboardPage><GrowthAgent /></DashboardPage>} />
+          <Route path="/dashboard/growth/connect" element={<DashboardPage><ConnectGoogle /></DashboardPage>} />
           <Route path="/dashboard/credits" element={<DashboardPage><CreditsPage /></DashboardPage>} />
           <Route path="/dashboard/settings" element={<DashboardPage><SettingsPage /></DashboardPage>} />
           <Route path="/admin/*" element={<Navigate to="/superadmin" replace />} />
