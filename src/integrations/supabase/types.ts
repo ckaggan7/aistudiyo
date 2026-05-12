@@ -447,6 +447,66 @@ export type Database = {
         }
         Relationships: []
       }
+      certificates: {
+        Row: {
+          id: string
+          issued_at: string
+          score: number
+          share_slug: string
+          title: string
+          track_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          issued_at?: string
+          score?: number
+          share_slug: string
+          title: string
+          track_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          issued_at?: string
+          score?: number
+          share_slug?: string
+          title?: string
+          track_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      community_posts: {
+        Row: {
+          body: string
+          content_pack_id: string | null
+          created_at: string
+          id: string
+          image_url: string | null
+          kind: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          content_pack_id?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          kind?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          content_pack_id?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          kind?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       content_packs: {
         Row: {
           content_type: string
@@ -510,6 +570,66 @@ export type Database = {
           id?: string
           name?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      creator_missions: {
+        Row: {
+          claimed_at: string
+          id: string
+          mission_id: string
+          rewards: Json
+          status: string
+          user_id: string
+          xp: number
+        }
+        Insert: {
+          claimed_at?: string
+          id?: string
+          mission_id: string
+          rewards?: Json
+          status?: string
+          user_id: string
+          xp?: number
+        }
+        Update: {
+          claimed_at?: string
+          id?: string
+          mission_id?: string
+          rewards?: Json
+          status?: string
+          user_id?: string
+          xp?: number
+        }
+        Relationships: []
+      }
+      creator_profile: {
+        Row: {
+          business_type: string | null
+          created_at: string
+          goals: Json
+          niche: string | null
+          skill_level: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          business_type?: string | null
+          created_at?: string
+          goals?: Json
+          niche?: string | null
+          skill_level?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          business_type?: string | null
+          created_at?: string
+          goals?: Json
+          niche?: string | null
+          skill_level?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -1049,7 +1169,13 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      creator_xp: {
+        Row: {
+          user_id: string | null
+          xp: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       adjust_user_credits: {
@@ -1067,6 +1193,17 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      get_public_certificate: {
+        Args: { _slug: string }
+        Returns: {
+          display_name: string
+          id: string
+          issued_at: string
+          score: number
+          title: string
+          track_id: string
+        }[]
       }
       has_role: {
         Args: {

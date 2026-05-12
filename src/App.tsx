@@ -68,6 +68,7 @@ const CertificatePage = lazy(() => import("./pages/academy/CertificatePage"));
 const AcademyVideos = lazy(() => import("./pages/academy/AcademyVideos"));
 const AcademyCommunity = lazy(() => import("./pages/academy/AcademyCommunity"));
 const AcademyProgress = lazy(() => import("./pages/academy/AcademyProgress"));
+const CertificatePublic = lazy(() => import("./pages/c/CertificatePublic"));
 
 const AcademyFallback = () => <div className="p-8 animate-pulse text-muted-foreground text-sm">Loading Academy…</div>;
 const A = ({ children }: { children: React.ReactNode }) => (
@@ -145,6 +146,7 @@ const App = () => (
           <Route path="/dashboard/academy/videos" element={<A><AcademyVideos /></A>} />
           <Route path="/dashboard/academy/community" element={<A><AcademyCommunity /></A>} />
           <Route path="/dashboard/academy/progress" element={<A><AcademyProgress /></A>} />
+          <Route path="/c/:slug" element={<Suspense fallback={<div className="p-8 text-muted-foreground">Loading…</div>}><CertificatePublic /></Suspense>} />
           <Route path="/admin/*" element={<Navigate to="/superadmin" replace />} />
           <Route path="/superadmin/login" element={<SuperAdminLogin />} />
           <Route path="/superadmin" element={<SuperAdminPage><SuperAdminOverview /></SuperAdminPage>} />
