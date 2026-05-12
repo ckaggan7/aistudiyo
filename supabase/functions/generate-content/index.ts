@@ -100,13 +100,23 @@ function computeVirality(scores: { hook: number; readability: number; platform_f
 function buildSystemPrompt(opts: {
   platform: string; tone: string; audience?: string; brand?: string;
   voice?: string; style_prompt?: string; languageInstruction: string;
+  memory?: Record<string, unknown>;
 }) {
-  const { platform, tone, audience, brand, voice, style_prompt, languageInstruction } = opts;
+  const { platform, tone, audience, brand, voice, style_prompt, languageInstruction, memory } = opts;
   const brandLines: string[] = [];
   if (brand) brandLines.push(`Brand name: ${brand}.`);
   if (voice) brandLines.push(`Brand voice: ${voice}.`);
   if (audience) brandLines.push(`Audience: ${audience}.`);
   if (style_prompt) brandLines.push(`Style notes: ${style_prompt}.`);
+  if (memory && typeof memory === "object") {
+    const m = memory as Record<string, unknown>;
+    if (m.cta_style) brandLines.push(`CTA style: ${m.cta_style}.`);
+    if (Array.isArray(m.hashtags) && m.hashtags.length) brandLines.push(`Preferred hashtags: ${(m.hashtags as string[]).slice(0, 10).join(" ")}.`);
+    if (Array.isArray(m.keywords) && m.keywords.length) brandLines.push(`Brand keywords: ${(m.keywords as string[]).slice(0, 10).join(", ")}.`);
+    if (m.communication_style) brandLines.push(`Communication style: ${m.communication_style}.`);
+    if (m.visual_personality) brandLines.push(`Visual personality: ${m.visual_personality}.`);
+    if (m.content_strategy) brandLines.push(`Content strategy: ${m.content_strategy}.`);
+  }
 
   return `You are AI STUDIYO — a senior social media strategist + copywriter + growth marketer combined into one.
 
@@ -172,7 +182,7 @@ serve(async (req) => {
       platform = "instagram", contentType = "post", brand, audience, tone = "casual",
       topic, language = "native",
       // brand voice memory
-      voice, style_prompt,
+      voice, style_prompt, memory,
       // per-block regen
       regenerate_block, context: existingPack,
     } = body;
@@ -181,7 +191,7 @@ serve(async (req) => {
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     const languageInstruction = langMap[language] || langMap.native;
-    const systemPrompt = buildSystemPrompt({ platform, tone, audience, brand, voice, style_prompt, languageInstruction });
+    const systemPrompt = buildSystemPrompt({ platform, tone, audience, brand, voice, style_prompt, languageInstruction, memory });
 
     // ── Per-block regeneration ───────────────────────────────
     if (regenerate_block) {
