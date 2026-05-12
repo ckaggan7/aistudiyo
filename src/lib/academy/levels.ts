@@ -6,13 +6,13 @@ export type LevelTier = {
   color: string;
 };
 
-const TIERS = [
+const TIERS: { level: number; name: string; min: number; color: string }[] = [
   { level: 1, name: "Beginner Creator", min: 0,    color: "hsl(38 95% 60%)" },
   { level: 2, name: "Growth Creator",   min: 500,  color: "hsl(20 90% 60%)" },
   { level: 3, name: "AI Strategist",    min: 1500, color: "hsl(330 85% 65%)" },
   { level: 4, name: "Viral Creator",    min: 3500, color: "hsl(280 85% 65%)" },
   { level: 5, name: "AI Growth Master", min: 7500, color: "hsl(200 95% 60%)" },
-] as const;
+];
 
 export function tierForXp(xp: number): LevelTier {
   let current = TIERS[0];
