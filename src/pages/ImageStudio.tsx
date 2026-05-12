@@ -119,6 +119,7 @@ export default function ImageStudio() {
   const [activeFilter, setActiveFilter] = useState<Filter | null>(null);
   const [filterCategory, setFilterCategory] = useState<Category>("All");
   const [styleCategory, setStyleCategory] = useState<ImageStyleCategory>("All");
+  const [visibleCount, setVisibleCount] = useState(10);
 
   const setModeAndUrl = (m: Mode) => {
     setMode(m);
@@ -135,6 +136,8 @@ export default function ImageStudio() {
         ? IMAGE_STYLES
         : IMAGE_STYLES.filter((s) => s.category === styleCategory);
   const isVideo = mode === "video";
+
+  useEffect(() => { setVisibleCount(10); }, [styleCategory, mode]);
 
   const loadHistory = async () => {
     const { data } = await supabase
@@ -298,12 +301,12 @@ export default function ImageStudio() {
             ))}
           </div>
         )}
-        <div className="flex gap-3 overflow-x-auto pb-3 -mx-1 px-1 scrollbar-thin">
-          {styles.map((s) => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          {styles.slice(0, visibleCount).map((s) => (
             <button
               key={s.name}
               onClick={() => setOpenStyle({ name: s.name, desc: s.desc, thumb: s.thumb, prompt: s.prompt })}
-              className="group relative shrink-0 w-44 aspect-[4/5] rounded-2xl overflow-hidden border border-border/40 hover:border-primary/50 transition-all"
+              className="group relative aspect-[4/5] rounded-2xl overflow-hidden border border-border/40 hover:border-primary/50 transition-all"
             >
               <img src={s.thumb} alt={s.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
@@ -317,6 +320,17 @@ export default function ImageStudio() {
             </button>
           ))}
         </div>
+        {visibleCount < styles.length && (
+          <div className="flex justify-center mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setVisibleCount((c) => c + 10)}
+              className="rounded-xl"
+            >
+              Load more
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Recent generations */}
