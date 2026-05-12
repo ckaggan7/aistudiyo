@@ -295,48 +295,119 @@ export type Database = {
           },
         ]
       }
+      brand_assets: {
+        Row: {
+          brand_id: string | null
+          created_at: string
+          id: string
+          kind: string
+          meta: Json
+          name: string | null
+          url: string
+          user_id: string
+        }
+        Insert: {
+          brand_id?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          meta?: Json
+          name?: string | null
+          url: string
+          user_id: string
+        }
+        Update: {
+          brand_id?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          meta?: Json
+          name?: string | null
+          url?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brand_assets_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brand_profile"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       brand_profile: {
         Row: {
+          address: string | null
           audience: string | null
+          category: string | null
           created_at: string
+          email: string | null
           font_pair: string | null
           id: string
           logo_url: string | null
+          memory: Json
           name: string
           palette: Json | null
+          phone: string | null
+          scan_summary: Json
+          score: Json
+          socials: Json
+          sources: Json
           style_prompt: string | null
           tagline: string | null
           updated_at: string
           user_id: string | null
           voice: string | null
+          website: string | null
         }
         Insert: {
+          address?: string | null
           audience?: string | null
+          category?: string | null
           created_at?: string
+          email?: string | null
           font_pair?: string | null
           id?: string
           logo_url?: string | null
+          memory?: Json
           name?: string
           palette?: Json | null
+          phone?: string | null
+          scan_summary?: Json
+          score?: Json
+          socials?: Json
+          sources?: Json
           style_prompt?: string | null
           tagline?: string | null
           updated_at?: string
           user_id?: string | null
           voice?: string | null
+          website?: string | null
         }
         Update: {
+          address?: string | null
           audience?: string | null
+          category?: string | null
           created_at?: string
+          email?: string | null
           font_pair?: string | null
           id?: string
           logo_url?: string | null
+          memory?: Json
           name?: string
           palette?: Json | null
+          phone?: string | null
+          scan_summary?: Json
+          score?: Json
+          socials?: Json
+          sources?: Json
           style_prompt?: string | null
           tagline?: string | null
           updated_at?: string
           user_id?: string | null
           voice?: string | null
+          website?: string | null
         }
         Relationships: []
       }
