@@ -5,8 +5,8 @@ export type LabScore = {
   suggestions: string[]; rewrite: string;
 };
 
-export async function scoreAd(prompt: string, context: { platform: string; objective: string }) {
-  const { data, error } = await supabase.functions.invoke("academy-ai", { body: { action: "lab_score", prompt, context } });
+export async function scoreAd(prompt: string, context: { platform: string; objective: string }, variant?: string) {
+  const { data, error } = await supabase.functions.invoke("academy-ai", { body: { action: "lab_score", variant, prompt, context } });
   if (error) throw error;
   return data?.result as LabScore;
 }
