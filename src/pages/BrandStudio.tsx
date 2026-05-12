@@ -48,13 +48,14 @@ export default function BrandStudio() {
     supabase.from("brand_profile").select("*").order("updated_at", { ascending: false }).limit(1).maybeSingle()
       .then(({ data }) => {
         if (data) {
+          const d = data as unknown as Record<string, unknown>;
           setBrand({
-            ...DEFAULT, ...data,
-            palette: Array.isArray(data.palette) ? (data.palette as string[]) : DEFAULT.palette,
-            socials: (data as { socials?: Record<string, string> }).socials ?? {},
-            memory: (data as { memory?: Memory }).memory ?? {},
-            score: (data as { score?: Score }).score ?? {},
-            sources: ((data as { sources?: Source[] }).sources) ?? [],
+            ...DEFAULT, ...(d as Partial<Brand>),
+            palette: Array.isArray(d.palette) ? (d.palette as string[]) : DEFAULT.palette,
+            socials: (d.socials as Record<string, string>) ?? {},
+            memory: (d.memory as Memory) ?? {},
+            score: (d.score as Score) ?? {},
+            sources: (d.sources as Source[]) ?? [],
           });
         }
         setLoaded(true);
