@@ -1,12 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Sparkles, Bot, TrendingUp, User } from "lucide-react";
+import { Home, Brain, Bot, GraduationCap, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const ITEMS = [
   { icon: Home,       label: "Home",    path: "/dashboard" },
-  { icon: Sparkles,   label: "Create",  path: "/dashboard/generator" },
+  { icon: Brain,      label: "Studio",  path: "/dashboard/studio" },
   { icon: Bot,        label: "Agents",  path: "/dashboard/agents" },
-  { icon: TrendingUp, label: "Trends",  path: "/dashboard/trends" },
+  { icon: GraduationCap, label: "Academy", path: "/dashboard/academy" },
   { icon: User,       label: "Profile", path: "/dashboard/settings" },
 ];
 
