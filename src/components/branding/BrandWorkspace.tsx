@@ -49,7 +49,9 @@ export default function BrandWorkspace() {
     const payload = { name: brand.name, tagline: brand.tagline, voice: brand.voice, audience: brand.audience, palette: brand.palette, font_pair: brand.font_pair, style_prompt: brand.style_prompt };
     if (brand.id) await supabase.from("brand_profile").update(payload).eq("id", brand.id);
     else {
-      const { data } = await supabase.from("brand_profile").insert(payload).select().single();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setSaving(false); toast.error("Please sign in"); return; }
+      const { data } = await supabase.from("brand_profile").insert({ ...payload, user_id: user.id }).select().single();
       if (data) setBrand((b) => ({ ...b, id: data.id }));
     }
     setSaving(false);

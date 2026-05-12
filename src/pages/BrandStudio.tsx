@@ -75,7 +75,9 @@ export default function BrandStudio() {
     if (merged.id) {
       await supabase.from("brand_profile").update(payload).eq("id", merged.id);
     } else {
-      const { data } = await supabase.from("brand_profile").insert(payload).select().single();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase.from("brand_profile").insert({ ...payload, user_id: user.id }).select().single();
       if (data) setBrand((b) => ({ ...b, id: data.id }));
     }
   };
