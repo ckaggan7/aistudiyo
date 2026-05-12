@@ -12,53 +12,34 @@ import CoreActionCards from "@/components/dashboard/CoreActionCards";
 
 export default function DashboardHome() {
   return (
-    <div className="max-w-[1440px] mx-auto pb-24 lg:pb-6">
-      {/* Unified bento mosaic — every section is a tile */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 auto-rows-min">
-        {/* Row 1 — hero spans full width */}
-        <div className="lg:col-span-12">
-          <WelcomeHeader />
-        </div>
+    <div className="max-w-[1440px] mx-auto pb-24 lg:pb-6 space-y-4">
+      {/* Band 1 — hero */}
+      <WelcomeHeader />
 
-        {/* Row 2 — quick create + AI insights */}
-        <div className="lg:col-span-7">
-          <QuickCreateBar />
-        </div>
-        <div className="lg:col-span-5">
-          <AISuggestions />
-        </div>
+      {/* Band 2 — Act now */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+        <div className="lg:col-span-7 flex"><QuickCreateBar /></div>
+        <div className="lg:col-span-5 flex"><AISuggestions /></div>
+      </div>
 
-        {/* Row 3 — agents + trending feed */}
-        <div className="lg:col-span-8">
-          <AgentsStrip />
-        </div>
-        <div className="lg:col-span-4 lg:row-span-2">
-          <TrendingNowFeed />
-        </div>
+      {/* Band 3 — Discover */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+        <div className="lg:col-span-5 flex"><AgentsStrip /></div>
+        <div className="lg:col-span-4 flex"><TrendingNowFeed /></div>
+        <div className="lg:col-span-3 flex"><TrendingSocialDates /></div>
+      </div>
 
-        {/* Row 3b — what's new carousel beside trending */}
-        <div className="lg:col-span-8">
-          <WhatsNewCarousel />
-        </div>
+      {/* Band 4 — Plan */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+        <div className="lg:col-span-5 flex"><WhatsNewCarousel /></div>
+        <div className="lg:col-span-4 flex"><RecentContentPacks /></div>
+        <div className="lg:col-span-3 flex"><CalendarPreview /></div>
+      </div>
 
-        {/* Row 4 — calendar moments + content packs */}
-        <div className="lg:col-span-5">
-          <TrendingSocialDates />
-        </div>
-        <div className="lg:col-span-7">
-          <RecentContentPacks />
-        </div>
-
-        {/* Row 5 — momentum + week peek + core actions */}
-        <div className="lg:col-span-4">
-          <CreatorMomentum />
-        </div>
-        <div className="lg:col-span-4">
-          <CalendarPreview />
-        </div>
-        <div className="lg:col-span-4">
-          <CoreActionCards />
-        </div>
+      {/* Band 5 — Pulse */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+        <div className="lg:col-span-8 flex"><CreatorMomentum /></div>
+        <div className="lg:col-span-4 flex"><CoreActionCards /></div>
       </div>
     </div>
   );
