@@ -26,22 +26,36 @@ import {
   ShieldCheck,
   Building2,
   LogOut,
+  Brain,
+  GraduationCap,
+  Workflow,
+  Megaphone,
+  Coins,
+  FlaskConical,
+  Trophy,
 } from "lucide-react";
 import { useWorkspace } from "@/hooks/useWorkspace";
 import { useAuth } from "@/hooks/useAuth";
 
 const nav = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-  { icon: Sparkles, label: "AI Generator", path: "/dashboard/generator" },
+  { icon: Brain, label: "Brand AI Studio", path: "/dashboard/studio" },
   { icon: Wand2, label: "Image Studio", path: "/dashboard/image-studio" },
   { icon: Palette, label: "Design Studio", path: "/dashboard/design" },
   { icon: Flame, label: "Trending Templates", path: "/dashboard/templates" },
   { icon: Briefcase, label: "Branding CRM", path: "/dashboard/branding" },
   { icon: Bot, label: "Agents", path: "/dashboard/agents" },
+  { icon: Workflow, label: "Workflows", path: "/dashboard/workflows" },
   { icon: Calendar, label: "Content Calendar", path: "/dashboard/calendar" },
   { icon: FolderOpen, label: "Media Library", path: "/dashboard/media" },
   { icon: TrendingUp, label: "Trend Engine", path: "/dashboard/trends" },
   { icon: BarChart3, label: "Analytics", path: "/dashboard/analytics" },
+  { icon: Megaphone, label: "Growth Hub", path: "/dashboard/growth" },
+  { icon: GraduationCap, label: "Academy", path: "/dashboard/academy" },
+  { icon: Sparkles, label: "Academy Mentor", path: "/dashboard/academy/mentor" },
+  { icon: FlaskConical, label: "Practice Lab", path: "/dashboard/academy/practice-lab" },
+  { icon: Trophy, label: "Missions", path: "/dashboard/academy/missions" },
+  { icon: Coins, label: "Credits", path: "/dashboard/credits" },
   { icon: Settings, label: "Settings", path: "/dashboard/settings" },
 ];
 
