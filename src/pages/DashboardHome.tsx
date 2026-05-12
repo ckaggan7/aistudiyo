@@ -6,7 +6,7 @@ import AgentsStrip from "@/components/dashboard/AgentsStrip";
 import TrendingSocialDates from "@/components/dashboard/TrendingSocialDates";
 import WhatsNewCarousel from "@/components/dashboard/WhatsNewCarousel";
 import TrendingNowFeed from "@/components/dashboard/TrendingNowFeed";
-import CalendarPreview from "@/components/dashboard/CalendarPreview";
+import AIInsights from "@/components/dashboard/AIInsights";
 
 export default function DashboardHome() {
   return (
@@ -35,7 +35,7 @@ export default function DashboardHome() {
       {/* Band 4 — Plan */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         <div className="lg:col-span-8"><RecentContentPacks /></div>
-        <div className="lg:col-span-4"><CalendarPreview /></div>
+        <div className="lg:col-span-4"><AIInsights /></div>
       </div>
     </div>
   );
