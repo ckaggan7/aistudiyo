@@ -2,7 +2,7 @@ import { useState, type ElementType } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Sparkles, BarChart3, Settings, Menu, X,
-  Bot, Calendar, FolderOpen, TrendingUp, Image as ImageIcon, PanelRightOpen, Megaphone,
+  Bot, Calendar, FolderOpen, TrendingUp, Image as ImageIcon, PanelRightOpen, Megaphone, Brain,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import WorkspaceSwitcher from "./workspace/WorkspaceSwitcher";
@@ -15,7 +15,7 @@ type NavItem = { icon: ElementType; label: string; path: string };
 
 const navItems: NavItem[] = [
   { icon: LayoutDashboard, label: "Home",          path: "/dashboard" },
-  { icon: Sparkles,        label: "Create",        path: "/dashboard/generator" },
+  { icon: Brain,           label: "Brand AI Studio", path: "/dashboard/studio" },
   { icon: ImageIcon,       label: "Image Studio",  path: "/dashboard/image-studio" },
   { icon: Bot,             label: "Agents",        path: "/dashboard/agents" },
   { icon: Calendar,        label: "Calendar",      path: "/dashboard/calendar" },

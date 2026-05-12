@@ -8,6 +8,7 @@ import LandingPage from "./pages/LandingPage";
 import DashboardLayout from "./components/DashboardLayout";
 import DashboardHome from "./pages/DashboardHome";
 import AIGenerator from "./pages/AIGenerator";
+import BrandStudio from "./pages/BrandStudio";
 import DesignStudio from "./pages/DesignStudio";
 import ContentCalendar from "./pages/ContentCalendar";
 import MediaLibrary from "./pages/MediaLibrary";
@@ -104,7 +105,8 @@ const App = () => (
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/dashboard" element={<DashboardPage><DashboardHome /></DashboardPage>} />
-          <Route path="/dashboard/generator" element={<DashboardPage><AIGenerator /></DashboardPage>} />
+          <Route path="/dashboard/studio" element={<DashboardPage><BrandStudio /></DashboardPage>} />
+          <Route path="/dashboard/generator" element={<Navigate to="/dashboard/studio" replace />} />
           <Route path="/dashboard/image-studio" element={<DashboardPage><ImageStudio /></DashboardPage>} />
           <Route path="/dashboard/images" element={<Navigate to="/dashboard/image-studio" replace />} />
           <Route path="/dashboard/stickers" element={<Navigate to="/dashboard/image-studio?mode=sticker" replace />} />
