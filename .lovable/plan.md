@@ -1,57 +1,133 @@
-# Type-Safety Pass — AISTUDIYO
+## Goal
+Add a Google Growth Suite to AISTUDIYO under `/dashboard/growth` — an AI-native local-business growth OS. All Google data is mocked; all generated content uses Lovable AI (Gemini 3 Flash). No OAuth, no real Google API calls.
 
-Goal: eliminate every `any`, empty `catch{}`, and empty-extends interface flagged by the audit. No behavior, UI, or feature changes.
+## New route structure
 
-## Scope of changes (file by file)
+```text
+/dashboard/growth                  → Growth OS hub (Business Command Center)
+/dashboard/growth/ads              → Google Ads AI (campaign builder)
+/dashboard/growth/analytics        → Google Analytics AI
+/dashboard/growth/profile          → Google Business Profile AI + Post Generator
+/dashboard/growth/reviews          → Review & Engagement AI
+/dashboard/growth/seo              → Local SEO + Discovery
+/dashboard/growth/agent            → Local Business AI Agent
+/dashboard/growth/connect          → Google Connect screen (mock connect flow)
+```
 
-### Hooks
-- **src/hooks/useWorkspace.tsx** — `(m: any)` → `(m: { workspace_id: string })`.
-- **src/hooks/useScheduledPosts.ts** — `insert(post as any)` → `insert(post as Record<string, unknown>)`.
-- **src/hooks/useTheme.tsx** — `catch {}` → `catch (_e) { /* storage unavailable */ }`.
+Nav: add a "Growth" group to the sidebar with `Sparkles`/`Megaphone` icon. Calendar gets a new "Google Business Posts" track (additive — no rewrite of existing calendar).
 
-### Layout & dashboard
-- **src/components/DashboardLayout.tsx** — `NavItem.icon: any` → `React.ElementType`.
-- **src/components/dashboard/AIDock.tsx** — `icon: any` → `React.ElementType`.
-- **src/components/dashboard/HeaderAnnouncementCarousel.tsx** — three `catch {}`/`catch { return true }` → `catch (_e) { /* storage unavailable */ }` (preserve the `return true`).
+## Modules (all mocked + AI-generated)
 
-### Pages
-- **src/pages/AIGenerator.tsx** — two `catch (e: any)` → `catch (e: unknown)` with `(e as Error).message`.
-- **src/pages/LoginPage.tsx** — `catch (err: any)` → `catch (err: unknown)` + `(err as Error).message`.
-- **src/pages/ImageStudio.tsx** — type the edge-function response as `{ error?: string; image_url?: string; generated_prompt?: string }`; remove 5× `as any`. Tabs `setTab(v as any)` → `setTab(v as "text" | "image")`.
-- **src/pages/AgentBuilder.tsx** — TEMPLATES `icon: any` → `React.ElementType`; logs map `(l: any)` → `(l: { msg: string })`.
-- **src/pages/BrandingCRM.tsx** — `StatCard`/`ContactRow` `icon: any` → `React.ElementType`.
-- **src/components/branding/BrandWorkspace.tsx** — `BridgeCard` `icon: any` → `React.ElementType`.
-- **src/components/agents/InstagramConnectCard.tsx** — `useState<any>` → `useState<{ provider: string; handle?: string } | null>`.
-- **src/components/scheduled/ScheduledPostsPanel.tsx** — `PLATFORM_ICON: Record<string, any>` → `Record<string, React.ElementType>`; `(opt: any)` → typed `{ label: string; ms?: number; date?: () => Date }`.
-- **src/components/generator/RepurposeCard.tsx** — `setTab(t.id as any)` → `setTab(t.id as "thread" | "reel")`.
+### 1. Growth Hub — `/dashboard/growth` (Business Command Center)
+Bento layout consistent with existing DashboardHome density.
+- KPI tiles: profile views, calls, website clicks, direction requests, review count, local SEO score (mock data, animated counters)
+- Visibility trend sparkline (recharts) — mock weekly series
+- **Google AI Insights Dock** (right side / inline): 4–6 AI-generated cards ("Profile visibility up 12%", "Weekend posts perform best", "2 negative reviews need attention", "AI recommends a local campaign"). Generated on mount via edge function with a deterministic mock context.
+- "Connect Google" empty-state CTA if not "connected" (local state only).
 
-### Workflows
-- **src/pages/workflows/nodes/WorkflowNodes.tsx** — add `NodeData` interface `{ nodeType: string; label?: string; description?: string; config?: { prompt?: string; template?: string; left?: string; [k: string]: unknown } }`. NODE_META `icon: any` → `React.ElementType`. Replace `(data as any)` with `(data as NodeData)`.
-- **src/pages/workflows/WorkflowBuilder.tsx** — share/import the same `NodeData`. `runOutput` → `{ status: string; output?: unknown; error?: string } | null`. `updateSelected(patch: any)` → `Record<string, unknown>` and remove inner `as any` casts using NodeData. `graph as any` → `unknown as Record<string, unknown>`. `catch (e: any)` → `catch (e: unknown)`.
-- **src/pages/workflows/WorkflowRuns.tsx** — `output: any` → `output: unknown`; replace `as any` casts with `as Run[]`.
+### 2. Google Ads AI — `/dashboard/growth/ads`
+- Campaign list (mock cards: name, status, CPC, CTR, conversions, AI score)
+- "New AI Campaign" wizard modal: business description → AI returns `{ headlines[], descriptions[], keywords[], audience, budget, adGroups[] }` via structured output
+- Per-campaign drawer: AI-suggested optimizations, CTR/CPC prediction bar
 
-### Superadmin
-- **src/pages/superadmin/SuperAdminOverview.tsx** — type role/provider/ai-cost/model-count/fails/signups callbacks with concrete row shapes (`{ role: string }`, `{ enabled: boolean; status: string }`, `{ cost_usd?: string | number | null }`, `{ model_slug: string }`, etc.). Cast `setAiFails`/`setSignups` to their state types instead of `as any`.
-- **src/pages/superadmin/SuperAdminWorkspaces.tsx** — type profile/member forEach params.
-- **src/pages/superadmin/SuperAdminUsers.tsx** — `role as any` (2×) → `role as AppRole` (import from `useAuth`).
-- **src/pages/superadmin/SuperAdminAI.tsx** — `p.status as any` → cast to `"healthy" | "degraded" | "down" | "unknown"`.
-- **src/pages/superadmin/SuperAdminAnalytics.tsx** — replace 4× `as any` with typed interfaces for profiles/workspaces/aiLogs/activity.
-- **src/pages/superadmin/SuperAdminCredits.tsx** — wallets/txns/profiles forEach + map typed per spec.
-- **src/pages/superadmin/SuperAdminUserDetail.tsx** — replace `useState<any>` with typed Profile/Workspace/ActivityLog shapes; roles map typed.
-- **src/pages/superadmin/SuperAdminSystem.tsx** — type ws/providers reduce/filter callbacks.
-- **src/pages/superadmin/SuperAdminLogin.tsx** — `catch (err: any)` → `unknown`.
-- **src/components/admin/PulseStrip.tsx** — forEach `(r: any)` → `{ created_at: string }`.
-- **src/components/admin/AIInsightsDock.tsx** — `rows: any[]` → `{ cost_usd?: string | number | null }[] | null`; modelCounts forEach `{ model_slug: string }`; providers filter `{ enabled: boolean; status: string }`.
+### 3. Google Analytics AI — `/dashboard/growth/analytics`
+- GA4-style mocked charts: traffic, top pages, bounce, conversions, top sources
+- AI summary panel: plain-English insights + 3 recommended actions, drop-off detection
 
-### Empty interfaces (shadcn ui)
-- **src/components/ui/textarea.tsx** — `interface TextareaProps extends … {}` → `type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement>`.
-- **src/components/ui/command.tsx** — `interface CommandDialogProps extends DialogProps {}` → `type CommandDialogProps = DialogProps`.
-- **src/components/ui/badge.tsx** — convert to `type BadgeProps = React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof badgeVariants>`.
+### 4. Google Business Profile AI — `/dashboard/growth/profile`
+- Profile card preview (name, category, hours, photos placeholder)
+- **Google Post Generator** tabs: Offer / Announcement / Update / Event / Festive / Trending — AI generates post copy + suggested image prompt + hashtags
+- "Schedule" button → writes to `scheduled_posts` with `platform = 'google_business'` (column already exists as text — no migration needed)
+- Local SEO keyword suggestions list
 
-## Out of scope
-- No new pages, components, edge functions, tables, or migrations.
-- No styling, copy, routing, or behavioral changes.
-- `src/integrations/supabase/types.ts` is auto-generated and not touched.
+### 5. Review AI — `/dashboard/growth/reviews`
+- Mock review feed (positive/neutral/negative with sentiment chips)
+- One-click "Generate Reply" — AI returns 3 tone variants (warm/professional/apologetic)
+- Bulk auto-reply toggle (mock), multilingual selector
+- Escalation flag for negative reviews
+
+### 6. Local SEO — `/dashboard/growth/seo`
+- Visibility score gauge, ranking table (mock), keyword opportunities, competitor row
+- AI "Improve my ranking" → bullet recommendations
+
+### 7. Local Business AI Agent — `/dashboard/growth/agent`
+- Chat-style agent UI (reuses existing AI generator chat patterns) with quick-action chips: "Optimize profile", "Generate week of posts", "Reply to all reviews", "Suggest campaign", "Audit SEO"
+- Streamed responses via edge function
+
+### 8. Connect Google — `/dashboard/growth/connect`
+- Mock connect cards: Analytics / Ads / Business Profile / YouTube / Search Console
+- Toggling "Connect" sets a localStorage flag → other screens flip from empty state to populated mock data
+
+## Backend
+
+One new edge function: `supabase/functions/growth-ai/index.ts`
+- Routes by `action`: `insights | ads_campaign | analytics_summary | post_generator | review_reply | seo_recommendations | agent_chat`
+- Uses Lovable AI Gateway, model `google/gemini-3-flash-preview`, `Output.object` (Zod) for structured actions, `streamText` for `agent_chat`
+- Reads `LOVABLE_API_KEY` (already configured). No new secrets.
+- CORS headers; no JWT verification needed (`verify_jwt = false` default).
+
+No DB migrations required. `scheduled_posts.platform` is free-form text so Google Business posts piggyback. If the user later wants persistence for ads/reviews, we add tables in a follow-up.
+
+## UI / design system
+- Reuse existing tokens: `bg-gradient-hero`, `shadow-elegant`, `shadow-card`, glassmorphism cards, orange primary `hsl(22 100% 55%)`.
+- Bento density matches DashboardHome (already standardized).
+- Compact analytics cards, AI suggestion bubbles (rounded pill with `Sparkles` icon + orange glow), campaign preview cards.
+- Framer Motion entry: `initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }}` per card with staggered delays.
+- AmbientBackdrop already global via DashboardLayout.
+
+## Sidebar / navigation
+Add to `DashboardLayout.tsx` nav array (after Analytics):
+- `{ icon: Megaphone, label: "Growth", path: "/dashboard/growth" }`
+
+Plus a small secondary nav (chip bar) inside Growth pages for the 7 sub-routes.
+
+## Files to add (new)
+
+```text
+src/pages/growth/
+  GrowthHub.tsx
+  GoogleAds.tsx
+  GoogleAnalyticsAI.tsx
+  BusinessProfile.tsx
+  Reviews.tsx
+  LocalSEO.tsx
+  GrowthAgent.tsx
+  ConnectGoogle.tsx
+
+src/components/growth/
+  GrowthNav.tsx                  (sub-route chip bar)
+  GoogleInsightsDock.tsx
+  KpiTile.tsx
+  AdsCampaignCard.tsx
+  AdsWizardModal.tsx
+  AnalyticsChartCard.tsx
+  PostGeneratorPanel.tsx
+  ReviewCard.tsx
+  ReviewReplyDrawer.tsx
+  SeoGauge.tsx
+  AgentChat.tsx
+  ConnectCard.tsx
+
+src/lib/growth/
+  mockData.ts                    (mock metrics, reviews, campaigns, GA series)
+  growthApi.ts                   (client wrapper around growth-ai edge function)
+
+supabase/functions/growth-ai/index.ts
+```
+
+Files to edit:
+- `src/App.tsx` — register 8 routes
+- `src/components/DashboardLayout.tsx` — add Growth nav entry
+- `src/components/dashboard/MobileDock.tsx` — add Growth icon if room
+
+## Out of scope (explicit)
+- No real Google OAuth, no Ads/Analytics/GBP API calls
+- No new DB tables or migrations
+- No changes to existing dashboard pages beyond adding the nav link
+- No payments / pricing changes
+- Comment & DM reply agent (item 12) — reuses GrowthAgent UI; a dedicated multi-platform inbox is deferred
 
 ## Verification
-Run `npx tsc --noEmit` and `npx eslint src --ext .ts,.tsx` after the pass; fix only regressions caused by the retypes.
+- `tsc --noEmit` clean, ESLint clean (no `any`)
+- Manual click-through: visit each `/dashboard/growth/*` route, trigger one AI action per page, confirm streamed/structured output renders
+- Edge function smoke test via curl for each `action`
