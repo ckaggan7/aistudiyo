@@ -357,7 +357,7 @@ export type Database = {
           style_prompt: string | null
           tagline: string | null
           updated_at: string
-          user_id: string | null
+          user_id: string
           voice: string | null
           website: string | null
         }
@@ -381,7 +381,7 @@ export type Database = {
           style_prompt?: string | null
           tagline?: string | null
           updated_at?: string
-          user_id?: string | null
+          user_id: string
           voice?: string | null
           website?: string | null
         }
@@ -405,7 +405,7 @@ export type Database = {
           style_prompt?: string | null
           tagline?: string | null
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
           voice?: string | null
           website?: string | null
         }
