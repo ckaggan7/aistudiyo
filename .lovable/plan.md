@@ -1,51 +1,82 @@
-# Fix Errors, Bugs & Missing Links — Navigation Audit
 
-After a full sweep of the route table, sidebar, mobile dock, command palette, and outbound links, the app's routes themselves all resolve. The real bugs are **dead links** and **missing navigation entries**. No console errors and no 404s in network logs.
+## Goal
 
-## Issues found
+Transform the landing page from dark-cinematic to a clean light theme that matches the AISTUDIYO brand (white BG, black text, orange accents/gradients), remove "01 —", "02 —" … section counters, and rewrite the footer with the requested attribution lines.
 
-1. **Stale link `/dashboard/academy/lab`** (route is `/dashboard/academy/practice-lab`)
-   - `src/components/academy/PracticeLabPreview.tsx`
-   - `src/lib/academy/missions.ts` (mission `m5`)
+## Scope
 
-2. **Sidebar missing core sections** (`src/components/DashboardLayout.tsx`)
-   - No **Academy** entry (huge feature, only reachable via deep links)
-   - No **Workflows** entry
-   - No **Credits** entry
+Only the public landing page (`/`) and its scenes + footer. Dashboard, auth, and other routes stay as-is.
 
-3. **Mobile dock outdated** (`src/components/dashboard/MobileDock.tsx`)
-   - "Create" still points to `/dashboard/generator` (legacy redirect) instead of `/dashboard/studio`
-   - No Academy access on mobile
+## Changes
 
-4. **Command palette stale** (`src/components/CommandPalette.tsx`)
-   - Lists "AI Generator" → `/dashboard/generator` (legacy); should be "Brand AI Studio" → `/dashboard/studio`
-   - Missing: Academy, Academy Mentor, Practice Lab, Missions, Workflows, Growth, Credits
+### 1. Theme repaint — every landing scene → light
 
-5. **Safety net**: catch-all `*` → `NotFound` already present (good).
+Touch each `FlowSection` background and text colors in:
+- `HeroScene.tsx` — bg `#FFFFFF`, headline black, body `#52525B`. Keep the orange gradient on "Operating System" via existing `text-gradient-hero`. Soften ambient orange glows (lower opacity), keep floating preview cards on a subtle white/neutral surface (`bg-black/[0.03]`, border `black/10`).
+- `QuickCreateScene.tsx` — white bg, black text. Pills become `bg-black/[0.04]` with `border-black/10`.
+- `AgentsScene.tsx` — white bg, black text; agent cards on `bg-black/[0.03]`.
+- `ContentEngineScene.tsx` — keep the orange (#ff6a17) brand band as a deliberate accent section (matches logo). Counter removed.
+- `TrendsScene.tsx` — white bg, black text; pills inverted.
+- `BrandVoiceScene.tsx` — white bg, black text.
+- `SocialProofScene.tsx` — white bg, black text; stat cards `bg-black/[0.03]`.
+- `FinalCTAScene.tsx` — soft white→cream gradient bg, black text, orange CTA gradient.
+- `LandingHeader.tsx` — switch to translucent white (`bg-white/70 backdrop-blur` with `border-black/[0.06]`); links black; primary CTA keeps orange gradient.
 
-## Fixes
+All `text-white/XX` → `text-black/XX` (or zinc equivalents). All `border-white/XX` → `border-black/XX`. All `bg-white/XX` glass → `bg-black/[0.03–0.06]` for subtle cards on white.
 
-### Link corrections
-- `PracticeLabPreview.tsx`: `/dashboard/academy/lab` → `/dashboard/academy/practice-lab`
-- `missions.ts` mission `m5.to`: `/dashboard/academy/lab` → `/dashboard/academy/practice-lab`
+Brand gradients (`text-gradient-hero`, `bg-gradient-hero`, `btn-premium`) stay — they are the orange brand and look great on white.
 
-### Sidebar (`DashboardLayout.tsx`)
-Add 3 entries (with appropriate lucide icons), keeping order coherent:
-- `GraduationCap` · **Academy** · `/dashboard/academy` (place after Growth)
-- `Workflow` · **Workflows** · `/dashboard/workflows` (place after Agents)
-- `Coins` · **Credits** · `/dashboard/credits` (place above Settings)
+### 2. Remove "unwanted numbers"
 
-### Mobile dock (`MobileDock.tsx`)
-- Replace "Create" target `/dashboard/generator` → `/dashboard/studio` (icon `Brain`, label "Studio")
-- Replace "Trends" slot with `GraduationCap` · **Academy** · `/dashboard/academy` (Trends remains accessible from sidebar / palette)
+Delete the section counter line in every scene:
+- `01 — AISTUDIYO` (Hero)
+- `02 — Quick Create`
+- `03 — AI Team`
+- `04 — Content Engine`
+- `05 — Trend Intelligence`
+- `06 — Brand Memory`
+- `07 — Loved by creators`
+- `08 — Start now`
 
-### Command palette (`CommandPalette.tsx`)
-- Replace "AI Generator" entry with "Brand AI Studio" → `/dashboard/studio` (icon `Brain`)
-- Append entries: Academy, Academy Mentor (`/dashboard/academy/mentor`), Practice Lab (`/dashboard/academy/practice-lab`), Missions (`/dashboard/academy/missions`), Workflows, Growth Hub (`/dashboard/growth`), Credits
+The thin `<hr>` separators that follow them are removed too.
+
+The vanity stats block in `SocialProofScene` (`1M+ AI generations`, `100K+ creators`, `10M+ social reach`, `500K+ viral hooks`) is also removed since AISTUDIYO is pre-launch / waitlist-first and these inflated numbers are misleading. The testimonials block stays.
+
+### 3. Footer rewrite
+
+Replace the current `Footer` usage in `LandingPage.tsx` with a new lightweight footer (light theme) that contains:
+
+```
+[ AISTUDIYO logo ]   AI Studio · AI Agents · Calendar · Trends · Contact
+
+Made with ♥ by Orange Economy India
+A Product by WOC @ Wise Owl Communications · New Delhi
+
+© 2026 AISTUDIYO          Privacy · Terms
+```
+
+- White background, black text, orange heart icon, hover-orange links.
+- Implement inline in `LandingPage.tsx` (or as a small `LightFooter` component) so the existing dark `Footer` UI primitive remains untouched for other pages.
+
+### 4. Memory update
+
+Update `mem://style/visual-identity` to record: "Landing page is light-theme (white BG, black text, orange brand gradient). Dashboard remains dark."
 
 ## Out of scope
-- No redesign, no new pages, no backend/schema changes.
-- Routes themselves untouched — only link targets and navigation surfaces.
 
-## Verification
-After edits: visit each updated nav target via the preview and confirm it renders without 404 or console errors.
+- Dashboard, login, signup, contact, academy, growth, admin pages — untouched.
+- No new images. Logo continues to be the existing `Sparkles` mark + AISTUDIYO wordmark (the uploaded logo can be wired in later as a separate task if you want the actual artwork in place of the Sparkles icon).
+
+## Files touched
+
+- `src/pages/LandingPage.tsx`
+- `src/components/landing/LandingHeader.tsx`
+- `src/components/landing/HeroScene.tsx`
+- `src/components/landing/QuickCreateScene.tsx`
+- `src/components/landing/AgentsScene.tsx`
+- `src/components/landing/ContentEngineScene.tsx`
+- `src/components/landing/TrendsScene.tsx`
+- `src/components/landing/BrandVoiceScene.tsx`
+- `src/components/landing/SocialProofScene.tsx`
+- `src/components/landing/FinalCTAScene.tsx`
+- `mem://style/visual-identity`
