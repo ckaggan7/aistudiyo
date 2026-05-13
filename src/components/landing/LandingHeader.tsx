@@ -26,12 +26,12 @@ export default function LandingHeader() {
     <header
       className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-black/60 backdrop-blur-md border-b border-white/[0.06]"
+          ? "bg-white/80 backdrop-blur-md border-b border-black/[0.06]"
           : "bg-transparent border-b border-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto h-16 px-5 md:px-8 flex items-center justify-between">
-        <Link to="/" className="text-base font-semibold tracking-tight text-white">
+        <Link to="/" className="text-base font-semibold tracking-tight text-zinc-900">
           AI <span className="text-[hsl(22_100%_55%)]">STUDIYO</span>
         </Link>
 
@@ -44,8 +44,8 @@ export default function LandingHeader() {
               className={({ isActive }) =>
                 `relative px-3 py-2 text-[13px] font-medium transition-colors ${
                   isActive
-                    ? "text-white"
-                    : "text-white/60 hover:text-white"
+                    ? "text-zinc-900"
+                    : "text-zinc-500 hover:text-zinc-900"
                 }`
               }
             >
@@ -64,7 +64,7 @@ export default function LandingHeader() {
         <div className="hidden md:flex items-center gap-2">
           <Link
             to="/login"
-            className="px-3.5 h-9 inline-flex items-center text-[13px] font-medium text-white/80 hover:text-white rounded-lg transition-colors"
+            className="px-3.5 h-9 inline-flex items-center text-[13px] font-medium text-zinc-700 hover:text-zinc-900 rounded-lg transition-colors"
           >
             Login
           </Link>
@@ -77,7 +77,7 @@ export default function LandingHeader() {
         </div>
 
         <button
-          className="md:hidden text-white/80"
+          className="md:hidden text-zinc-700"
           onClick={() => setOpen((v) => !v)}
           aria-label="Toggle menu"
         >
@@ -86,14 +86,14 @@ export default function LandingHeader() {
       </div>
 
       {open && (
-        <div className="md:hidden border-t border-white/[0.06] bg-black/85 backdrop-blur-md">
+        <div className="md:hidden border-t border-black/[0.06] bg-white/95 backdrop-blur-md">
           <div className="px-5 py-3 flex flex-col">
             {LINKS.map((l) => (
               <Link
                 key={l.label}
                 to={l.to}
                 onClick={() => setOpen(false)}
-                className="py-2.5 text-sm font-medium text-white/80 hover:text-white"
+                className="py-2.5 text-sm font-medium text-zinc-700 hover:text-zinc-900"
               >
                 {l.label}
               </Link>
@@ -102,7 +102,7 @@ export default function LandingHeader() {
               <Link
                 to="/login"
                 onClick={() => setOpen(false)}
-                className="flex-1 h-10 inline-flex items-center justify-center text-sm font-medium text-white/80 border border-white/10 rounded-lg"
+                className="flex-1 h-10 inline-flex items-center justify-center text-sm font-medium text-zinc-700 border border-black/10 rounded-lg"
               >
                 Login
               </Link>
