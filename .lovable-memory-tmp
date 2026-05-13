@@ -1,0 +1,24 @@
+---
+name: AISTUDIYO Visual Identity
+description: Orange + black brand. Public landing is light-theme (white BG, black text, orange gradient accents). Dashboard remains dark cinematic.
+type: design
+---
+Brand: AISTUDIYO — "The Operating System for Social Media Creators".
+
+LANDING PAGE (public, /): LIGHT theme.
+- Backgrounds: white (#FFFFFF) on most scenes; ContentEngineScene uses brand orange (#ff6a17) as a deliberate accent band; TrendsScene uses #FAFAFA.
+- Text: zinc-900/zinc-700/zinc-500 hierarchy on white. Body text uses text-zinc-600.
+- Cards: white surface with border-black/10 and subtle shadow-sm/lg (NOT glassmorphism on white).
+- Brand gradient: text-gradient-hero / btn-premium (orange) used for hero accents and primary CTAs.
+- Section number prefixes (01 — , 02 — , …) have been REMOVED from every scene. Do not re-add them.
+- Vanity stats (1M+ generations etc.) removed from SocialProofScene — pre-launch product, do not invent inflated numbers.
+
+DASHBOARD (/dashboard/*): DARK theme (unchanged) — cinematic, glassmorphism on dark, ambient orange glows.
+
+Tokens (dark, dashboard): bg #050505, surface #0D0D0D, glass rgba(255,255,255,0.04), primary #FF6B00, glow #FFB347.
+
+Typography: Sora (display/headlines), Inter (body).
+
+Footer (landing only): light, includes "Made with ♥ by Orange Economy India" and "A Product by WOC @ Wise Owl Communications · New Delhi". Implemented inline in src/pages/LandingPage.tsx — do not replace with the dark @/components/ui/footer primitive.
+
+Motion: Framer Motion across the app.
