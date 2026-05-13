@@ -39,7 +39,7 @@ function Row({ items, dir = "left" }: { items: Hook[]; dir?: "left" | "right" })
           return (
             <span
               key={i}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/5 border text-sm text-white/85 backdrop-blur shrink-0"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white border text-sm text-zinc-800 shadow-sm shrink-0"
               style={{ borderColor: `hsl(${c} / 0.3)` }}
             >
               <span className="w-1.5 h-1.5 rounded-full animate-pulse"
@@ -58,17 +58,14 @@ function Row({ items, dir = "left" }: { items: Hook[]; dir?: "left" | "right" })
 
 export default function TrendsScene() {
   return (
-    <FlowSection aria-label="Trends" style={{ backgroundColor: "#0a0a0d", color: "#fff" }}>
-      <p className="relative text-[10px] font-bold uppercase tracking-[0.3em] text-orange-400/90">05 — Trend Intelligence</p>
-      <hr className="relative my-[1.5vw] border-none border-t border-white/15" />
-
+    <FlowSection aria-label="Trends" style={{ backgroundColor: "#FAFAFA", color: "#0A0A0A" }}>
       <motion.h2
         initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-        className="relative text-[clamp(2.5rem,8.5vw,8rem)] font-bold leading-[0.9] tracking-tight"
+        className="relative text-[clamp(2.5rem,8.5vw,8rem)] font-bold leading-[0.9] tracking-tight pt-12"
       >
         AI-Powered<br /><span className="text-gradient-hero">Trend Intelligence</span>
       </motion.h2>
-      <hr className="relative my-[1.5vw] border-none border-t border-white/15" />
+      <hr className="relative my-[1.5vw] border-none border-t border-black/10" />
 
       <div className="relative flex-1 flex flex-col justify-center gap-4">
         <Row items={HOOKS_A} dir="left" />
@@ -76,10 +73,10 @@ export default function TrendsScene() {
         <Row items={HOOKS_A.slice().reverse()} dir="left" />
       </div>
 
-      <div className="relative flex flex-wrap gap-6 text-xs text-white/50 mt-4">
-        <span><b className="text-white">Live</b> · real-time hook radar</span>
-        <span><b className="text-white">Niche-aware</b> · learns your audience</span>
-        <span><b className="text-white">Predictive</b> · 24-hour virality forecast</span>
+      <div className="relative flex flex-wrap gap-6 text-xs text-zinc-500 mt-4">
+        <span><b className="text-zinc-900">Live</b> · real-time hook radar</span>
+        <span><b className="text-zinc-900">Niche-aware</b> · learns your audience</span>
+        <span><b className="text-zinc-900">Predictive</b> · 24-hour virality forecast</span>
       </div>
     </FlowSection>
   );

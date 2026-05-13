@@ -5,16 +5,16 @@ import { FlowSection } from "@/components/ui/story-scroll";
 
 export default function HeroScene() {
   return (
-    <FlowSection aria-label="Hero" style={{ backgroundColor: "#070707", color: "#F5F5F5" }}>
+    <FlowSection aria-label="Hero" style={{ backgroundColor: "#FFFFFF", color: "#0A0A0A" }}>
       {/* ambient glows */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-32 -left-32 w-[40rem] h-[40rem] rounded-full opacity-30 blur-3xl"
-             style={{ background: "radial-gradient(circle, rgba(255,122,26,0.30), transparent 60%)" }} />
-        <div className="absolute -bottom-40 right-0 w-[36rem] h-[36rem] rounded-full opacity-20 blur-3xl"
-             style={{ background: "radial-gradient(circle, rgba(255,155,82,0.22), transparent 60%)" }} />
+        <div className="absolute -top-32 -left-32 w-[40rem] h-[40rem] rounded-full opacity-25 blur-3xl"
+             style={{ background: "radial-gradient(circle, rgba(255,122,26,0.35), transparent 60%)" }} />
+        <div className="absolute -bottom-40 right-0 w-[36rem] h-[36rem] rounded-full opacity-15 blur-3xl"
+             style={{ background: "radial-gradient(circle, rgba(255,155,82,0.30), transparent 60%)" }} />
         {[...Array(14)].map((_, i) => (
           <span key={i}
-            className="absolute rounded-full bg-white/40"
+            className="absolute rounded-full bg-black/15"
             style={{
               width: 2 + (i % 3),
               height: 2 + (i % 3),
@@ -26,12 +26,7 @@ export default function HeroScene() {
         ))}
       </div>
 
-      <p className="relative text-[10px] font-bold uppercase tracking-[0.3em] text-[hsl(22_100%_60%)]/90">
-        01 — AISTUDIYO
-      </p>
-      <hr className="relative my-[1.5vw] border-none border-t border-white/[0.06]" />
-
-      <div className="relative grid lg:grid-cols-[1.3fr_1fr] gap-8 items-end flex-1">
+      <div className="relative grid lg:grid-cols-[1.3fr_1fr] gap-8 items-end flex-1 pt-12">
         <div>
           <motion.h1
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}
@@ -40,7 +35,7 @@ export default function HeroScene() {
             The AI <span className="text-gradient-hero">Operating System</span><br />
             for Social Media Creators
           </motion.h1>
-          <p className="mt-5 max-w-[620px] text-[clamp(1rem,1.2vw,1.125rem)] text-[#A1A1AA] leading-relaxed">
+          <p className="mt-5 max-w-[620px] text-[clamp(1rem,1.2vw,1.125rem)] text-zinc-600 leading-relaxed">
             Create viral content, launch AI agents, automate workflows, and grow your audience — all from one cinematic creator OS.
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
@@ -49,7 +44,7 @@ export default function HeroScene() {
             </Link>
             <button
               onClick={() => document.querySelector('[aria-label="Quick Create"]')?.scrollIntoView({ behavior: "smooth" })}
-              className="px-6 h-12 rounded-xl inline-flex items-center gap-2 text-sm font-semibold border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] transition-colors"
+              className="px-6 h-12 rounded-xl inline-flex items-center gap-2 text-sm font-semibold border border-black/10 bg-black/[0.02] hover:bg-black/[0.05] transition-colors"
             >
               <PlayCircle className="w-4 h-4" /> Watch Demo
             </button>
@@ -69,7 +64,7 @@ export default function HeroScene() {
               animate={{ opacity: 1, y: 0, rotate: parseFloat(c.rot) }}
               transition={{ duration: 0.7, delay: c.delay }}
               style={{ top: c.top, left: c.left }}
-              className="absolute w-56 rounded-2xl bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] p-3"
+              className="absolute w-56 rounded-2xl bg-white/80 backdrop-blur-xl border border-black/10 shadow-lg p-3"
             >
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-8 h-8 rounded-lg bg-gradient-hero flex items-center justify-center shadow-glow">
@@ -77,13 +72,13 @@ export default function HeroScene() {
                 </div>
                 <span className="text-xs font-semibold">{c.title}</span>
               </div>
-              <p className="text-[11px] text-white/60">{c.body}</p>
+              <p className="text-[11px] text-zinc-500">{c.body}</p>
             </motion.div>
           ))}
         </div>
       </div>
 
-      <p className="relative mt-auto text-xs text-white/40 tracking-wider">SCROLL TO BEGIN ↓</p>
+      <p className="relative mt-auto text-xs text-zinc-400 tracking-wider">SCROLL TO BEGIN ↓</p>
     </FlowSection>
   );
 }

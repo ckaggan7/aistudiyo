@@ -20,12 +20,9 @@ export default function ContentEngineScene() {
              style={{ background: "radial-gradient(circle, #ffb37a, transparent 60%)" }} />
       </div>
 
-      <p className="relative text-[10px] font-bold uppercase tracking-[0.3em] text-black/70">04 — Content Engine</p>
-      <hr className="relative my-[1.5vw] border-none border-t border-black/30" />
-
       <motion.h2
         initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-        className="relative text-[clamp(2.8rem,10vw,10rem)] font-bold leading-[0.9] tracking-tight"
+        className="relative text-[clamp(2.8rem,10vw,10rem)] font-bold leading-[0.9] tracking-tight pt-12"
       >
         One Prompt.<br />Infinite Content.
       </motion.h2>
