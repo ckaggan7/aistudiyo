@@ -5,14 +5,14 @@ import { FlowSection } from "@/components/ui/story-scroll";
 
 export default function FinalCTAScene() {
   return (
-    <FlowSection aria-label="Final CTA" style={{ backgroundColor: "#0a0a0a", color: "#fff" }}>
+    <FlowSection aria-label="Final CTA" style={{ backgroundColor: "#FFFFFF", color: "#0A0A0A" }}>
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[55rem] h-[55rem] rounded-full opacity-50 blur-3xl"
-             style={{ background: "radial-gradient(circle, hsl(22 95% 55% / 0.7), transparent 60%)" }} />
-        <div className="absolute -bottom-40 right-0 w-[36rem] h-[36rem] rounded-full opacity-30 blur-3xl"
-             style={{ background: "radial-gradient(circle, hsl(280 80% 58% / 0.6), transparent 60%)" }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[55rem] h-[55rem] rounded-full opacity-25 blur-3xl"
+             style={{ background: "radial-gradient(circle, hsl(22 95% 55% / 0.5), transparent 60%)" }} />
+        <div className="absolute -bottom-40 right-0 w-[36rem] h-[36rem] rounded-full opacity-15 blur-3xl"
+             style={{ background: "radial-gradient(circle, hsl(280 80% 58% / 0.4), transparent 60%)" }} />
         {[...Array(20)].map((_, i) => (
-          <span key={i} className="absolute rounded-full bg-white/40"
+          <span key={i} className="absolute rounded-full bg-black/15"
             style={{
               width: 2 + (i % 3),
               height: 2 + (i % 3),
@@ -23,30 +23,27 @@ export default function FinalCTAScene() {
         ))}
       </div>
 
-      <p className="relative text-[10px] font-bold uppercase tracking-[0.3em] text-orange-400/90">08 — Start now</p>
-      <hr className="relative my-[1.5vw] border-none border-t border-white/15" />
-
-      <div className="relative flex-1 flex flex-col items-center justify-center text-center">
+      <div className="relative flex-1 flex flex-col items-center justify-center text-center pt-12">
         <motion.h2
           initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           className="text-[clamp(3rem,11vw,11rem)] font-bold leading-[0.9] tracking-tight"
         >
           Your AI Social<br />Media Team<br /><span className="text-gradient-hero">Starts Here.</span>
         </motion.h2>
-        <p className="mt-6 max-w-[55ch] text-[clamp(1rem,1.6vw,1.3rem)] text-white/70">
+        <p className="mt-6 max-w-[55ch] text-[clamp(1rem,1.6vw,1.3rem)] text-zinc-600">
           Join thousands of creators using AISTUDIYO to ship content that actually moves the needle.
         </p>
         <div className="mt-8 flex flex-wrap gap-3 justify-center">
           <Link to="/dashboard" className="btn-premium px-7 h-12 rounded-full inline-flex items-center gap-2 text-sm font-semibold">
             Launch Workspace <ArrowRight className="w-4 h-4" />
           </Link>
-          <Link to="/dashboard/agents" className="px-7 h-12 rounded-full inline-flex items-center gap-2 text-sm font-semibold border border-white/20 bg-white/5 backdrop-blur hover:bg-white/10 transition-colors">
+          <Link to="/dashboard/agents" className="px-7 h-12 rounded-full inline-flex items-center gap-2 text-sm font-semibold border border-black/15 bg-black/[0.02] hover:bg-black/[0.05] transition-colors">
             <Bot className="w-4 h-4" /> Explore AI Agents
           </Link>
         </div>
       </div>
 
-      <p className="relative text-center text-xs text-white/40 tracking-wider">AISTUDIYO · The AI Operating System for Social Media Creators</p>
+      <p className="relative text-center text-xs text-zinc-400 tracking-wider">AISTUDIYO · The AI Operating System for Social Media Creators</p>
     </FlowSection>
   );
 }
